@@ -6,5 +6,4 @@ module ood.application.moneykeeper {
     opens ood.application.moneykeeper to javafx.fxml;
     exports ood.application.moneykeeper.view;
     opens ood.application.moneykeeper.controller to javafx.fxml;
-    exports ood.application.moneykeeper;
 }
