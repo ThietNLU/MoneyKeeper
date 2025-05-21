@@ -1,53 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.TextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="1.7976931348623157E308"
-            maxWidth="1.7976931348623157E308" prefHeight="290.0" prefWidth="519.0"
-            xmlns="http://javafx.com/javafx/21.0.7"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ood.application.moneykeeper.controller.AddTransactionController">
-    <center>
-        <VBox alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308"
-              maxWidth="1.7976931348623157E308" prefHeight="261.0"
-              prefWidth="479.0" spacing="10.0">
-
-            <Label text="Số tiền"/>
-            <TextField fx:id="transactionName" maxHeight="-Infinity"
-                       maxWidth="-Infinity" prefHeight="25.0" prefWidth="451.0"/>
-            <ComboBox prefWidth="150.0" promptText="Hạn mục"/>
-            <TextField/>
-            <DatePicker/>
-            <ComboBox prefWidth="150.0"/>
-
-            <Button onAction="#saveTransaction" text="Lưu"/>
-            <opaqueInsets>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-            </opaqueInsets>
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-            </padding>
-            <BorderPane.margin>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-            </BorderPane.margin>
-        </VBox>
-    </center>
+<?import javafx.scene.control.TextField?>
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="372.0" prefWidth="339.0" xmlns="http://javafx.com/javafx/21.0.7" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.AddTransactionController">
     <opaqueInsets>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </opaqueInsets>
-    <top>
-        <ComboBox prefHeight="38.0" prefWidth="204.0"
-                  BorderPane.alignment="CENTER">
-        </ComboBox>
-    </top>
     <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
+   <top>
+      <Label text="Thêm giao dịch" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" promptText="Chọn ví" />
+            <TextField promptText="Nhập số tiền" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+            <HBox alignment="CENTER" prefHeight="38.0" prefWidth="298.0" spacing="10.0">
+               <children>
+                  <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" promptText="Hạn mục" />
+                  <DatePicker maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="28.0" prefWidth="122.0" promptText="Thời gian" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+            <TextField promptText="Mô tả" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+            <HBox alignment="BOTTOM_RIGHT" prefHeight="52.0" prefWidth="298.0" spacing="10.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Hủy" />
+                  <Button mnemonicParsing="false" text="Lưu" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+   </center>
 </BorderPane>
