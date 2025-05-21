@@ -1,36 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.TextField?>
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="372.0" prefWidth="339.0" xmlns="http://javafx.com/javafx/21.0.7" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.AddTransactionController">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="372.0" prefWidth="339.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.AddTransactionController">
     <opaqueInsets>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </opaqueInsets>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
-   <top>
-      <Label text="Thêm giao dịch" BorderPane.alignment="CENTER">
-         <font>
-            <Font name="System Bold" size="24.0" />
-         </font>
-      </Label>
-   </top>
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
             <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" promptText="Chọn ví" />
-            <TextField promptText="Nhập số tiền" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+            <TextField maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Nhập số tiền" />
             <HBox alignment="CENTER" prefHeight="38.0" prefWidth="298.0" spacing="10.0">
                <children>
                   <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" promptText="Hạn mục" />
@@ -40,7 +32,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
             </HBox>
-            <TextField promptText="Mô tả" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+            <TextField maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Mô tả" />
             <HBox alignment="BOTTOM_RIGHT" prefHeight="52.0" prefWidth="298.0" spacing="10.0">
                <children>
                   <Button mnemonicParsing="false" text="Hủy" />
@@ -56,4 +48,16 @@
          </padding>
       </VBox>
    </center>
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="54.0" prefWidth="319.0" spacing="30.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button minHeight="30.0" minWidth="22.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="22.0" text="&lt;" />
+            <Label text="Thêm giao dịch">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+   </top>
 </BorderPane>
