@@ -6,12 +6,13 @@ import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class Wallet extends ASubject {
+public class Wallet implements ISubject {
     private String wId;
     private String name;
     private double balance;
     private List<ATransaction> transactions;
     private User owner;
+    private List<IObserver> observers = new ArrayList<>();
 
     public Wallet(String name, double balance, User owner) {
         this.name = name;
@@ -42,4 +43,20 @@ public class Wallet extends ASubject {
         return this.transactions.size();
     }
 
+    @Override
+    public void addObserver(IObserver observer) {
+        this.observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(IObserver observer) {
+        this.observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(String message) {
+        for (IObserver observer : observers) {
+            observer.update(message);
+        }
+    }
 }
