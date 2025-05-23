@@ -11,6 +11,7 @@ import ood.application.moneykeeper.model.NotificationObserver;
 import ood.application.moneykeeper.model.User;
 import ood.application.moneykeeper.model.Wallet;
 
+
 public class Main {
     public static void main(String[] args) {
         // Tạo người dùng

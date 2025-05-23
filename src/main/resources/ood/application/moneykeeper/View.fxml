@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="590.0" prefWidth="804.0" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- Thanh menu bên trái -->
+    <left>
+        <VBox prefHeight="538.0" prefWidth="158.0" spacing="10" style="-fx-background-color: linear-gradient(to bottom, #2d3e50, #1e2a38);">
+            <!-- Profile Section -->
+            <VBox alignment="CENTER" spacing="5" style="-fx-padding: 20 10;">
+                <!-- Circular Profile Image -->
+                <ImageView fx:id="logoImage" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" smooth="true">
+                    <image>
+                        <Image url="@profile.png" />
+                    </image>
+                    <style>-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0); -fx-clip: new
+                        Circle(50, 50, 50);
+                    </style>
+                </ImageView>
+                <!-- Greeting Label -->
+                <Label alignment="CENTER" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" text="Admin123" textAlignment="CENTER">
+                    <font>
+                        <Font name="Segoe UI Bold" size="14.0" />
+                    </font>
+                </Label>
+            </VBox>
+
+            <!-- Navigation Buttons -->
+            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Home">
+                <graphic>
+                    <ImageView fx:id="homeImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@beauhou.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+                <tooltip>
+                    <Tooltip text="Trang chủ" />
+                </tooltip>
+            </Button>
+            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Wallet">
+                <graphic>
+                    <ImageView fx:id="walletImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@wallet.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+                <tooltip>
+                    <Tooltip text="Quản lý ví" />
+                </tooltip>
+            </Button>
+            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Budget">
+                <graphic>
+                    <ImageView fx:id="budgetImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@budget.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+                <tooltip>
+                    <Tooltip text="Quản lý ngân sách" />
+                </tooltip>
+            </Button>
+            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="History">
+                <graphic>
+                    <ImageView fx:id="historyImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@history.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+                <tooltip>
+                    <Tooltip text="Lịch sử giao dịch" />
+                </tooltip>
+            </Button>
+            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Statistics">
+                <graphic>
+                    <ImageView fx:id="statisticImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@statistics.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+                <tooltip>
+                    <Tooltip text="Thống kê chi tiêu" />
+                </tooltip>
+            </Button>
+
+            <!-- Spacer -->
+            <VBox fx:id="spacer" VBox.vgrow="ALWAYS" />
+
+            <!-- Settings Button -->
+            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Settings">
+                <graphic>
+                    <ImageView fx:id="settingsImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@settings.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+                <tooltip>
+                    <Tooltip text="Cài đặt ứng dụng" />
+                </tooltip>
+            </Button>
+
+            <!-- Add Button -->
+            <HBox alignment="CENTER" style="-fx-padding: 10;">
+            <Button style="-fx-text-fill: white; -fx-background-color: #ff2147; -fx-alignment: CENTER; -fx-padding: 10 15; -fx-background-radius: 5;" text="Add ">
+                <graphic>
+                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@addF.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+            </Button>
+            </HBox>
+        </VBox>
+    </left>
+
+    <!-- Phần tiêu đề -->
+    <top>
+        <VBox style="-fx-background-color: linear-gradient(to right, #0288d1, #0277bd); -fx-padding: 10 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);">
+            <HBox alignment="CENTER" spacing="10">
+                <!-- Icon bên trái -->
+                <ImageView fx:id="money1Image" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@givemoney.png" />
+                    </image>
+                </ImageView>
+
+                <!-- Tiêu đề ứng dụng -->
+                <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #ffffff;" text="Expense Tracker Application">
+                    <font>
+                        <Font name="Segoe UI Bold" size="22.0" />
+                    </font>
+                </Label>
+
+                <!-- Spacer -->
+                <Region HBox.hgrow="ALWAYS" />
+
+                <!-- User Greeting -->
+                <Label style="-fx-font-size: 14px; -fx-text-fill: #ffffff;" text="Hi, Admin123 !!!">
+                    <font>
+                        <Font name="Segoe UI" size="14.0" />
+                    </font>
+                </Label>
+
+                <!-- Icon bên phải -->
+                <ImageView fx:id="money2Image" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@waving-hand.png" />
+                    </image>
+                </ImageView>
+            </HBox>
+        </VBox>
+    </top>
+
+
+
+
+
+</BorderPane>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<BorderPane prefHeight="500" prefWidth="800" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- Main Content -->
+    <center>
+        <VBox spacing="10" style="-fx-padding: 20;" BorderPane.alignment="CENTER">
+            <!-- Summary Section -->
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
+                <Label style="-fx-font-family: 'Segoe UI'; -fx-text-fill: #333;" text="Tổng giới hạn: ...">
+                    <font>
+                        <Font name="Segoe UI" size="14.0" />
+                    </font>
+                    <tooltip>
+                        <Tooltip text="Tổng giới hạn của tất cả ngân sách" />
+                    </tooltip>
+                </Label>
+                <Label style="-fx-font-family: 'Segoe UI'; -fx-text-fill: #333;" text="Tổng đã chi: ...">
+                    <font>
+                        <Font name="Segoe UI" size="14.0" />
+                    </font>
+                    <tooltip>
+                        <Tooltip text="Tổng số tiền đã chi từ các ngân sách" />
+                    </tooltip>
+                </Label>
+            </HBox>
+
+            <!-- Search Bar -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <TextField prefWidth="300" promptText="Tìm kiếm ngân sách..." style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #ddd; -fx-font-family: 'Segoe UI';">
+                    <font>
+                        <Font name="Segoe UI" size="14.0" />
+                    </font>
+                </TextField>
+                <Button style="-fx-background-color: #0288d1; -fx-text-fill: white; -fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-background-radius: 5;" text="Tìm">
+
+                </Button>
+
+                <ComboBox fx:id="sortComboBox"
+                          style="-fx-background-color: #0288d1; -fx-text-fill: white; -fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-background-radius: 5;">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Lọc từ A-Z" />
+                            <String fx:value="Lọc từ Z-A" />
+                            <String fx:value="Số dư cao đến thấp" />
+                            <String fx:value="Số dư thấp đến cao" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+
+
+            </HBox>
+
+            <!-- TableView with Card Style -->
+            <TableView fx:id="budgetTable" prefHeight="350" prefWidth="700" style="-fx-background-color: #ffffff; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
+                <columns>
+                    <TableColumn fx:id="nameColumn" prefWidth="150" text="Tên ngân sách" />
+                    <TableColumn fx:id="limitColumn" prefWidth="120" text="Giới hạn (VNĐ)" />
+                    <TableColumn fx:id="spentColumn" prefWidth="120" text="Đã chi (VNĐ)" />
+                    <TableColumn fx:id="startPeriodColumn" prefWidth="120" text="Ngày bắt đầu" />
+                    <TableColumn fx:id="endPeriodColumn" prefWidth="120" text="Ngày kết thúc" />
+                    <TableColumn fx:id="categoryColumn" prefWidth="120" text="Hạng mục" />
+                </columns>
+                <placeholder>
+                    <Label style="-fx-text-fill: #666; -fx-font-family: 'Segoe UI';" text="Không có ngân sách nào để hiển thị" />
+                </placeholder>
+            </TableView>
+
+            <!-- Action Buttons -->
+            <HBox alignment="CENTER" spacing="10">
+                <Button fx:id="addBudgetBtn"
+                        text="Thêm ngân sách"
+                        style="-fx-background-color: #28a745;
+                   -fx-text-fill: white;
+                   -fx-font-family: 'Segoe UI';
+                   -fx-font-weight: bold;
+                   -fx-font-size: 14px;
+                   -fx-padding: 10 20;
+                   -fx-background-radius: 5;
+                   -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);">
+                    <tooltip>
+                        <Tooltip text="Thêm một ngân sách mới" />
+                    </tooltip>
+                </Button>
+
+                <Button fx:id="deleteBudgetBtn"
+                        text="Xóa"
+                        style="-fx-background-color: #dc3545;
+                   -fx-text-fill: white;
+                   -fx-font-family: 'Segoe UI';
+                   -fx-font-weight: bold;
+                   -fx-font-size: 14px;
+                   -fx-padding: 10 20;
+                   -fx-background-radius: 5;
+                   -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);">
+                    <tooltip>
+                        <Tooltip text="Xóa ngân sách đã chọn" />
+                    </tooltip>
+                </Button>
+            </HBox>
+
+        </VBox>
+    </center>
+
+
+</BorderPane>
