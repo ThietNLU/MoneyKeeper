@@ -43,4 +43,19 @@ public class User {
     public void printBudgetsInfo() {
         System.out.println(this.budgets.getAllInfo());
     }
+
+    public void createTransaction(double amount, Category category, String description, Wallet wallet) {
+        ITransactionFactory transFactory;
+        if (category.isExpense()){
+            transFactory = new ExpenseTransactionFactory();
+            ATransaction trans = transFactory.createTransaction(wallet, amount, category, description);
+            wallet.addTransaction(trans);
+            budgets.processTrans(trans, category);
+        }
+        else {
+            transFactory = new IncomeTransactionFactory();
+            ATransaction trans = transFactory.createTransaction(wallet, amount, category, description);
+            wallet.addTransaction(trans);
+        }
+    }
 }

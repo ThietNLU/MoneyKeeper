@@ -7,15 +7,10 @@ public class IncomeTransaction extends ATransaction {
     }
 
     public String toString() {
-        return "\ttype: income," + "\n\tid: " + tId + ",\n\tamount: +" + amount + ",\n\ttime: " + dateTime
+        return "\ttype: Income," + "\n\tid: " + tId + ",\n\tamount: +" + amount + ",\n\ttime: " + dateTime
                 + ",\n\tcategory: " + category + ",\n\tdescription: " + description;
     }
 
-    @Override
-    public void processTrans() {
-        setStrategy(new IncomeTransactionStrategy());
-        this.strategy.process(this.wallet, this.amount, this.dateTime, false, this.category);
-    }
 
     @Override
     public boolean isExpense() {

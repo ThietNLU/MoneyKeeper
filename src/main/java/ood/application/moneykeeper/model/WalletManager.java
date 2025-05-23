@@ -1,8 +1,11 @@
 package ood.application.moneykeeper.model;
 
+import lombok.Data;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Data
 public class WalletManager {
     private List<Wallet> wallets;
 
@@ -37,5 +40,7 @@ public class WalletManager {
     public String getAllInfo(){
         return this.wallets.stream().map(Wallet::getInfo).collect(Collectors.joining("\n"));
     }
+
+
 
 }

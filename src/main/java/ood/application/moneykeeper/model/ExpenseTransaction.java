@@ -9,19 +9,13 @@ public class ExpenseTransaction extends ATransaction {
     }
 
     @Override
-    public void processTrans() {
-        setStrategy(new ExpenseTransactionStrategy());
-        this.strategy.process(this.wallet, this.amount, this.dateTime, true, this.category);
-    }
-
-    @Override
     public boolean isExpense() {
         return true;
     }
 
     @Override
     public String toString() {
-        return "\ttype: expense," + "\n\tid: " + tId + ",\n\tamount: -" + amount + ",\n\ttime: " + dateTime
+        return "\ttype: Expense," + "\n\tid: " + tId + ",\n\tamount: -" + amount + ",\n\ttime: " + dateTime
                 + ",\n\tcategory: " + category + ",\n\tdescription: " + description;
     }
 

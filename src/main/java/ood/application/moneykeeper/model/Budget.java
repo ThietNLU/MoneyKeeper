@@ -59,4 +59,9 @@ public class Budget implements ISubject {
         return this.name + "\t"+ this.limit + "\t" + this.spent + "\t" + this.startDate
                 + "\t" + this.endDate + "\t" + this.category.getName();
     }
+
+    public void addTransaction(ATransaction trans) {
+        spent += trans.getAmount();
+        this.transactions.add(trans);
+    }
 }

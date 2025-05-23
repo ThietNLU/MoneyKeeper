@@ -35,4 +35,13 @@ public class BudgetManager {
         return this.budgets.stream().map(budget -> budget.getInfo()).collect(Collectors.joining("\n"));
     }
 
+    public void processTrans(ATransaction trans, Category category) {
+        List<Budget> budgets = getBudgetsWithCategory(category);
+        Iterator<Budget> iterator = budgets.iterator();
+        while (iterator.hasNext()) {
+            Budget budget = iterator.next();
+            budget.addTransaction(trans);
+        }
+    }
+
 }

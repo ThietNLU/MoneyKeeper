@@ -79,4 +79,8 @@ public class Wallet implements ISubject {
     public String getInfo(){
         return this.id + "\t" + this.name + "\t" + this.balance;
     }
+
+    public String getInfoAllTrans(){
+        return this.transactions.stream().map(t -> t.toString()).collect(Collectors.joining("\n"));
+    }
 }

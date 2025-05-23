@@ -18,11 +18,15 @@ public class Category {
     }
 
     public boolean equals(Category category) {
-        return this.name.equalsIgnoreCase(category.getName());
+        return this.name.equalsIgnoreCase(category.getName()) && this.isExpense == category.isExpense();
     }
 
     public String toString() {
         return name;
+    }
+
+    public boolean isExpense() {
+        return isExpense;
     }
 
 }
