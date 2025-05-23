@@ -1,6 +1,7 @@
 package ood.application.moneykeeper.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import lombok.Data;
 
@@ -28,6 +29,10 @@ public class BudgetManager {
         return this.budgets.stream()
                 .filter(budget -> budget.getCategory().equals(category))
                 .toList();
+    }
+
+    public String getAllInfo(){
+        return this.budgets.stream().map(budget -> budget.getInfo()).collect(Collectors.joining("\n"));
     }
 
 }

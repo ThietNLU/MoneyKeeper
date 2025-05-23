@@ -10,20 +10,8 @@ public class ExpenseTransaction extends ATransaction {
 
     @Override
     public void processTrans() {
-        wallet.setBalance(wallet.getBalance() - amount);
-
-        if (isExpense()) {
-            User owner = wallet.getOwner();
-            List<Budget> budgets = owner.getBudgetsWithCategory(category);
-            for (Budget budget : budgets) {
-                if (dateTime.isAfter(budget.getStartDate()) && dateTime.isBefore(budget.getEndDate())) {
-                    budget.addExpense(amount);
-                    if (budget.isOverLimit()) {
-
-                    }
-                }
-            }
-        }
+        setStrategy(new ExpenseTransactionStrategy());
+        this.strategy.process(this.wallet, this.amount, this.dateTime, true, this.category);
     }
 
     @Override

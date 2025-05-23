@@ -13,7 +13,8 @@ public class IncomeTransaction extends ATransaction {
 
     @Override
     public void processTrans() {
-        wallet.setBalance(wallet.getBalance() + amount);
+        setStrategy(new IncomeTransactionStrategy());
+        this.strategy.process(this.wallet, this.amount, this.dateTime, false, this.category);
     }
 
     @Override

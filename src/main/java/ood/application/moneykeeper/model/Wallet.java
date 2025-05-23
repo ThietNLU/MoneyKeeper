@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class Wallet implements ISubject {
-    private String wId;
+    private String id;
     private String name;
     private double balance;
     private List<ATransaction> transactions;
@@ -15,11 +15,11 @@ public class Wallet implements ISubject {
     private List<IObserver> observers = new ArrayList<>();
 
     public Wallet(String name, double balance, User owner) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.balance = balance;
         this.transactions = new ArrayList<>();
         this.owner = owner;
-        owner.addWallet(this);
     }
 
     public void income(double amount) {
@@ -58,5 +58,25 @@ public class Wallet implements ISubject {
         for (IObserver observer : observers) {
             observer.update(message);
         }
+    }
+
+    public boolean isId(String id) {
+        return this.id.equals(id);
+    }
+
+    public boolean removeTransaction(String id) {
+        Iterator<ATransaction> iterator = this.transactions.iterator();
+        while (iterator.hasNext()) {
+            ATransaction trans = iterator.next();
+            if(trans.isId(id)){
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getInfo(){
+        return this.id + "\t" + this.name + "\t" + this.balance;
     }
 }

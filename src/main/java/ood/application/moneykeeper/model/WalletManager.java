@@ -1,6 +1,7 @@
 package ood.application.moneykeeper.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WalletManager {
     private List<Wallet> wallets;
@@ -17,8 +18,24 @@ public class WalletManager {
         this.wallets.add(wallet);
     }
 
-    public void removeWallet(Wallet wallet) {
-        this.wallets.remove(wallet);
+    public boolean removeWallet(String id) {
+        Iterator<Wallet> iterator = this.wallets.iterator();
+        while (iterator.hasNext()) {
+            Wallet wallet = iterator.next();
+            if (wallet.getId().equals(id)) {
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Wallet getWallet(String id) {
+        return this.wallets.stream().filter(w -> w.isId(id)).findFirst().orElse(null);
+    }
+
+    public String getAllInfo(){
+        return this.wallets.stream().map(Wallet::getInfo).collect(Collectors.joining("\n"));
     }
 
 }

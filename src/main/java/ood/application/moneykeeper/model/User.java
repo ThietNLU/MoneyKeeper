@@ -1,5 +1,7 @@
 package ood.application.moneykeeper.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,50 +11,36 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
-    private String uId;
-    private String uName;
-    private Map<String, Wallet> wallets;
-    private List<Budget> budgets;
+    private String id;
+    private String name;
+    private WalletManager wallets;
+    private BudgetManager budgets;
 
-    public User() {
-        this.wallets = new HashMap<>();
-        this.budgets = new ArrayList<>();
+    public User(String name) {
+        this.name = name;
+        this.wallets = new WalletManager();
+        this.budgets = new BudgetManager();
     }
 
-    public User(String username) {
-        this.uName = username;
-        this.wallets = new HashMap<>();
-        this.budgets = new ArrayList<>();
+    public void removeWallet(String id) {
+        this.wallets.removeWallet(id);
     }
 
-    public User(String username, Map<String, Wallet> wallets, List<Budget> budgets) {
-        this.uName = username;
-        this.wallets = wallets;
-        this.budgets = budgets;
+    public void createWallet(String name, double balance) {
+        this.wallets.addWallet(new Wallet(name, balance, this));
     }
 
-    public List<Budget> getBudgetsWithCategory(Category category) {
-        return this.budgets.stream().filter(b -> b.getCategory().equals(category)).toList();
+    public void printWalletsInfo() {
+        System.out.println(this.wallets.getAllInfo());
     }
 
-    public Wallet getWalletById(String wId) {
-        return this.wallets.get(wId) != null ? this.wallets.get(wId) : null;
+    public void createBudget(String name, double limit, LocalDateTime startDate, LocalDateTime endDate, Category category) {
+        this.budgets.addBudget(new Budget(name, limit, startDate, endDate, category));
     }
 
-    public void addWallet(Wallet wallet) {
-        this.wallets.put(wallet.getWId(), wallet);
-    }
-
-    public void addBudget(Budget budget) {
-        this.budgets.add(budget);
-    }
-
-    public void removeWallet(String wId) {
-        this.wallets.remove(wId);
-    }
-
-    public void removeBudget(Budget budget) {
-        this.budgets.remove(budget);
+    public void printBudgetsInfo() {
+        System.out.println(this.budgets.getAllInfo());
     }
 }
