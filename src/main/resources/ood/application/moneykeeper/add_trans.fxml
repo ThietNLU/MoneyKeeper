@@ -1,63 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="372.0" prefWidth="339.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.AddTransactionController">
-    <opaqueInsets>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-    </opaqueInsets>
-    <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-    </padding>
-   <center>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
-         <children>
-            <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" promptText="Chọn ví" />
-            <TextField maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Nhập số tiền" />
-            <HBox alignment="CENTER" prefHeight="38.0" prefWidth="298.0" spacing="10.0">
-               <children>
-                  <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" promptText="Hạn mục" />
-                  <DatePicker maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="28.0" prefWidth="122.0" promptText="Thời gian" />
-               </children>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </HBox>
-            <TextField maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Mô tả" />
-            <HBox alignment="BOTTOM_RIGHT" prefHeight="52.0" prefWidth="298.0" spacing="10.0">
-               <children>
-                  <Button mnemonicParsing="false" text="Hủy" />
-                  <Button mnemonicParsing="false" text="Lưu" />
-               </children>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </HBox>
-         </children>
-         <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </padding>
-      </VBox>
-   </center>
-   <top>
-      <HBox alignment="CENTER_LEFT" prefHeight="54.0" prefWidth="319.0" spacing="30.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button minHeight="30.0" minWidth="22.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="22.0" text="&lt;" />
-            <Label text="Thêm giao dịch">
-               <font>
-                  <Font name="System Bold" size="24.0" />
-               </font>
-            </Label>
-         </children>
-      </HBox>
-   </top>
+<BorderPane prefHeight="400" prefWidth="450" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.AddTransactionController">
+
+    <!-- Main Content -->
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 20;">
+            <!-- Form Card -->
+            <VBox alignment="TOP_CENTER" spacing="15" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0); -fx-padding: 20;">
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="LEFT" percentWidth="50" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" percentWidth="50" />
+                    </columnConstraints>
+
+                    <Label style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-text-fill: #333;" text="Ví" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <ComboBox fx:id="walletComboBox" promptText="Chọn ví" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #ddd;" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                        <tooltip>
+                            <Tooltip text="Chọn ví để thêm giao dịch" />
+                        </tooltip>
+                    </ComboBox>
+
+                    <!-- Số tiền -->
+                    <Label style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-text-fill: #333;" text="Số tiền" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <TextField fx:id="amountField" promptText="Nhập số tiền" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #ddd;" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                        <tooltip>
+                            <Tooltip text="Nhập số tiền giao dịch (VNĐ)" />
+                        </tooltip>
+                    </TextField>
+
+                    <Label style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-text-fill: #333;" text="Hạng mục" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                    <ComboBox fx:id="categoryComboBox" promptText="Chọn hạng mục" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #ddd;" GridPane.columnIndex="0" GridPane.rowIndex="5">
+                        <tooltip>
+                            <Tooltip text="Chọn hạng mục chi tiêu" />
+                        </tooltip>
+                    </ComboBox>
+
+                    <Label style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-text-fill: #333;" text="Ngày giao dịch" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    <DatePicker fx:id="datePicker" promptText="Chọn ngày" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #ddd;" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                        <tooltip>
+                            <Tooltip text="Chọn ngày giao dịch" />
+                        </tooltip>
+                    </DatePicker>
+
+                    <Label style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-text-fill: #333;" text="Mô tả" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                    <TextField fx:id="descriptionField" promptText="Nhập mô tả" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #ddd;" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="7">
+                        <tooltip>
+                            <Tooltip text="Nhập mô tả chi tiết cho giao dịch" />
+                        </tooltip>
+                    </TextField>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+
+                <HBox alignment="CENTER" spacing="15">
+                    <Button fx:id="saveButton" contentDisplay="CENTER" prefHeight="28.0" prefWidth="77.0" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);" textAlignment="CENTER">
+                        <graphic>
+                            <ImageView fitHeight="18.0" fitWidth="18.0">
+                                <image>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                        <text>Lưu</text>
+                        <tooltip>
+                            <Tooltip text="Lưu giao dịch" />
+                        </tooltip>
+                    </Button>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
 </BorderPane>
