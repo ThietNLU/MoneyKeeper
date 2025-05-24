@@ -17,7 +17,7 @@ public class MainTest {
         user.printWalletsInfo();
 
         user.createBudget("Launch", 200000, LocalDateTime.now(),
-                LocalDateTime.now(), new Category("Banh", true));
+                LocalDateTime.now(), new Category("Banh ", true));
 
         System.out.println("====*====");
         user.printBudgetsInfo();

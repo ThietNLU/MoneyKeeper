@@ -24,6 +24,15 @@ public class User {
         this.budgets = new BudgetManager();
     }
 
+    public User(String uid, String uname) {
+        this.id = uid;
+        this.name = uname;
+    }
+
+    public void addWallet(Wallet wallet) {
+        this.wallets.addWallet(wallet);
+    }
+
     public void removeWallet(String id) {
         this.wallets.removeWallet(id);
     }

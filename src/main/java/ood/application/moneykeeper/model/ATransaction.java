@@ -3,6 +3,7 @@ package ood.application.moneykeeper.model;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
@@ -23,6 +24,16 @@ public abstract class ATransaction {
         this.category = category;
         this.description = description;
     }
+
+    public ATransaction(String id, Wallet wallet, double amount, LocalDateTime dateTime, Category category, String description) {
+        this.tId = id;
+        this.wallet = wallet;
+        this.amount = amount;
+        this.dateTime = dateTime;
+        this.category = category;
+        this.description = description;
+    }
+
 
     public abstract boolean isExpense();
 

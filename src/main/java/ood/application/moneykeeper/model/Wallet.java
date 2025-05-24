@@ -3,9 +3,11 @@ package ood.application.moneykeeper.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class Wallet implements ISubject {
     private String id;
     private String name;
@@ -20,6 +22,14 @@ public class Wallet implements ISubject {
         this.balance = balance;
         this.transactions = new ArrayList<>();
         this.owner = owner;
+    }
+
+    public Wallet(String id, String name, double balance, User user) {
+        this.id = id;
+        this.name = name;
+        this.balance = balance;
+        this.transactions = new ArrayList<>();
+        this.owner = user;
     }
 
     public void income(double amount) {
