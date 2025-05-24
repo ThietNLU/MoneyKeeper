@@ -1,4 +1,4 @@
 package ood.application.moneykeeper.controller;
 
-public class AddBudget {
+public class HistoryController {
 }
