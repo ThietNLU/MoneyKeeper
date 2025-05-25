@@ -3,6 +3,7 @@ package ood.application.moneykeeper.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ood.application.moneykeeper.utils.UUIDUtils;
 
 @Data
 @NoArgsConstructor
@@ -13,6 +14,7 @@ public class Category {
     private boolean isExpense;
 
     public Category(String name, boolean isExpense) {
+        this.id = UUIDUtils.generateShortUUID();
         this.name = name;
         this.isExpense = isExpense;
     }

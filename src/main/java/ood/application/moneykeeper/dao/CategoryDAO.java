@@ -13,7 +13,7 @@ public class CategoryDAO implements DAO<Category, String> {
     }
 
     @Override
-    public List<Category> getAll() {
+    public List<Category> getAll() throws SQLException {
         List<Category> categories = new ArrayList<>();
         Connection con = db.getConnection();
 
@@ -37,7 +37,7 @@ public class CategoryDAO implements DAO<Category, String> {
     }
 
     @Override
-    public Category get(String id) {
+    public Category get(String id) throws SQLException {
         Category category = null;
         Connection con = db.getConnection();
 
@@ -60,7 +60,7 @@ public class CategoryDAO implements DAO<Category, String> {
     }
 
     @Override
-    public boolean save(Category category) {
+    public boolean save(Category category) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement stmt = con.prepareStatement("INSERT INTO Category (cid, name, isExpense) VALUES (?, ?, ?)");
@@ -79,7 +79,7 @@ public class CategoryDAO implements DAO<Category, String> {
     }
 
     @Override
-    public boolean update(Category category) {
+    public boolean update(Category category) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement stmt = con.prepareStatement("UPDATE Category SET name = ?, isExpense = ? WHERE cid = ?");
@@ -98,7 +98,7 @@ public class CategoryDAO implements DAO<Category, String> {
     }
 
     @Override
-    public boolean delete(Category category) {
+    public boolean delete(Category category) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement stmt = con.prepareStatement("DELETE FROM Category WHERE cid = ?");

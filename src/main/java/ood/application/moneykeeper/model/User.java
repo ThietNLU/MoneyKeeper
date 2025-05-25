@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.*;
+import ood.application.moneykeeper.utils.UUIDUtils;
 
 @Data
 @AllArgsConstructor
@@ -19,6 +20,7 @@ public class User {
     private BudgetManager budgets;
 
     public User(String name) {
+        this.id = UUIDUtils.generateShortUUID();
         this.name = name;
         this.wallets = new WalletManager();
         this.budgets = new BudgetManager();

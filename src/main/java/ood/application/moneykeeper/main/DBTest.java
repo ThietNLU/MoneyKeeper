@@ -2,6 +2,8 @@ package ood.application.moneykeeper.main;
 
 import ood.application.moneykeeper.dao.*;
 import ood.application.moneykeeper.model.*;
+import ood.application.moneykeeper.utils.DateTimeUtils;
+import ood.application.moneykeeper.utils.UUIDUtils;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -19,19 +21,19 @@ public class DBTest {
             CategoryDAO categoryDAO = new CategoryDAO();
 
             // Tạo dữ liệu người dùng
-            User testUser = new User("test_user", "Test User");
+            User testUser = new User("Test User");
             userDAO.save(testUser);
 
             // Tạo ví
-            Wallet testWallet = new Wallet("test_wallet", "Test Wallet", 500.0, testUser);
+            Wallet testWallet = new Wallet("Test Wallet", 500.0, testUser);
             walletDAO.save(testWallet);
 
             // Tạo danh mục
-            Category testCategory = new Category("test_category", "Food", true);
+            Category testCategory = new Category("Food", true);
             categoryDAO.save(testCategory);
 
             // Tạo giao dịch
-            String transId = UUID.randomUUID().toString();
+            String transId = UUIDUtils.generateShortUUID();
             ExpenseTransaction transaction = new ExpenseTransaction(transId, testWallet, 150.0, testCategory, "Lunch");
             transaction.setDateTime(LocalDateTime.now());
 
@@ -49,6 +51,7 @@ public class DBTest {
                 System.out.println("  Category: " + fetched.getCategory().getName());
                 System.out.println("  Description: " + fetched.getDescription());
                 System.out.println("  Is Expense: " + fetched.isExpense());
+                System.out.println("  Date Time: " + DateTimeUtils.formatDefault(fetched.getDateTime()));
             } else {
                 System.out.println("  -> Transaction not found");
             }
@@ -59,18 +62,10 @@ public class DBTest {
             boolean updateResult = transactionDAO.update(transaction);
             System.out.println("Update result: " + updateResult);
 
-            // Xóa giao dịch
-            boolean deleteResult = transactionDAO.delete(transaction);
-            System.out.println("Delete result: " + deleteResult);
-
             // In tất cả giao dịch còn lại
             List<ATransaction> allTransactions = transactionDAO.getAll();
             System.out.println("All transactions left: " + allTransactions.size());
 
-            // Xóa dữ liệu phụ
-            walletDAO.delete(testWallet);
-            userDAO.delete(testUser);
-            categoryDAO.delete(testCategory);
 
 
         } catch (SQLException e) {

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ood.application.moneykeeper.utils.UUIDUtils;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class Wallet implements ISubject {
     private List<IObserver> observers = new ArrayList<>();
 
     public Wallet(String name, double balance, User owner) {
-        this.id = UUID.randomUUID().toString();
+        this.id = UUIDUtils.generateShortUUID();
         this.name = name;
         this.balance = balance;
         this.transactions = new ArrayList<>();

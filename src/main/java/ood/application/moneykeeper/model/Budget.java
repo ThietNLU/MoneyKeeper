@@ -1,8 +1,8 @@
 package ood.application.moneykeeper.model;
 
 import lombok.Data;
+import ood.application.moneykeeper.utils.UUIDUtils;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class Budget implements ISubject {
     private List<ATransaction> transactions = new ArrayList<>();
 
     public Budget(String name, double limit, LocalDateTime startDate, LocalDateTime endDate, Category category) {
-        this.id = UUID.randomUUID().toString();
+        this.id = UUIDUtils.generateShortUUID();
         this.name = name;
         this.limit = limit;
         this.spent = 0.0;

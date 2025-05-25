@@ -12,7 +12,7 @@ public class WalletDAO implements DAO<Wallet, String> {
     public WalletDAO() throws SQLException {}
 
     @Override
-    public List<Wallet> getAll() {
+    public List<Wallet> getAll() throws SQLException {
         List<Wallet> wallets = new ArrayList<>();
         Connection con = db.getConnection();
         try {
@@ -37,7 +37,7 @@ public class WalletDAO implements DAO<Wallet, String> {
     }
 
     @Override
-    public Wallet get(String id) {
+    public Wallet get(String id) throws SQLException {
         Wallet wallet = null;
         Connection con = db.getConnection();
         try {
@@ -61,7 +61,7 @@ public class WalletDAO implements DAO<Wallet, String> {
     }
 
     @Override
-    public boolean save(Wallet wallet) {
+    public boolean save(Wallet wallet) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("INSERT INTO Wallet (id, name, balance, owner_id) VALUES (?, ?, ?, ?)");
@@ -80,7 +80,7 @@ public class WalletDAO implements DAO<Wallet, String> {
     }
 
     @Override
-    public boolean update(Wallet wallet) {
+    public boolean update(Wallet wallet) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("UPDATE Wallet SET name = ?, balance = ?, owner_id = ? WHERE id = ?");
@@ -99,7 +99,7 @@ public class WalletDAO implements DAO<Wallet, String> {
     }
 
     @Override
-    public boolean delete(Wallet wallet) {
+    public boolean delete(Wallet wallet) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("DELETE FROM Wallet WHERE id = ?");

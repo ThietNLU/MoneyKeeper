@@ -12,7 +12,7 @@ public class UserDAO implements DAO<User, String> {
     public UserDAO() throws SQLException {}
 
     @Override
-    public List<User> getAll() {
+    public List<User> getAll() throws SQLException {
         List<User> users = new ArrayList<>();
         Connection con = db.getConnection();
         try {
@@ -32,7 +32,7 @@ public class UserDAO implements DAO<User, String> {
     }
 
     @Override
-    public User get(String id) {
+    public User get(String id) throws SQLException {
         User user = null;
         Connection con = db.getConnection();
         try {
@@ -50,7 +50,7 @@ public class UserDAO implements DAO<User, String> {
     }
 
     @Override
-    public boolean save(User user) {
+    public boolean save(User user) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("INSERT INTO User (id, name) VALUES (?, ?)");
@@ -67,7 +67,7 @@ public class UserDAO implements DAO<User, String> {
     }
 
     @Override
-    public boolean update(User user) {
+    public boolean update(User user) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("UPDATE User SET name = ? WHERE id = ?");
@@ -84,7 +84,7 @@ public class UserDAO implements DAO<User, String> {
     }
 
     @Override
-    public boolean delete(User user) {
+    public boolean delete(User user) throws SQLException {
         Connection con = db.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("DELETE FROM User WHERE id = ?");

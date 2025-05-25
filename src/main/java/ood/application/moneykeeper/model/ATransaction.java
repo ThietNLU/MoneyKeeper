@@ -5,6 +5,7 @@ import java.util.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ood.application.moneykeeper.utils.UUIDUtils;
 
 @Data
 public abstract class ATransaction {
@@ -17,7 +18,7 @@ public abstract class ATransaction {
 
     public ATransaction(Wallet wallet, double amount, Category category,
                         String description) {
-        this.tId = UUID.randomUUID().toString();
+        this.tId = UUIDUtils.generateShortUUID();
         this.wallet = wallet;
         this.amount = amount;
         this.dateTime = LocalDateTime.now();
