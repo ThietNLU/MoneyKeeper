@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="590.0" prefWidth="804.0" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.ViewController">
+<BorderPane fx:id="mainPane" prefHeight="590.0" prefWidth="804.0" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.MainViewController">
 
     <!-- Thanh menu bên trái -->
     <left>
@@ -36,7 +36,7 @@
             </VBox>
 
             <!-- Navigation Buttons -->
-            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Home">
+            <Button fx:id="homeBtn" onAction="#loadHome" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Home">
                 <graphic>
                     <ImageView fx:id="homeImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -51,7 +51,7 @@
                     <Tooltip text="Trang chủ" />
                 </tooltip>
             </Button>
-            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Wallet">
+            <Button fx:id="walletBtn" onAction="#loadWallet" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Wallet">
                 <graphic>
                     <ImageView fx:id="walletImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -66,7 +66,7 @@
                     <Tooltip text="Quản lý ví" />
                 </tooltip>
             </Button>
-            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Budget">
+            <Button fx:id="budgetBtn" onAction="#loadBudget" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Budget">
                 <graphic>
                     <ImageView fx:id="budgetImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -81,7 +81,7 @@
                     <Tooltip text="Quản lý ngân sách" />
                 </tooltip>
             </Button>
-            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="History">
+            <Button fx:id="transBtn" onAction="#loadTransaction" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Transaction">
                 <graphic>
                     <ImageView fx:id="historyImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -96,7 +96,7 @@
                     <Tooltip text="Lịch sử giao dịch" />
                 </tooltip>
             </Button>
-            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Statistics">
+            <Button fx:id="reportBtn" onAction="#loadReport" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Report">
                 <graphic>
                     <ImageView fx:id="statisticImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -116,7 +116,7 @@
             <VBox fx:id="spacer" VBox.vgrow="ALWAYS" />
 
             <!-- Settings Button -->
-            <Button style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Settings">
+            <Button fx:id="settingsBtn" onAction="#loadSettings" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Settings">
                 <graphic>
                     <ImageView fx:id="settingsImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -136,7 +136,7 @@
             <HBox alignment="CENTER" style="-fx-padding: 10;">
             <Button style="-fx-text-fill: white; -fx-background-color: #ff2147; -fx-alignment: CENTER; -fx-padding: 10 15; -fx-background-radius: 5;" text="Add ">
                 <graphic>
-                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fx:id="addTransBtn" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
                             <Image url="@image/addF.png" />
                         </image>
@@ -187,9 +187,5 @@
             </HBox>
         </VBox>
     </top>
-
-
-
-
 
 </BorderPane>

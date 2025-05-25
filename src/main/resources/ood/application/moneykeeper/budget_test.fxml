@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ood.application.moneykeeper.controller.BudgetController">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <top>
+        <VBox spacing="10">
+            <Label text="Quản lý ngân sách" style="-fx-font-weight: bold; -fx-font-size: 24px;"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="15">
+            <!-- Budget Form -->
+            <TitledPane text="Thêm/Chỉnh sửa ngân sách" expanded="true">
+                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
+                    <GridPane hgap="15" vgap="10">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="100" prefWidth="120"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="250"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="80" prefWidth="120"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="150" prefWidth="150"/>
+                        </columnConstraints>
+
+                        <!-- Row 0 -->
+                        <Label text="Tên ngân sách:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="budgetNameField" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Nhập tên ngân sách"/>
+
+                        <Label text="Hạng mục:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                        <ComboBox fx:id="categoryComboBox" GridPane.rowIndex="0" GridPane.columnIndex="3" promptText="Chọn hạng mục" prefWidth="150"/>
+
+                        <!-- Row 1 -->
+                        <Label text="Giới hạn:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="limitField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Nhập giới hạn ngân sách"/>
+
+                        <Label text="Thời gian:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                        <ComboBox fx:id="periodComboBox" GridPane.rowIndex="1" GridPane.columnIndex="3" promptText="Chọn kỳ hạn" prefWidth="150"/>
+
+                        <!-- Row 2 -->
+                        <Label text="Mô tả:" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="TOP">
+                            <GridPane.margin>
+                                <Insets top="5"/>
+                            </GridPane.margin>
+                        </Label>
+                        <TextArea fx:id="descriptionField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                  GridPane.columnSpan="3" promptText="Nhập mô tả cho ngân sách" prefHeight="60"/>
+
+                        <!-- Row 3: Buttons -->
+                        <HBox alignment="CENTER_RIGHT" spacing="10" GridPane.rowIndex="3"
+                              GridPane.columnIndex="1" GridPane.columnSpan="3">
+                            <Button fx:id="clearButton" text="Xóa trắng" onAction="#clearForm"
+                                    style="-fx-background-color: #6c757d; -fx-text-fill: white;"/>
+                            <Button fx:id="saveButton" text="Lưu ngân sách" onAction="#saveBudget"
+                                    style="-fx-background-color: #28a745; -fx-text-fill: white;"/>
+                        </HBox>
+                    </GridPane>
+
+                    <Label fx:id="errorLabel" style="-fx-text-fill: red;" visible="false"/>
+                </VBox>
+            </TitledPane>
+
+            <!-- Budget List -->
+            <TitledPane text="Danh sách ngân sách" expanded="true" VBox.vgrow="ALWAYS">
+                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Lọc theo:"/>
+                        <ComboBox fx:id="filterComboBox" prefWidth="150"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="searchField" promptText="Tìm kiếm ngân sách..." prefWidth="200"/>
+                        <Button fx:id="searchButton" text="Tìm" onAction="#searchBudgets" style="-fx-background-color: #0288d1; -fx-text-fill: white;"/>
+                    </HBox>
+
+                    <TableView fx:id="budgetTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="nameColumn" text="Tên ngân sách" prefWidth="150"/>
+                            <TableColumn fx:id="categoryColumn" text="Hạng mục" prefWidth="120"/>
+                            <TableColumn fx:id="limitColumn" text="Giới hạn" prefWidth="100"/>
+                            <TableColumn fx:id="usedColumn" text="Đã sử dụng" prefWidth="100"/>
+                            <TableColumn fx:id="remainingColumn" text="Còn lại" prefWidth="100"/>
+                            <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="80"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="Không có dữ liệu ngân sách" style="-fx-text-fill: #999999;"/>
+                        </placeholder>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Button fx:id="editButton" text="Chỉnh sửa" onAction="#editBudget"
+                                style="-fx-background-color: #ffc107; -fx-text-fill: white;" disable="true"/>
+                        <Button fx:id="deleteButton" text="Xóa" onAction="#deleteBudget"
+                                style="-fx-background-color: #dc3545; -fx-text-fill: white;" disable="true"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Tải lại" onAction="#refreshData"
+                                style="-fx-background-color: #0288d1; -fx-text-fill: white;"/>
+                    </HBox>
+                </VBox>
+            </TitledPane>
+        </VBox>
+    </center>
+
+</BorderPane>

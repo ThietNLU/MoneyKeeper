@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.HomeScreenController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" >
     <center>
         <VBox alignment="TOP_LEFT" prefHeight="580.0" prefWidth="634.0" spacing="15.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0); -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10;" BorderPane.alignment="CENTER">
             <!-- Tổng Quan Section -->

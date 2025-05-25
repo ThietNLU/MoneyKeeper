@@ -10094,7 +10094,7 @@
 											"top": 547,
 											"width": 265.31005859375,
 											"height": 13,
-											"text": "+DBConnection()",
+											"text": "-DBConnection()",
 											"horizontalAlignment": 0
 										},
 										{
@@ -18709,7 +18709,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGXBasDmKiGSK0="
 							},
-							"name": "DBConnection"
+							"name": "DBConnection",
+							"visibility": "private"
 						},
 						{
 							"_type": "UMLOperation",

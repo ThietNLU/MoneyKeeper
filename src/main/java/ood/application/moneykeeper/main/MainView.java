@@ -10,9 +10,9 @@ import javafx.scene.Scene;
 public class MainView extends Application {
     @Override
     public void start(javafx.stage.Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ood/application/moneykeeper/transaction_test.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ood/application/moneykeeper/budget_test.fxml"));
         Parent root = loader.load();
-        primaryStage.setTitle("Expense Tracker");
+        primaryStage.setTitle("MoneyKeeper - Expense Tracker");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }

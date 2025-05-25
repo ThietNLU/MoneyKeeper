@@ -1,7 +1,7 @@
-module ood.application.moneykeeper {
-    // JavaFX
+module ood.application.moneykeeper {    // JavaFX
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.graphics;
 
     // JDBC
     requires java.sql;

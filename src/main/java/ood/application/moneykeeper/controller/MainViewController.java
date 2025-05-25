@@ -8,32 +8,51 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class ViewController {
-    @FXML private BorderPane mainPane;
-    @FXML private Button addTrans;
+public class MainViewController {
+    @FXML
+    private BorderPane mainPane;
 
     @FXML
     private void loadHome() throws IOException {
-        Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/HomeScreen.fxml"));
+        Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/home_test.fxml"));
         mainPane.setCenter(view);
     }
 
     @FXML
-    private void loadStats() throws IOException {
+    private void loadWallet() throws IOException {
+        Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/wallet_test.fxml"));
+        mainPane.setCenter(view);
+    }
+
+    @FXML
+    private void loadBudget() throws IOException {
+        Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/budget_test.fxml"));
+        mainPane.setCenter(view);
+    }
+
+
+    @FXML
+    private void loadTransaction() throws IOException {
+        Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/transaction_test.fxml"));
+        mainPane.setCenter(view);
+    }
+
+    @FXML
+    private void loadReport() throws IOException {
         Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/report.fxml"));
         mainPane.setCenter(view);
     }
 
     @FXML
     private void loadSettings() throws IOException {
-        Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/settings.fxml"));
+        Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/settings_test.fxml"));
         mainPane.setCenter(view);
     }
+
 
     @FXML
     private void openTransactionWindow() {
