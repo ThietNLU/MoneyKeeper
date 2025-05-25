@@ -1,5 +1,4 @@
 # OOD Project 
-Tôi sẽ giải thích mẫu Observer Pattern trong project MoneyKeeper này cho bạn hiểu. Hãy để tôi phân tích cấu trúc và cách hoạt động của nó. Hãy để tôi tiếp tục tìm hiểu các interface và classes cốt lõi để giải thích đầy đủ hơn: Bây giờ tôi có đủ thông tin để giải thích chi tiết mẫu Observer Pattern trong project MoneyKeeper. Đây là một implementation rất hoàn chỉnh và phức tạp của mẫu Observer Pattern:
 
 ## 🎯 **Observer Pattern trong MoneyKeeper - Giải Thích Chi Tiết**
 
