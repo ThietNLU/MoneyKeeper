@@ -13,7 +13,7 @@ public class Wallet implements ISubject {
     private String id;
     private String name;
     private double balance;
-    private List<ATransaction> transactions;
+    private List<Transaction> transactions;
     private User owner;
     private List<IObserver> observers = new ArrayList<>();
 
@@ -41,8 +41,9 @@ public class Wallet implements ISubject {
         this.balance -= amount;
     }
 
-    public void addTransaction(ATransaction transaction) {
+    public void addTransaction(Transaction transaction) {
         this.transactions.add(transaction);
+        transaction.processWallet();
     }
 
     public String printTransactions() {
@@ -76,10 +77,10 @@ public class Wallet implements ISubject {
     }
 
     public boolean removeTransaction(String id) {
-        Iterator<ATransaction> iterator = this.transactions.iterator();
+        Iterator<Transaction> iterator = this.transactions.iterator();
         while (iterator.hasNext()) {
-            ATransaction trans = iterator.next();
-            if(trans.isId(id)){
+            Transaction trans = iterator.next();
+            if(trans.getTId().equals(id)) {
                 iterator.remove();
                 return true;
             }
@@ -93,5 +94,9 @@ public class Wallet implements ISubject {
 
     public String getInfoAllTrans(){
         return this.transactions.stream().map(t -> t.toString()).collect(Collectors.joining("\n"));
+    }
+
+    public String toString(){
+        return "Id: " + id + "\nName: " + name + "\nBalance: " + balance;
     }
 }

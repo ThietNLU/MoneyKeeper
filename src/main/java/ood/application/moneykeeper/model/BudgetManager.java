@@ -21,8 +21,14 @@ public class BudgetManager {
         this.budgets.add(budget);
     }
 
-    public void removeBudget(Budget budget) {
-        this.budgets.remove(budget);
+    public void removeBudget(String id) {
+        Iterator<Budget> iterator = this.budgets.iterator();
+        while (iterator.hasNext()) {
+            Budget budget = iterator.next();
+            if (budget.getId().equals(id)) {
+                iterator.remove();
+            }
+        }
     }
 
     public List<Budget> getBudgetsWithCategory(Category category) {
@@ -35,7 +41,8 @@ public class BudgetManager {
         return this.budgets.stream().map(budget -> budget.getInfo()).collect(Collectors.joining("\n"));
     }
 
-    public void processTrans(ATransaction trans, Category category) {
+    public void processTrans(Transaction trans) {
+        Category category = trans.getCategory();
         List<Budget> budgets = getBudgetsWithCategory(category);
         Iterator<Budget> iterator = budgets.iterator();
         while (iterator.hasNext()) {

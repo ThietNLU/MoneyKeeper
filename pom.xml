@@ -92,7 +92,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>ood.application.moneykeeper/ood.application.moneykeeper.view.MainView</mainClass>
+                            <mainClass>ood.application.moneykeeper/ood.application.moneykeeper.main.MainView</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

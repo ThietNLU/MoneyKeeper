@@ -1,11 +1,6 @@
 package ood.application.moneykeeper.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import lombok.*;
 import ood.application.moneykeeper.utils.UUIDUtils;
@@ -39,34 +34,40 @@ public class User {
         this.wallets.removeWallet(id);
     }
 
-    public void createWallet(String name, double balance) {
-        this.wallets.addWallet(new Wallet(name, balance, this));
+    public Wallet createWallet(String name, double balance) {
+        Wallet re = new Wallet(name, balance, this);
+        this.wallets.addWallet(re);
+        return re;
     }
 
-    public void printWalletsInfo() {
-        System.out.println(this.wallets.getAllInfo());
+    public void addBudget(Budget budget) {
+        this.budgets.addBudget(budget);
     }
 
-    public void createBudget(String name, double limit, LocalDateTime startDate, LocalDateTime endDate, Category category) {
-        this.budgets.addBudget(new Budget(name, limit, startDate, endDate, category));
+    public void removeBudget(String id) {
+        this.budgets.removeBudget(id);
     }
 
-    public void printBudgetsInfo() {
-        System.out.println(this.budgets.getAllInfo());
+    public Budget createBudget(String name, double limit, LocalDateTime startDate, LocalDateTime endDate, Category category) {
+        Budget re = new Budget(name, limit, startDate, endDate, category);
+        this.budgets.addBudget(re);
+        return re;
     }
 
-    public void createTransaction(double amount, Category category, String description, Wallet wallet) {
-        ITransactionFactory transFactory;
-        if (category.isExpense()){
-            transFactory = new ExpenseTransactionFactory();
-            ATransaction trans = transFactory.createTransaction(wallet, amount, category, description);
-            wallet.addTransaction(trans);
-            budgets.processTrans(trans, category);
+    public void addTransaction(Transaction transaction) {
+        transaction.processWallet();
+        transaction.processBudget(budgets);
+    }
+
+    public Transaction createTransaction(Wallet wallet, double amount, Category category, String description) {
+        Transaction re = new Transaction(wallet, amount, category, description);
+        if (category.isExpense()) {
+            re.setStrategy(new ExpenseTransactionStrategy());
+        } else {
+            re.setStrategy(new IncomTransactionStrategy());
         }
-        else {
-            transFactory = new IncomeTransactionFactory();
-            ATransaction trans = transFactory.createTransaction(wallet, amount, category, description);
-            wallet.addTransaction(trans);
-        }
+        re.processWallet();
+        re.processBudget(budgets);
+        return re;
     }
 }

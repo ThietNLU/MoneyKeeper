@@ -1,139 +1,215 @@
 package ood.application.moneykeeper.dao;
 
 import ood.application.moneykeeper.model.*;
+import ood.application.moneykeeper.utils.DateTimeUtils;
+
 import java.sql.*;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionDAO implements DAO<ATransaction, String> {
+public class TransactionDAO implements DAO<Transaction, String> {
     private final DBConnection db = DBConnection.getInstance();
+    private final WalletDAO walletDAO;
+    private final CategoryDAO categoryDAO;
+
+    public TransactionDAO() throws SQLException {
+        this.walletDAO = new WalletDAO();
+        this.categoryDAO = new CategoryDAO();
+    }
 
     @Override
-    public List<ATransaction> getAll() {
-        List<ATransaction> list = new ArrayList<>();
-        String query = "SELECT * FROM Transactions";
-        try (Connection con = db.getConnection();
-             Statement stm = con.createStatement();
-             ResultSet rs = stm.executeQuery(query)) {
+    public List<Transaction> getAll() throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
+        Connection con = db.getConnection();
+
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Transactions");
+
             while (rs.next()) {
-                ATransaction transaction = buildTransactionFromResultSet(rs);
-                if (transaction != null) list.add(transaction);
+                transactions.add(extractTransactionFromResultSet(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return list;
+
+        return transactions;
     }
 
     @Override
-    public ATransaction get(String trans_id) {
-        ATransaction result = null;
-        String query = "SELECT * FROM Transactions WHERE id = ?";
-        try (Connection con = db.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, trans_id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    result = buildTransactionFromResultSet(rs);
-                }
+    public Transaction get(String id) throws SQLException {
+        Connection con = db.getConnection();
+
+        try {
+            PreparedStatement stmt = con.prepareStatement("SELECT * FROM Transactions WHERE id = ?");
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return extractTransactionFromResultSet(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return result;
+
+        return null;
     }
 
     @Override
-    public boolean save(ATransaction t) {
-        String query = "INSERT INTO Transactions (id, amount, dateTime, category_id, description, wallet_id, isExpense) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public boolean save(Transaction transaction) throws SQLException {
+        Connection con = db.getConnection();
 
-        try (Connection con = db.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "INSERT INTO Transactions (id, amount, dateTime, category_id, description, wallet_id, isExpense) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?)"
+            );
 
-            LocalDateTime transactionTime = (t.getDateTime() != null)
-                    ? t.getDateTime()
-                    : LocalDateTime.now();
+            stmt.setString(1, transaction.getTId());
+            stmt.setDouble(2, transaction.getAmount());
+            stmt.setString(3, DateTimeUtils.formatDefault(transaction.getDateTime()));
+            stmt.setString(4, transaction.getCategory().getId());
+            stmt.setString(5, transaction.getDescription());
+            stmt.setString(6, transaction.getWallet().getId());
+            stmt.setBoolean(7, transaction.getStrategy().isExpense());
 
-            // Sử dụng milliseconds từ epoch để lưu trữ
-            long timestamp = transactionTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-
-            ps.setString(1, t.getTId());
-            ps.setDouble(2, t.getAmount());
-            ps.setLong(3, timestamp); // Lưu dưới dạng số
-            ps.setString(4, t.getCategory().getId());
-            ps.setString(5, t.getDescription());
-            ps.setString(6, t.getWallet().getId());
-            ps.setBoolean(7, t instanceof ExpenseTransaction);
-
-            return ps.executeUpdate() > 0;
+            int affected = stmt.executeUpdate();
+            return affected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return false;
     }
 
     @Override
-    public boolean update(ATransaction t) {
-        String query = "UPDATE Transactions SET amount=?, dateTime=?, category_id=?, description=?, wallet_id=?, isExpense=? WHERE id=?";
-        try (Connection con = db.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+    public boolean update(Transaction transaction) throws SQLException {
+        Connection con = db.getConnection();
 
-            long timestamp = t.getDateTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "UPDATE Transactions SET amount = ?, dateTime = ?, category_id = ?, " +
+                            "description = ?, wallet_id = ?, isExpense = ? WHERE id = ?"
+            );
 
-            ps.setDouble(1, t.getAmount());
-            ps.setLong(2, timestamp);
-            ps.setString(3, t.getCategory().getId());
-            ps.setString(4, t.getDescription());
-            ps.setString(5, t.getWallet().getId());
-            ps.setBoolean(6, t instanceof ExpenseTransaction);
-            ps.setString(7, t.getTId());
+            stmt.setDouble(1, transaction.getAmount());
+            stmt.setString(2, DateTimeUtils.formatDefault(transaction.getDateTime()));
+            stmt.setString(3, transaction.getCategory().getId());
+            stmt.setString(4, transaction.getDescription());
+            stmt.setString(5, transaction.getWallet().getId());
+            stmt.setBoolean(6, transaction.getStrategy().isExpense());
+            stmt.setString(7, transaction.getTId());
 
-            return ps.executeUpdate() > 0;
+            int affected = stmt.executeUpdate();
+            return affected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return false;
     }
 
     @Override
-    public boolean delete(ATransaction t) {
-        String query = "DELETE FROM Transactions WHERE id=?";
-        try (Connection con = db.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, t.getTId());
-            return ps.executeUpdate() > 0;
+    public boolean delete(Transaction transaction) throws SQLException {
+        Connection con = db.getConnection();
+
+        try {
+            PreparedStatement stmt = con.prepareStatement("DELETE FROM Transactions WHERE id = ?");
+            stmt.setString(1, transaction.getTId());
+
+            int affected = stmt.executeUpdate();
+            return affected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return false;
     }
 
-    private ATransaction buildTransactionFromResultSet(ResultSet rs) throws SQLException {
+    public List<Transaction> getTransactionsByWallet(String walletId) throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
+        Connection con = db.getConnection();
+
+        try {
+            PreparedStatement stmt = con.prepareStatement("SELECT * FROM Transactions WHERE wallet_id = ?");
+            stmt.setString(1, walletId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                transactions.add(extractTransactionFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return transactions;
+    }
+
+    public List<Transaction> getTransactionsByCategory(String categoryId) throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
+        Connection con = db.getConnection();
+
+        try {
+            PreparedStatement stmt = con.prepareStatement("SELECT * FROM Transactions WHERE category_id = ?");
+            stmt.setString(1, categoryId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                transactions.add(extractTransactionFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return transactions;
+    }
+
+    public List<Transaction> getTransactionsByDateRange(LocalDateTime start, LocalDateTime end) throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
+        Connection con = db.getConnection();
+
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT * FROM Transactions WHERE dateTime BETWEEN ? AND ?"
+            );
+            stmt.setString(1, DateTimeUtils.formatDefault(start));
+            stmt.setString(2, DateTimeUtils.formatDefault(end));
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                transactions.add(extractTransactionFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return transactions;
+    }
+
+    private Transaction extractTransactionFromResultSet(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         double amount = rs.getDouble("amount");
-
-        // Đọc timestamp dưới dạng milliseconds từ epoch
-        long timestampMillis = rs.getLong("dateTime");
-        LocalDateTime dateTime = Instant.ofEpochMilli(timestampMillis)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-
-        String category_id = rs.getString("category_id");
+        String dateTimeStr = rs.getString("dateTime");
+        String categoryId = rs.getString("category_id");
         String description = rs.getString("description");
-        String wallet_id = rs.getString("wallet_id");
+        String walletId = rs.getString("wallet_id");
         boolean isExpense = rs.getBoolean("isExpense");
 
-        Category category = new CategoryDAO().get(category_id);
-        Wallet wallet = new WalletDAO().get(wallet_id);
+        // Get related objects
+        Wallet wallet = walletDAO.get(walletId);
+        Category category = categoryDAO.get(categoryId);
+        LocalDateTime dateTime = DateTimeUtils.parse(dateTimeStr, DateTimeUtils.DEFAULT_DATE_TIME_FORMAT);
 
-        if (category == null || wallet == null) return null;
+        // Create transaction with appropriate strategy
+        Transaction transaction = new Transaction(id, wallet, null , amount, dateTime, category, description);
 
-        return isExpense
-                ? new ExpenseTransaction(id, wallet, amount, dateTime, category, description)
-                : new IncomeTransaction(id, wallet, amount, dateTime, category, description);
+        if (isExpense) {
+            transaction.setStrategy(new ExpenseTransactionStrategy());
+        } else {
+            transaction.setStrategy(new IncomTransactionStrategy());
+        }
+
+        return transaction;
     }
 }

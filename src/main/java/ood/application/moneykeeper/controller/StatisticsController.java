@@ -1,9 +1,6 @@
 package ood.application.moneykeeper.controller;
-import ood.application.moneykeeper.model.ATransaction;
 import ood.application.moneykeeper.model.*;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +9,7 @@ public class StatisticsController {
         Map<Category, Double> categoryTotals = new HashMap<>();
 
 //        for (Wallet wallet : WalletManager.getWallets().subList()) {
-//            for (ATransaction tx : wallet.getTransactions()) {
+//            for (Transaction tx : wallet.getTransactions()) {
 //                if (tx instanceof ExpenseTransaction) {
 //                    LocalDateTime txDateTime = tx.getDateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 //

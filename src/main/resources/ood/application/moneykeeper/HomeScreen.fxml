@@ -38,7 +38,7 @@
             <HBox alignment="CENTER_LEFT" spacing="5">
                 <ImageView fitHeight="20.0" fitWidth="20.0">
                     <image>
-                        <Image url="@balance-spendings.png" />
+                        <Image url="@image/balance-spendings.png" />
                     </image>
                 </ImageView>
                 <Label fx:id="balanceSummary" style="-fx-text-fill: #333;" text="Tổng số dư: ...">
@@ -112,7 +112,7 @@
                 <HBox alignment="CENTER_LEFT" spacing="5">
                     <ImageView fitHeight="20.0" fitWidth="20.0">
                         <image>
-                            <Image url="@expense.png" />
+                            <Image url="@image/expense.png" />
                         </image>
                     </ImageView>
                     <Label fx:id="budgetSummary" style="-fx-text-fill: #333;" text="Tổng ngân sách đã chi: ...">

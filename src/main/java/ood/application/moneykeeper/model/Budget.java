@@ -1,12 +1,12 @@
 package ood.application.moneykeeper.model;
 
 import lombok.Data;
+import ood.application.moneykeeper.utils.DateTimeUtils;
 import ood.application.moneykeeper.utils.UUIDUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 public class Budget implements ISubject {
@@ -18,7 +18,7 @@ public class Budget implements ISubject {
     private LocalDateTime endDate;
     private Category category;
     private List<IObserver> observers = new ArrayList<>();
-    private List<ATransaction> transactions = new ArrayList<>();
+    private List<Transaction> transactions = new ArrayList<>();
 
     public Budget(String name, double limit, LocalDateTime startDate, LocalDateTime endDate, Category category) {
         this.id = UUIDUtils.generateShortUUID();
@@ -30,12 +30,16 @@ public class Budget implements ISubject {
         this.category = category;
     }
 
-    public void addExpense(double amount) {
-        this.spent += amount;
-    }
-
-    public boolean isOverLimit() {
-        return this.spent > this.limit;
+    public Budget(String id, String name, double limit, double spent, LocalDateTime startDate, LocalDateTime endDate, Category category) {
+        this.id = id;
+        this.name = name;
+        this.limit = limit;
+        this.spent = spent;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.category = category;
+        this.observers = new ArrayList<>();
+        this.transactions = new ArrayList<>();
     }
 
     @Override
@@ -55,13 +59,27 @@ public class Budget implements ISubject {
         }
     }
 
-    public String getInfo(){
-        return this.name + "\t"+ this.limit + "\t" + this.spent + "\t" + this.startDate
-                + "\t" + this.endDate + "\t" + this.category.getName();
+    public boolean isOverLimit() {
+        return this.spent > this.limit;
     }
 
-    public void addTransaction(ATransaction trans) {
-        spent += trans.getAmount();
+    public String getInfo() {
+        return this.name + "\n" + this.limit + "\n" + this.spent + "\n" + this.startDate
+                + "\n" + this.endDate + "\n" + this.category.getName();
+    }
+
+    public void addTransaction(Transaction trans) {
         this.transactions.add(trans);
+        processTrans(trans);
+    }
+
+    public void processTrans(Transaction trans) {
+        spent += trans.getAmount();
+    }
+
+    public String toString() {
+        return "Id: " + id + "\nName: " + name + "\nLimit: " + limit + "\nSpent: "
+                + spent + "\nStart: " + DateTimeUtils.formatDefault(startDate) + "\nEnd: "
+                + DateTimeUtils.formatDefault(endDate) + "\nCategory: " + category.getName();
     }
 }

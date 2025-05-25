@@ -21,7 +21,7 @@
                 <!-- Circular Profile Image -->
                 <ImageView fx:id="logoImage" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" smooth="true">
                     <image>
-                        <Image url="@profile.png" />
+                        <Image url="@image/profile.png" />
                     </image>
                     <style>-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0); -fx-clip: new
                         Circle(50, 50, 50);
@@ -40,7 +40,7 @@
                 <graphic>
                     <ImageView fx:id="homeImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@beauhou.png" />
+                            <Image url="@image/beauhou.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -55,7 +55,7 @@
                 <graphic>
                     <ImageView fx:id="walletImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@wallet.png" />
+                            <Image url="@image/wallet.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -70,7 +70,7 @@
                 <graphic>
                     <ImageView fx:id="budgetImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@budget.png" />
+                            <Image url="@image/budget.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -85,7 +85,7 @@
                 <graphic>
                     <ImageView fx:id="historyImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@history.png" />
+                            <Image url="@image/history.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -100,7 +100,7 @@
                 <graphic>
                     <ImageView fx:id="statisticImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@statistics.png" />
+                            <Image url="@image/statistics.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -120,7 +120,7 @@
                 <graphic>
                     <ImageView fx:id="settingsImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@settings.png" />
+                            <Image url="@image/settings.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -138,7 +138,7 @@
                 <graphic>
                     <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@addF.png" />
+                            <Image url="@image/addF.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -157,7 +157,7 @@
                 <!-- Icon bên trái -->
                 <ImageView fx:id="money1Image" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@givemoney.png" />
+                        <Image url="@image/givemoney.png" />
                     </image>
                 </ImageView>
 
@@ -181,7 +181,7 @@
                 <!-- Icon bên phải -->
                 <ImageView fx:id="money2Image" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@waving-hand.png" />
+                        <Image url="@image/waving-hand.png" />
                     </image>
                 </ImageView>
             </HBox>

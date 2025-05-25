@@ -1,33 +1,29 @@
 package ood.application.moneykeeper.main;
 
-import ood.application.moneykeeper.model.Category;
-import ood.application.moneykeeper.model.User;
-import ood.application.moneykeeper.model.Wallet;
-import ood.application.moneykeeper.model.WalletManager;
+import ood.application.moneykeeper.model.*;
 
 import java.time.LocalDateTime;
 
 public class MainTest {
     public static void main(String[] args) {
         User user = new User("Thirvo");
-        user.createWallet("Cash", 500000.0);
-        user.createWallet("Vietel Money", 200000.0);
-        user.createWallet("Momo", 1500000.0);
+        Wallet cash = user.createWallet("Cash", 500000.0);
+        System.out.println(cash.toString());
+        System.out.println("====***====");
 
-        user.printWalletsInfo();
+        Budget budget = user.createBudget(
+                "Launch",
+                200000.0,
+                LocalDateTime.now(),
+                LocalDateTime.parse("2025-06-27T00:00:00"),
+                new Category("Launch", true)
+        );
 
-        user.createBudget("Launch", 200000, LocalDateTime.now(),
-                LocalDateTime.now(), new Category("Banh ", true));
-
-        System.out.println("====*====");
-        user.printBudgetsInfo();
-
-        Wallet wallet = user.getWallets().getWallets().get(0);
-        user.createTransaction(15000.0, new Category("Banh", true), "Banh mi hai trung", wallet);
-
-        System.out.println("====*====");
-        System.out.println(wallet.getInfoAllTrans());
-        System.out.println("====*====");
-        user.printBudgetsInfo();
+        Transaction trans = user.createTransaction(cash, 15000.0, new Category("Launch", true), "Bánh mì 2 trứng");
+        System.out.println(trans.toString());
+        System.out.println("====***====");
+        System.out.println(budget.toString());
+        System.out.println("====***====");
+        System.out.println(cash.toString());
     }
 }
