@@ -127,6 +127,19 @@ public class TransactionDAO implements DAO<Transaction, String> {
         return false;
     }
 
+    public boolean deleteById(String id) throws SQLException {
+        Connection con = db.getConnection();
+
+        try {
+            PreparedStatement stmt = con.prepareStatement("DELETE FROM Transactions WHERE id = ?");
+            stmt.setString(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     public List<Transaction> getTransactionsByWallet(String walletId) throws SQLException {
         List<Transaction> transactions = new ArrayList<>();
         Connection con = db.getConnection();
@@ -187,6 +200,61 @@ public class TransactionDAO implements DAO<Transaction, String> {
         return transactions;
     }
 
+    public List<Transaction> getTransactionsByWalletId(String walletId) throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
+        Connection con = db.getConnection();
+        try {
+            PreparedStatement stmt = con.prepareStatement("SELECT * FROM Transactions WHERE wallet_id = ?");
+            stmt.setString(1, walletId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                transactions.add(extractTransactionFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return transactions;
+    }
+
+    public List<Transaction> getTransactionsByWalletAndDateRange(String walletId, LocalDateTime start, LocalDateTime end) throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
+        Connection con = db.getConnection();
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                "SELECT * FROM Transactions WHERE wallet_id = ? AND dateTime BETWEEN ? AND ?"
+            );
+            stmt.setString(1, walletId);
+            stmt.setString(2, DateTimeUtils.formatDefault(start));
+            stmt.setString(3, DateTimeUtils.formatDefault(end));
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                transactions.add(extractTransactionFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return transactions;
+    }
+
+    public List<Transaction> getTransactionsByWalletAndType(String walletId, boolean isExpense) throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
+        Connection con = db.getConnection();
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                "SELECT * FROM Transactions WHERE wallet_id = ? AND isExpense = ?"
+            );
+            stmt.setString(1, walletId);
+            stmt.setBoolean(2, isExpense);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                transactions.add(extractTransactionFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return transactions;
+    }
+
     private Transaction extractTransactionFromResultSet(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         double amount = rs.getDouble("amount");
@@ -213,3 +281,4 @@ public class TransactionDAO implements DAO<Transaction, String> {
         return transaction;
     }
 }
+

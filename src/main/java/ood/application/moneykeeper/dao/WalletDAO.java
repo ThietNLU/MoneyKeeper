@@ -9,7 +9,8 @@ import java.util.List;
 public class WalletDAO implements DAO<Wallet, String> {
     DBConnection db = DBConnection.getInstance();
 
-    public WalletDAO() throws SQLException {}
+    public WalletDAO() throws SQLException {
+    }
 
     @Override
     public List<Wallet> getAll() throws SQLException {
@@ -32,7 +33,7 @@ public class WalletDAO implements DAO<Wallet, String> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return wallets;
     }
 
@@ -55,7 +56,7 @@ public class WalletDAO implements DAO<Wallet, String> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            
+
         }
         return wallet;
     }
@@ -74,7 +75,7 @@ public class WalletDAO implements DAO<Wallet, String> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            
+
         }
         return false;
     }
@@ -93,7 +94,7 @@ public class WalletDAO implements DAO<Wallet, String> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            
+
         }
         return false;
     }
@@ -109,8 +110,28 @@ public class WalletDAO implements DAO<Wallet, String> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            
+
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteById(String s) throws SQLException {
+        Connection con = db.getConnection();
+        try {
+            // Delete all transactions for this wallet first
+            PreparedStatement ps1 = con.prepareStatement("DELETE FROM Transactions WHERE wallet_id = ?");
+            ps1.setString(1, s);
+            ps1.executeUpdate();
+            // Now delete the wallet
+            PreparedStatement ps2 = con.prepareStatement("DELETE FROM Wallet WHERE id = ?");
+            ps2.setString(1, s);
+            int rows = ps2.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return false;
     }
 }
+

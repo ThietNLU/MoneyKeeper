@@ -32,7 +32,7 @@ public class CategoryDAO implements DAO<Category, String> {
             e.printStackTrace();
         }
 
-        
+
         return categories;
     }
 
@@ -55,7 +55,7 @@ public class CategoryDAO implements DAO<Category, String> {
             e.printStackTrace();
         }
 
-        
+
         return category;
     }
 
@@ -73,7 +73,7 @@ public class CategoryDAO implements DAO<Category, String> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            
+
         }
         return false;
     }
@@ -92,7 +92,7 @@ public class CategoryDAO implements DAO<Category, String> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            
+
         }
         return false;
     }
@@ -109,7 +109,22 @@ public class CategoryDAO implements DAO<Category, String> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            
+
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteById(String s) throws SQLException {
+        Connection con = db.getConnection();
+        try {
+            PreparedStatement stmt = con.prepareStatement("DELETE FROM Category WHERE cid = ?");
+            stmt.setString(1, s);
+
+            int affected = stmt.executeUpdate();
+            return affected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return false;
     }

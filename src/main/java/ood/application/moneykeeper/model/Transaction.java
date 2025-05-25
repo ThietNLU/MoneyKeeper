@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ood.application.moneykeeper.utils.UUIDUtils;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Transaction {
     private String tId;
     private Wallet wallet;

@@ -5,10 +5,12 @@ import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ood.application.moneykeeper.utils.UUIDUtils;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Wallet implements ISubject {
     private String id;
     private String name;
@@ -16,6 +18,7 @@ public class Wallet implements ISubject {
     private List<Transaction> transactions;
     private User owner;
     private List<IObserver> observers = new ArrayList<>();
+    private java.time.LocalDateTime creationDate;
 
     public Wallet(String name, double balance, User owner) {
         this.id = UUIDUtils.generateShortUUID();
@@ -31,6 +34,24 @@ public class Wallet implements ISubject {
         this.balance = balance;
         this.transactions = new ArrayList<>();
         this.owner = user;
+    }
+
+    public Wallet(String name, double balance, User owner, java.time.LocalDateTime creationDate) {
+        this.id = UUIDUtils.generateShortUUID();
+        this.name = name;
+        this.balance = balance;
+        this.transactions = new ArrayList<>();
+        this.owner = owner;
+        this.creationDate = creationDate;
+    }
+
+    public Wallet(String id, String name, double balance, User user, java.time.LocalDateTime creationDate) {
+        this.id = id;
+        this.name = name;
+        this.balance = balance;
+        this.transactions = new ArrayList<>();
+        this.owner = user;
+        this.creationDate = creationDate;
     }
 
     public void income(double amount) {

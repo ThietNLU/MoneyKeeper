@@ -14,4 +14,6 @@ public interface DAO<T, K> {
     public boolean update(T t) throws SQLException;
 
     public boolean delete(T t) throws SQLException;
+
+    public boolean deleteById(K k) throws SQLException;
 }

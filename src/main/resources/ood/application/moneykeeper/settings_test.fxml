@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="700" prefWidth="804" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.SettingsController">
+
+    <!-- Top Header -->
+    <top>
+        <VBox style="-fx-background-color: linear-gradient(to right, #0288d1, #0277bd); -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);">
+            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 15;">
+                <ImageView fitHeight="32.0" fitWidth="32.0">
+                    <image>
+                        <Image url="@image/settings.png" />
+                    </image>
+                </ImageView>
+                <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #ffffff;" text="Cài Đặt Ứng Dụng">
+                    <font>
+                        <Font name="Segoe UI Bold" size="22.0" />
+                    </font>
+                </Label>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <VBox spacing="20" style="-fx-padding: 30;">
+            <!-- Tài khoản -->
+            <TitledPane animated="true" expanded="true" text="Thông Tin Tài Khoản">
+                <content>
+                    <VBox spacing="15" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 5;">
+                        <HBox alignment="CENTER_LEFT" spacing="20">
+                            <ImageView fitHeight="80.0" fitWidth="80.0">
+                                <image>
+                                    <Image url="@image/profile.png" />
+                                </image>
+                            </ImageView>
+                            <VBox spacing="5">
+                                <Label fx:id="userNameLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Admin123" />
+                                <Label fx:id="userEmailLabel" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="admin@example.com" />
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button fx:id="editProfileButton" style="-fx-background-color: #0288d1; -fx-text-fill: white;" text="Chỉnh sửa">
+                                <tooltip>
+                                    <Tooltip text="Chỉnh sửa thông tin cá nhân" />
+                                </tooltip>
+                            </Button>
+                        </HBox>
+                        <Separator />
+                        <GridPane hgap="15" vgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints minWidth="150" />
+                                <ColumnConstraints hgrow="ALWAYS" />
+                            </columnConstraints>
+
+                            <Label text="Mật khẩu:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                            <Button fx:id="changePasswordButton" text="Đổi mật khẩu" GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-background-color: transparent; -fx-text-fill: #0288d1; -fx-underline: true;" />
+
+                            <Label text="Ngày tham gia:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                            <Label fx:id="joinDateLabel" text="01/01/2023" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+                            <Label text="Trạng thái:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                            <Label text="Hoạt động" style="-fx-text-fill: #28a745;" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                        </GridPane>
+                    </VBox>
+                </content>
+            </TitledPane>
+
+            <!-- Cài đặt hiển thị -->
+            <TitledPane animated="true" text="Hiển Thị">
+                <content>
+                    <VBox spacing="15" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 5;">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Ngôn ngữ:" />
+                            <ComboBox fx:id="languageComboBox" prefWidth="150">
+                                <tooltip>
+                                    <Tooltip text="Chọn ngôn ngữ hiển thị" />
+                                </tooltip>
+                            </ComboBox>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Chế độ hiển thị:" />
+                            <ComboBox fx:id="themeComboBox" prefWidth="150">
+                                <tooltip>
+                                    <Tooltip text="Chọn chế độ hiển thị sáng/tối" />
+                                </tooltip>
+                            </ComboBox>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Đơn vị tiền tệ:" />
+                            <ComboBox fx:id="currencyComboBox" prefWidth="150">
+                                <tooltip>
+                                    <Tooltip text="Chọn đơn vị tiền tệ mặc định" />
+                                </tooltip>
+                            </ComboBox>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Định dạng ngày:" />
+                            <ComboBox fx:id="dateFormatComboBox" prefWidth="150">
+                                <tooltip>
+                                    <Tooltip text="Chọn định dạng hiển thị ngày tháng" />
+                                </tooltip>
+                            </ComboBox>
+                        </HBox>
+                    </VBox>
+                </content>
+            </TitledPane>
+
+            <!-- Thông báo -->
+            <TitledPane animated="true" text="Thông Báo">
+                <content>
+                    <VBox spacing="15" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 5;">
+                        <CheckBox fx:id="budgetAlertCheckBox" selected="true" text="Thông báo khi vượt ngân sách" />
+                        <CheckBox fx:id="transactionAlertCheckBox" selected="true" text="Thông báo khi có giao dịch mới" />
+                        <CheckBox fx:id="reportAlertCheckBox" selected="true" text="Thông báo báo cáo hàng tuần" />
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Ngưỡng cảnh báo ngân sách (%):" />
+                            <Slider fx:id="budgetThresholdSlider" prefWidth="200" min="50" max="100" value="80" showTickLabels="true" showTickMarks="true" />
+                            <Label fx:id="budgetThresholdLabel" text="80%" />
+                        </HBox>
+                    </VBox>
+                </content>
+            </TitledPane>
+
+            <!-- Sao lưu và khôi phục -->
+            <TitledPane animated="true" text="Sao Lưu và Khôi Phục">
+                <content>
+                    <VBox spacing="15" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 5;">
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <Button fx:id="backupButton" style="-fx-background-color: #0288d1; -fx-text-fill: white;" text="Sao lưu dữ liệu">
+                                <graphic>
+                                    <ImageView fitHeight="16" fitWidth="16">
+                                        <image>
+                                            <Image url="@image/backup.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <tooltip>
+                                    <Tooltip text="Tạo bản sao lưu dữ liệu của bạn" />
+                                </tooltip>
+                            </Button>
+
+                            <Button fx:id="restoreButton" style="-fx-background-color: #6c757d; -fx-text-fill: white;" text="Khôi phục dữ liệu">
+                                <graphic>
+                                    <ImageView fitHeight="16" fitWidth="16">
+                                        <image>
+                                            <Image url="@image/restore.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <tooltip>
+                                    <Tooltip text="Khôi phục dữ liệu từ bản sao lưu" />
+                                </tooltip>
+                            </Button>
+                        </HBox>
+
+                        <CheckBox fx:id="autoBackupCheckBox" selected="true" text="Tự động sao lưu hàng tuần" />
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Vị trí lưu trữ:" />
+                            <TextField fx:id="backupLocationTextField" prefWidth="300" editable="false" />
+                            <Button fx:id="browseLocationButton" text="Chọn" />
+                        </HBox>
+                    </VBox>
+                </content>
+            </TitledPane>
+
+            <!-- Về ứng dụng -->
+            <TitledPane animated="true" text="Về Ứng Dụng">
+                <content>
+                    <VBox spacing="15" style="-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 5;">
+                        <Label text="Expense Tracker Application" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                        <Label text="Phiên bản: 1.0.0" />
+                        <Label text="© 2023 Money Keeper Team" />
+                        <Hyperlink fx:id="websiteLink" text="Trang web chính thức" />
+                        <Hyperlink fx:id="helpLink" text="Trung tâm trợ giúp" />
+                        <Button fx:id="checkUpdatesButton" style="-fx-background-color: #0288d1; -fx-text-fill: white;" text="Kiểm tra cập nhật" />
+                    </VBox>
+                </content>
+            </TitledPane>
+        </VBox>
+    </center>
+
+    <!-- Bottom buttons -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 15;">
+            <Button fx:id="resetButton" style="-fx-background-color: #dc3545; -fx-text-fill: white;" text="Đặt lại mặc định">
+                <tooltip>
+                    <Tooltip text="Đặt lại tất cả cài đặt về mặc định" />
+                </tooltip>
+            </Button>
+            <Button fx:id="saveButton" style="-fx-background-color: #28a745; -fx-text-fill: white;" text="Lưu thay đổi">
+                <tooltip>
+                    <Tooltip text="Lưu tất cả thay đổi cài đặt" />
+                </tooltip>
+            </Button>
+        </HBox>
+    </bottom>
+</BorderPane>

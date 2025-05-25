@@ -98,4 +98,20 @@ public class UserDAO implements DAO<User, String> {
         }
         return false;
     }
+
+    @Override
+    public boolean deleteById(String s) throws SQLException {
+        Connection con = db.getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("DELETE FROM User WHERE id = ?");
+            ps.setString(1, s);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+
+        }
+        return false;
+    }
 }
