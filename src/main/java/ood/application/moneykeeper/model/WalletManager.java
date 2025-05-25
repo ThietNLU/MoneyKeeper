@@ -15,10 +15,12 @@ public class WalletManager {
 
     public WalletManager(List<Wallet> wallets) {
         this.wallets = wallets;
-    }
-
-    public void addWallet(Wallet wallet) {
+    }    public void addWallet(Wallet wallet) {
         this.wallets.add(wallet);
+        
+        // Automatically setup observers for the new wallet
+        NotificationManager notificationManager = NotificationManager.getInstance();
+        notificationManager.setupWalletObservers(wallet);
     }
 
     public boolean removeWallet(String id) {
@@ -27,6 +29,13 @@ public class WalletManager {
             Wallet wallet = iterator.next();
             if (wallet.getId().equals(id)) {
                 iterator.remove();
+                
+                // Notify about wallet removal
+                NotificationManager.getInstance().broadcast(
+                    NotificationType.INFO,
+                    "Wallet '" + wallet.getName() + "' has been removed",
+                    "WalletManager"
+                );
                 return true;
             }
         }

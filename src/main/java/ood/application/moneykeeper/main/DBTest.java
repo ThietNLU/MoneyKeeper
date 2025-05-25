@@ -2,8 +2,6 @@ package ood.application.moneykeeper.main;
 
 import ood.application.moneykeeper.dao.*;
 import ood.application.moneykeeper.model.*;
-import ood.application.moneykeeper.utils.DateTimeUtils;
-import ood.application.moneykeeper.utils.UUIDUtils;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -145,29 +143,50 @@ public class DBTest {
                 if (budget.isOverLimit()) {
                     System.out.println("ALERT: " + budget.getName() + " is over limit!");
                 }
-            }
-
-            // Test Observer pattern by adding a test observer
+            }            // Test Observer pattern by adding a test observer
             BudgetObserver observer = new BudgetObserver();
             retrievedFoodBudget.addObserver(observer);
+
+            // Initialize NotificationManager for enhanced observer pattern
+            NotificationManager notificationManager = NotificationManager.getInstance();
+            notificationManager.setupBudgetObservers(retrievedFoodBudget);
+            notificationManager.setupWalletObservers(testWallet);
+
+            System.out.println("\n=== OBSERVER PATTERN DEMO ===");
+            System.out.println("Setting up observers for budget and wallet...");
 
             // Add another transaction that would push the budget over limit
             Transaction overLimitTrans = new Transaction(testWallet, 800.0, foodCategory, "Expensive dinner");
             overLimitTrans.setDateTime(now.plusDays(5));
             overLimitTrans.setStrategy(new ExpenseTransactionStrategy());
 
+            System.out.println("\nAdding transaction that will trigger budget over-limit...");
             transactionDAO.save(overLimitTrans);
-            overLimitTrans.processWallet();
+            
+            // Process transaction (this will trigger observers)
+            testWallet.addTransaction(overLimitTrans);  // This will notify wallet observers
             walletDAO.update(testWallet);
 
-            retrievedFoodBudget.addTransaction(overLimitTrans);
+            retrievedFoodBudget.addTransaction(overLimitTrans);  // This will notify budget observers
             budgetDAO.update(retrievedFoodBudget);
 
-            if (retrievedFoodBudget.isOverLimit()) {
-                retrievedFoodBudget.notifyObservers("Budget " + retrievedFoodBudget.getName() + " is over limit!");
-            }
+            // Test different notification types
+            System.out.println("\n=== Testing different notification types ===");
+            
+            // Test wallet balance update
+            System.out.println("Testing wallet balance update notification...");
+            testWallet.updateBalance(testWallet.getBalance() - 100);
+            
+            // Test budget spending update
+            System.out.println("Testing budget update notification...");
+            retrievedFoodBudget.updateSpent(retrievedFoodBudget.getSpent() + 50);
+            
+            // Test low balance notification
+            System.out.println("Testing low balance notification...");
+            testWallet.updateBalance(500.0);  // Set to low balance
 
             System.out.println("\nFinal wallet balance: " + testWallet.getBalance());
+            System.out.println("=== OBSERVER PATTERN DEMO COMPLETE ===");
 
         } catch (SQLException e) {
             System.err.println("Database error: " + e.getMessage());
@@ -175,11 +194,16 @@ public class DBTest {
         }
     }
 
-    // Simple observer class for demonstration
+    // Enhanced observer class for demonstration
     static class BudgetObserver implements IObserver {
         @Override
         public void update(String message) {
-            System.out.println("NOTIFICATION: " + message);
+            System.out.println("LEGACY NOTIFICATION: " + message);
+        }
+        
+        @Override
+        public void update(NotificationData notificationData) {
+            System.out.println("ENHANCED NOTIFICATION: " + notificationData.toString());
         }
     }
 

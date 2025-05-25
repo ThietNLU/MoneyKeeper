@@ -17,8 +17,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ood.application.moneykeeper.dao.TransactionDAO;
 import ood.application.moneykeeper.dao.WalletDAO;
+import ood.application.moneykeeper.dao.UserDAO;
 import ood.application.moneykeeper.model.Transaction;
 import ood.application.moneykeeper.model.Wallet;
+import ood.application.moneykeeper.model.User;
 import ood.application.moneykeeper.report.CategoryReport;
 import ood.application.moneykeeper.report.MonthlyTimeStrategy;
 import ood.application.moneykeeper.report.Report;
@@ -53,17 +55,16 @@ public class WalletController implements Initializable {
     @FXML private ComboBox<String> reportPeriodComboBox;
     @FXML private BorderPane expenseChartContainer;
     @FXML private BorderPane incomeExpenseContainer;
-    @FXML private Label totalBalanceLabel;
-
-    private WalletDAO walletDAO;
+    @FXML private Label totalBalanceLabel;    private WalletDAO walletDAO;
     private TransactionDAO transactionDAO;
+    private UserDAO userDAO;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        try {
+    public void initialize(URL url, ResourceBundle resourceBundle) {        try {
             walletDAO = new WalletDAO();
             transactionDAO = new TransactionDAO();
+            userDAO = new UserDAO();
             setupWalletListView();
             setupTransactionTable();
             setupComboBoxes();
@@ -255,14 +256,18 @@ public class WalletController implements Initializable {
                 if (name.isEmpty()) {
                     showErrorAlert("Invalid input", "Wallet name cannot be empty.");
                     return;
-                }
-                if (walletToEdit == null) {
+                }                if (walletToEdit == null) {
                     try {
                         double balance = Double.parseDouble(balanceField.getText());
                         Wallet newWallet = new Wallet();
                         newWallet.setName(name);
                         newWallet.setBalance(balance);
                         newWallet.setCreationDate(LocalDateTime.now());
+                        
+                        // Set the owner for the wallet
+                        User defaultUser = getOrCreateDefaultUser();
+                        newWallet.setOwner(defaultUser);
+                        
                         walletDAO.save(newWallet);
                         refreshWalletList();
                     } catch (NumberFormatException e) {
@@ -322,14 +327,29 @@ public class WalletController implements Initializable {
 
     private String formatMoney(double amount) {
         return String.format("%,.0f VNĐ", amount);
-    }
-
-    private void showErrorAlert(String title, String message) {
+    }    private void showErrorAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Get the default user or create one if it doesn't exist
+     */
+    private User getOrCreateDefaultUser() throws SQLException {
+        List<User> users = userDAO.getAll();
+        
+        // If there are existing users, return the first one
+        if (!users.isEmpty()) {
+            return users.get(0);
+        }
+        
+        // Otherwise, create a default user
+        User defaultUser = new User("Default User");
+        userDAO.save(defaultUser);
+        return defaultUser;
     }
 }
 

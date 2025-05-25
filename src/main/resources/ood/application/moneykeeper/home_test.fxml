@@ -1,153 +1,202 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" >
-    <center>
-        <VBox alignment="TOP_LEFT" prefHeight="580.0" prefWidth="634.0" spacing="15.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0); -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10;" BorderPane.alignment="CENTER">
-            <!-- Tổng Quan Section -->
+<BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ood.application.moneykeeper.controller.HomeController_fixed">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <top>
+        <VBox spacing="10">
             <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333; -fx-background-color: linear-gradient(to right, #e0f7fa, #b2ebf2); -fx-padding: 5 10; -fx-background-radius: 5;" text="📊 Tổng Quan">
-                    <font>
-                        <Font name="Segoe UI Bold" size="18.0" />
-                    </font>
-                </Label>
-                <Button style="-fx-background-color: #0288d1; -fx-text-fill: white; -fx-background-radius: 5;" text="↻ Refresh">
-                    <font>
-                        <Font name="Segoe UI" size="12.0" />
-                    </font>
-                </Button>
+                <Label text="Trang chủ - Tổng quan" style="-fx-font-weight: bold; -fx-font-size: 24px;"/>
+                <Button fx:id="refreshButton" text="Làm mới" onAction="#handleRefresh" 
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 5;"/>
             </HBox>
-
-            <HBox alignment="CENTER_LEFT" spacing="5" />
-
-            <HBox alignment="CENTER_LEFT" spacing="5">
-                <ImageView fitHeight="20.0" fitWidth="20.0">
-                    <image>
-                        <Image url="@image/balance-spendings.png" />
-                    </image>
-                </ImageView>
-                <Label fx:id="balanceSummary" style="-fx-text-fill: #333;" text="Tổng số dư: ...">
-                    <font>
-                        <Font name="Segoe UI" size="14.0" />
-                    </font>
-                    <tooltip>
-                        <Tooltip text="Tổng số dư của tất cả các ví" />
-                    </tooltip>
-                </Label>
-            </HBox>
-
-            <BarChart fx:id="budgetChart"
-                      title="Biểu đồ ngân sách"
-                      legendVisible="false"
-                      categoryGap="20"
-                      barGap="10"
-                      prefHeight="250"
-                      prefWidth="600">
-                <xAxis>
-                    <CategoryAxis fx:id="xAxis" label="Hạng mục" side="BOTTOM"/>
-                </xAxis>
-                <yAxis>
-                    <NumberAxis fx:id="yAxis" label="Số tiền" side="LEFT"/>
-                </yAxis>
-            </BarChart>
-
-            <!-- Last Updated Timestamp -->
-            <Label style="-fx-font-size: 12px; -fx-text-fill: #666;" text="Cập nhật lần cuối: 09:31 AM, 22/05/2025">
-                <font>
-                    <Font name="Segoe UI Italic" size="12.0" />
-                </font>
-            </Label>
-
-            <Separator style="-fx-background-color: #ddd;" />
-
-            <!-- Giao dịch gần đây Section -->
-            <VBox fx:id="recentTransBox" spacing="5">
-                <HBox alignment="CENTER_LEFT" spacing="5">
-                    <Label style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-background-color: linear-gradient(to right, #e0f7fa, #b2ebf2); -fx-padding: 5 10; -fx-background-radius: 5;" text="🔄 Giao dịch gần đây">
-                        <font>
-                            <Font name="Segoe UI Bold" size="18.0" />
-                        </font>
-                    </Label>
-                </HBox>
-
-                <TableView fx:id="recentTransTable" prefHeight="200" style="-fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
-                    <columns>
-                        <TableColumn fx:id="dateCol" prefWidth="157.60003662109375" text="Ngày" />
-                        <TableColumn fx:id="descCol" prefWidth="208.00009155273438" text="Mô tả" />
-                        <TableColumn fx:id="amountCol" prefWidth="196.0" text="Số tiền" />
-                    </columns>
-                    <placeholder>
-                        <Label style="-fx-text-fill: #666;" text="Không có giao dịch nào gần đây" />
-                    </placeholder>
-                </TableView>
-            </VBox>
-
-            <Separator style="-fx-background-color: #ddd;" />
-
-            <!-- Ngân sách Section -->
-            <VBox spacing="5">
-                <HBox alignment="CENTER_LEFT" spacing="5">
-                    <Label style="-fx-font-weight: bold; -fx-text-fill: #333; -fx-background-color: linear-gradient(to right, #e0f7fa, #b2ebf2); -fx-padding: 5 10; -fx-background-radius: 5;" text="📉 Ngân sách">
-                        <font>
-                            <Font name="Segoe UI Bold" size="18.0" />
-                        </font>
-                    </Label>
-                </HBox>
-
-                <HBox alignment="CENTER_LEFT" spacing="5">
-                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                        <image>
-                            <Image url="@image/expense.png" />
-                        </image>
-                    </ImageView>
-                    <Label fx:id="budgetSummary" style="-fx-text-fill: #333;" text="Tổng ngân sách đã chi: ...">
-                        <font>
-                            <Font name="Segoe UI" size="14.0" />
-                        </font>
-                        <tooltip>
-                            <Tooltip text="Tổng ngân sách hiện tại" />
-                        </tooltip>
-                    </Label>
-                </HBox>
-
-                <!-- Over-Limit Warning with Animation -->
-                <HBox alignment="CENTER_LEFT" spacing="5">
-
-                    <Label fx:id="overLimitWarning" style="-fx-font-weight: bold; -fx-effect: dropshadow(gaussian, rgba(255,0,0,0.3), 5, 0.5, 0, 0);" text="⚠ Có ngân sách vượt giới hạn!" textFill="red" visible="true">
-                        <font>
-                            <Font name="Segoe UI" size="14.0" />
-                        </font>
-                        <style>-fx-animation: pulse 2s infinite;</style>
-                    </Label>
-                </HBox>
-
-                <TableView fx:id="overLimitTable" prefHeight="180" style="-fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
-                    <columns>
-                        <TableColumn fx:id="budgetNameCol" prefWidth="157.60003662109375" text="Tên" />
-                        <TableColumn fx:id="categoryCol" prefWidth="120.0" text="Hạng mục" />
-                        <TableColumn fx:id="limitCol" prefWidth="146.40005493164062" text="Giới hạn" />
-                        <TableColumn fx:id="spentCol" prefWidth="140.79998779296875" text="Đã chi" />
-                    </columns>
-                    <placeholder>
-                        <Label style="-fx-text-fill: #666;" text="Không có ngân sách nào vượt giới hạn" />
-                    </placeholder>
-                </TableView>
-            </VBox>
+            <Separator/>
         </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox spacing="15">
+                
+                <!-- Balance Summary Section -->
+                <TitledPane text="Tổng quan tài chính" expanded="true">
+                    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
+                        <GridPane hgap="15" vgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="150" prefWidth="150"/>
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                            </columnConstraints>
+                            
+                            <Label text="Tổng số dư:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                                   style="-fx-font-weight: bold;"/>
+                            <Label fx:id="totalBalanceLabel" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                   style="-fx-text-fill: #2E7D32; -fx-font-weight: bold;"/>
+                            
+                            <Label text="Tổng thu nhập (tháng):" GridPane.columnIndex="0" GridPane.rowIndex="1"
+                                   style="-fx-font-weight: bold;"/>
+                            <Label fx:id="monthlyIncomeLabel" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                                   style="-fx-text-fill: #1976D2;"/>
+                            
+                            <Label text="Tổng chi tiêu (tháng):" GridPane.columnIndex="0" GridPane.rowIndex="2"
+                                   style="-fx-font-weight: bold;"/>
+                            <Label fx:id="monthlyExpenseLabel" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                                   style="-fx-text-fill: #D32F2F;"/>
+                            
+                            <Label text="Cập nhật lần cuối:" GridPane.columnIndex="0" GridPane.rowIndex="3"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                            <Label fx:id="lastUpdateLabel" text="..." GridPane.columnIndex="1" GridPane.rowIndex="3"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                        </GridPane>
+                    </VBox>
+                </TitledPane>
+
+                <!-- Recent Transactions Section -->
+                <TitledPane text="Giao dịch gần đây" expanded="true">
+                    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
+                        <TableView fx:id="recentTransactionsTable" prefHeight="200">
+                            <columns>
+                                <TableColumn fx:id="transactionDateColumn" text="Ngày" prefWidth="120"/>
+                                <TableColumn fx:id="transactionDescriptionColumn" text="Mô tả" prefWidth="200"/>
+                                <TableColumn fx:id="transactionWalletColumn" text="Ví" prefWidth="120"/>
+                                <TableColumn fx:id="transactionAmountColumn" text="Số tiền" prefWidth="120"/>
+                                <TableColumn fx:id="transactionTypeColumn" text="Loại" prefWidth="80"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="Không có giao dịch nào gần đây"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+                </TitledPane>                <!-- Budget Overview Section -->
+                <TitledPane text="Tình trạng ngân sách" expanded="true">
+                    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
+                        
+                        <!-- Budget Alert -->
+                        <HBox fx:id="budgetAlertBox" spacing="10" visible="false" managed="false"
+                              style="-fx-background-color: #FFEBEE; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #F44336; -fx-border-radius: 5;">
+                            <Label text="⚠" style="-fx-text-fill: #F44336; -fx-font-weight: bold; -fx-font-size: 16px;"/>
+                            <Label fx:id="budgetAlertLabel" text="Có ngân sách vượt giới hạn!" 
+                                   style="-fx-text-fill: #F44336; -fx-font-weight: bold;"/>
+                        </HBox>
+                        
+                        <!-- Budget Chart -->
+                        <BarChart fx:id="budgetChart" title="Biểu đồ ngân sách" prefHeight="200" legendVisible="false">
+                            <xAxis>
+                                <CategoryAxis fx:id="budgetXAxis" label="Hạng mục"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="budgetYAxis" label="Số tiền"/>
+                            </yAxis>
+                        </BarChart>
+                        
+                        <!-- Over-limit budgets table -->
+                        <TableView fx:id="overLimitBudgetsTable" prefHeight="150">
+                            <columns>
+                                <TableColumn fx:id="budgetNameColumn" text="Tên ngân sách" prefWidth="150"/>
+                                <TableColumn fx:id="budgetCategoryColumn" text="Hạng mục" prefWidth="120"/>
+                                <TableColumn fx:id="budgetLimitColumn" text="Giới hạn" prefWidth="100"/>
+                                <TableColumn fx:id="budgetSpentColumn" text="Đã chi" prefWidth="100"/>
+                                <TableColumn fx:id="budgetStatusColumn" text="Trạng thái" prefWidth="100"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="Tất cả ngân sách đều trong giới hạn"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+                </TitledPane>
+
+                <!-- Observer Pattern Demo Section -->
+                <TitledPane text="Demo Observer Pattern" expanded="false">
+                    <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
+                        <Label text="Thử nghiệm mẫu Observer Pattern trong ứng dụng MoneyKeeper" 
+                               style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                        
+                        <HBox spacing="20">
+                            <!-- Control Panel -->
+                            <VBox spacing="15" prefWidth="350" style="-fx-background-color: #f5f5f5; -fx-background-radius: 5; -fx-padding: 15;">
+                                <Label text="Bảng điều khiển" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                                
+                                <!-- Transaction Section -->
+                                <TitledPane text="Thêm giao dịch (Test Wallet Observer)" expanded="true">
+                                    <VBox spacing="10">
+                                        <Label text="Chọn ví:"/>
+                                        <ComboBox fx:id="walletComboBox" prefWidth="300"/>
+                                        
+                                        <Label text="Số tiền (VND):"/>
+                                        <TextField fx:id="transactionAmountField" promptText="Nhập số tiền (ví dụ: 50000)"/>
+                                        
+                                        <Label text="Mô tả:"/>
+                                        <TextField fx:id="transactionDescriptionField" promptText="Nhập mô tả"/>
+                                        
+                                        <Button fx:id="addTransactionButton" text="Thêm giao dịch" 
+                                                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                                    </VBox>
+                                </TitledPane>
+                                
+                                <!-- Budget Section -->
+                                <TitledPane text="Cập nhật ngân sách (Test Budget Observer)" expanded="true">
+                                    <VBox spacing="10">
+                                        <Label text="Chọn ngân sách:"/>
+                                        <ComboBox fx:id="budgetComboBox" prefWidth="300"/>
+                                        
+                                        <Label text="Số tiền đã chi mới (VND):"/>
+                                        <TextField fx:id="budgetSpentField" promptText="Nhập số tiền đã chi"/>
+                                        
+                                        <Button fx:id="updateBudgetButton" text="Cập nhật ngân sách" 
+                                                style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                                    </VBox>
+                                </TitledPane>
+                                
+                                <!-- Controls -->
+                                <VBox spacing="10">
+                                    <CheckBox fx:id="enableAlertsCheckBox" text="Bật thông báo UI" selected="true"/>
+                                    <Button fx:id="clearNotificationsButton" text="Xóa thông báo" 
+                                            style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                                </VBox>
+                            </VBox>
+                            
+                            <!-- Notification Panel -->
+                            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                <Label text="Thông báo" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                                
+                                <ScrollPane fitToWidth="true" prefHeight="200">
+                                    <ListView fx:id="notificationListView" style="-fx-background-color: white;"/>
+                                </ScrollPane>
+                                
+                                <Label text="Lợi ích của Observer Pattern:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+                                <VBox spacing="5" style="-fx-background-color: #e8f5e8; -fx-padding: 10; -fx-background-radius: 5;">
+                                    <Label text="• Thông báo thời gian thực khi dữ liệu thay đổi" style="-fx-font-size: 12px;"/>
+                                    <Label text="• Kết nối lỏng lẻo giữa các thành phần" style="-fx-font-size: 12px;"/>
+                                    <Label text="• Cập nhật UI tự động không cần làm mới thủ công" style="-fx-font-size: 12px;"/>
+                                    <Label text="• Quản lý thông báo tập trung" style="-fx-font-size: 12px;"/>
+                                    <Label text="• Hỗ trợ nhiều loại observer" style="-fx-font-size: 12px;"/>
+                                </VBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </TitledPane>
+
+            </VBox>        </ScrollPane>
     </center>
+
+    <bottom>
+        <HBox style="-fx-background-color: #263238; -fx-padding: 10;">
+            <Label text="Trạng thái: " style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Label fx:id="statusLabel" text="Sẵn sàng" style="-fx-text-fill: #4CAF50; -fx-font-weight: bold;"/>
+        </HBox>
+    </bottom>
+
 </BorderPane>

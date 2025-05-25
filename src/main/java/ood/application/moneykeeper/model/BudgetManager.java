@@ -15,10 +15,12 @@ public class BudgetManager {
 
     public BudgetManager(List<Budget> budgets) {
         this.budgets = budgets;
-    }
-
-    public void addBudget(Budget budget) {
+    }    public void addBudget(Budget budget) {
         this.budgets.add(budget);
+        
+        // Automatically setup observers for the new budget
+        NotificationManager notificationManager = NotificationManager.getInstance();
+        notificationManager.setupBudgetObservers(budget);
     }
 
     public void removeBudget(String id) {
@@ -27,6 +29,13 @@ public class BudgetManager {
             Budget budget = iterator.next();
             if (budget.getId().equals(id)) {
                 iterator.remove();
+                
+                // Notify about budget removal
+                NotificationManager.getInstance().broadcast(
+                    NotificationType.INFO,
+                    "Budget '" + budget.getName() + "' has been removed",
+                    "BudgetManager"
+                );
             }
         }
     }

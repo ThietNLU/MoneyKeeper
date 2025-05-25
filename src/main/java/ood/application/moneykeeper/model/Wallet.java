@@ -52,19 +52,31 @@ public class Wallet implements ISubject {
         this.transactions = new ArrayList<>();
         this.owner = user;
         this.creationDate = creationDate;
-    }
-
-    public void income(double amount) {
+    }    public void income(double amount) {
+        double oldBalance = this.balance;
         this.balance += amount;
+        notifyBalanceChanged(oldBalance, this.balance, "income");
     }
 
     public void expense(double amount) {
+        double oldBalance = this.balance;
         this.balance -= amount;
+        notifyBalanceChanged(oldBalance, this.balance, "expense");
     }
 
     public void addTransaction(Transaction transaction) {
         this.transactions.add(transaction);
         transaction.processWallet();
+        
+        // Notify about transaction addition
+        NotificationData transactionNotification = new NotificationData(
+            NotificationType.TRANSACTION_ADDED,
+            String.format("Transaction added to wallet '%s': %.2f", 
+                         name, transaction.getAmount()),
+            "Wallet",
+            transaction
+        );
+        notifyObservers(transactionNotification);
     }
 
     public String printTransactions() {
@@ -84,13 +96,67 @@ public class Wallet implements ISubject {
     @Override
     public void removeObserver(IObserver observer) {
         this.observers.remove(observer);
-    }
-
-    @Override
+    }    @Override
     public void notifyObservers(String message) {
         for (IObserver observer : observers) {
             observer.update(message);
         }
+    }
+
+    @Override
+    public void notifyObservers(NotificationData notificationData) {
+        for (IObserver observer : observers) {
+            observer.update(notificationData);
+        }
+    }
+    
+    /**
+     * Notify observers about balance changes
+     */
+    private void notifyBalanceChanged(double oldBalance, double newBalance, String type) {
+        // General balance update notification
+        NotificationData balanceNotification = new NotificationData(
+            NotificationType.WALLET_UPDATE,
+            String.format("Wallet '%s' balance changed from %.2f to %.2f (%s)", 
+                         name, oldBalance, newBalance, type),
+            "Wallet",
+            this
+        );
+        notifyObservers(balanceNotification);
+        
+        // Check for low balance
+        if (isLowBalance() && !wasLowBalance(oldBalance)) {
+            NotificationData lowBalanceNotification = new NotificationData(
+                NotificationType.LOW_BALANCE,
+                String.format("Wallet '%s' has low balance: %.2f", name, newBalance),
+                "Wallet",
+                this
+            );
+            notifyObservers(lowBalanceNotification);
+        }
+    }
+    
+    /**
+     * Check if current balance is considered low
+     */
+    public boolean isLowBalance() {
+        return this.balance < 1000.0; // Default threshold
+    }
+    
+    /**
+     * Check if previous balance was low
+     */
+    private boolean wasLowBalance(double previousBalance) {
+        return previousBalance < 1000.0; // Default threshold
+    }
+    
+    /**
+     * Update wallet balance directly and notify observers
+     */
+    public void updateBalance(double newBalance) {
+        double oldBalance = this.balance;
+        this.balance = newBalance;
+        notifyBalanceChanged(oldBalance, newBalance, "update");
     }
 
     public boolean isId(String id) {

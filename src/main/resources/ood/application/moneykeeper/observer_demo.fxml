@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ood.application.moneykeeper.controller.ObserverTestController">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <top>
+        <VBox spacing="10">
+            <Label text="Observer Pattern Demo" style="-fx-font-weight: bold; -fx-font-size: 24px;"/>
+            <Label text="This demo shows how the Observer pattern works in MoneyKeeper application" style="-fx-font-size: 14px;"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <HBox spacing="20">
+            <!-- Control Panel -->
+            <VBox spacing="15" prefWidth="350" style="-fx-background-color: #f5f5f5; -fx-background-radius: 5; -fx-padding: 15;">
+                <Label text="Control Panel" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                
+                <!-- Transaction Section -->
+                <TitledPane text="Add Transaction (Test Wallet Observer)" expanded="true">
+                    <VBox spacing="10">
+                        <Label text="Select Wallet:"/>
+                        <ComboBox fx:id="walletComboBox" prefWidth="300"/>
+                        
+                        <Label text="Amount (VND):"/>
+                        <TextField fx:id="transactionAmountField" promptText="Enter amount (e.g., 50000)"/>
+                        
+                        <Label text="Description:"/>
+                        <TextField fx:id="transactionDescriptionField" promptText="Enter description"/>
+                        
+                        <Button fx:id="addTransactionButton" text="Add Transaction" 
+                                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </VBox>
+                </TitledPane>
+                
+                <!-- Budget Section -->
+                <TitledPane text="Update Budget (Test Budget Observer)" expanded="true">
+                    <VBox spacing="10">
+                        <Label text="Select Budget:"/>
+                        <ComboBox fx:id="budgetComboBox" prefWidth="300"/>
+                        
+                        <Label text="New Spent Amount (VND):"/>
+                        <TextField fx:id="budgetSpentField" promptText="Enter spent amount"/>
+                        
+                        <Button fx:id="updateBudgetButton" text="Update Budget" 
+                                style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </VBox>
+                </TitledPane>
+                
+                <!-- Controls -->
+                <VBox spacing="10">
+                    <CheckBox fx:id="enableAlertsCheckBox" text="Enable UI Alerts" selected="true"/>
+                    <Button fx:id="clearNotificationsButton" text="Clear Notifications" 
+                            style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                </VBox>
+            </VBox>
+            
+            <!-- Notification Panel -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Notifications" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                    <ListView fx:id="notificationListView" style="-fx-background-color: white;"/>
+                </ScrollPane>
+                
+                <Label text="Observer Pattern Benefits:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+                <VBox spacing="5" style="-fx-background-color: #e8f5e8; -fx-padding: 10; -fx-background-radius: 5;">
+                    <Label text="• Real-time notifications when data changes" style="-fx-font-size: 12px;"/>
+                    <Label text="• Loose coupling between components" style="-fx-font-size: 12px;"/>
+                    <Label text="• Automatic UI updates without manual refresh" style="-fx-font-size: 12px;"/>
+                    <Label text="• Centralized notification management" style="-fx-font-size: 12px;"/>
+                    <Label text="• Support for multiple observer types" style="-fx-font-size: 12px;"/>
+                </VBox>
+            </VBox>
+        </HBox>
+    </center>
+
+    <bottom>
+        <HBox style="-fx-background-color: #263238; -fx-padding: 10;">
+            <Label text="Status: " style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Label fx:id="statusLabel" text="Ready" style="-fx-text-fill: #4CAF50; -fx-font-weight: bold;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
