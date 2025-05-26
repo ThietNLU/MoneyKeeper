@@ -34,7 +34,6 @@ public class MainViewController {
         mainPane.setCenter(view);
     }
 
-
     @FXML
     private void loadTransaction() throws IOException {
         Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/transaction_test.fxml"));
@@ -53,6 +52,11 @@ public class MainViewController {
         mainPane.setCenter(view);
     }
 
+    @FXML
+    private void loadCategory() throws IOException {
+        Node view = FXMLLoader.load(getClass().getResource("/ood/application/moneykeeper/category_test.fxml"));
+        mainPane.setCenter(view);
+    }
 
     @FXML
     private void openTransactionWindow() {
@@ -77,9 +81,10 @@ public class MainViewController {
             // Hiển thị thông báo lỗi nếu không thể mở cửa sổ
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Lỗi");
-            alert.setHeaderText("Không thể mở cửa sổ thêm giao dịch");
+            alert.setHeaderText("Không thể mở cửa s�� thêm giao dịch");
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
     }
 }
+

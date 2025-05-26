@@ -11,10 +11,11 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
-<BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);"
+<BorderPane prefHeight="500.0" prefWidth="700.0"
+            style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ood.application.moneykeeper.controller.HomeController_fixed">
+            fx:controller="ood.application.moneykeeper.controller.HomeController">
 
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
@@ -24,7 +25,7 @@
         <VBox spacing="10">
             <HBox alignment="CENTER_LEFT" spacing="10">
                 <Label text="Trang chủ - Tổng quan" style="-fx-font-weight: bold; -fx-font-size: 24px;"/>
-                <Button fx:id="refreshButton" text="Làm mới" onAction="#handleRefresh" 
+                <Button fx:id="refreshButton" text="Làm mới" onAction="#handleRefresh"
                         style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 5;"/>
             </HBox>
             <Separator/>
@@ -34,7 +35,7 @@
     <center>
         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
             <VBox spacing="15">
-                
+
                 <!-- Balance Summary Section -->
                 <TitledPane text="Tổng quan tài chính" expanded="true">
                     <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
@@ -43,22 +44,24 @@
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="150" prefWidth="150"/>
                                 <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
                             </columnConstraints>
-                            
+
                             <Label text="Tổng số dư:" GridPane.columnIndex="0" GridPane.rowIndex="0"
                                    style="-fx-font-weight: bold;"/>
                             <Label fx:id="totalBalanceLabel" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="0"
                                    style="-fx-text-fill: #2E7D32; -fx-font-weight: bold;"/>
-                            
+
                             <Label text="Tổng thu nhập (tháng):" GridPane.columnIndex="0" GridPane.rowIndex="1"
                                    style="-fx-font-weight: bold;"/>
-                            <Label fx:id="monthlyIncomeLabel" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                            <Label fx:id="monthlyIncomeLabel" text="0 VND" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="1"
                                    style="-fx-text-fill: #1976D2;"/>
-                            
+
                             <Label text="Tổng chi tiêu (tháng):" GridPane.columnIndex="0" GridPane.rowIndex="2"
                                    style="-fx-font-weight: bold;"/>
-                            <Label fx:id="monthlyExpenseLabel" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                            <Label fx:id="monthlyExpenseLabel" text="0 VND" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="2"
                                    style="-fx-text-fill: #D32F2F;"/>
-                            
+
                             <Label text="Cập nhật lần cuối:" GridPane.columnIndex="0" GridPane.rowIndex="3"
                                    style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
                             <Label fx:id="lastUpdateLabel" text="..." GridPane.columnIndex="1" GridPane.rowIndex="3"
@@ -86,15 +89,16 @@
                 </TitledPane>                <!-- Budget Overview Section -->
                 <TitledPane text="Tình trạng ngân sách" expanded="true">
                     <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
-                        
+
                         <!-- Budget Alert -->
                         <HBox fx:id="budgetAlertBox" spacing="10" visible="false" managed="false"
                               style="-fx-background-color: #FFEBEE; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #F44336; -fx-border-radius: 5;">
-                            <Label text="⚠" style="-fx-text-fill: #F44336; -fx-font-weight: bold; -fx-font-size: 16px;"/>
-                            <Label fx:id="budgetAlertLabel" text="Có ngân sách vượt giới hạn!" 
+                            <Label text="⚠"
+                                   style="-fx-text-fill: #F44336; -fx-font-weight: bold; -fx-font-size: 16px;"/>
+                            <Label fx:id="budgetAlertLabel" text="Có ngân sách vượt giới hạn!"
                                    style="-fx-text-fill: #F44336; -fx-font-weight: bold;"/>
                         </HBox>
-                        
+
                         <!-- Budget Chart -->
                         <BarChart fx:id="budgetChart" title="Biểu đồ ngân sách" prefHeight="200" legendVisible="false">
                             <xAxis>
@@ -104,7 +108,7 @@
                                 <NumberAxis fx:id="budgetYAxis" label="Số tiền"/>
                             </yAxis>
                         </BarChart>
-                        
+
                         <!-- Over-limit budgets table -->
                         <TableView fx:id="overLimitBudgetsTable" prefHeight="150">
                             <columns>
@@ -119,160 +123,9 @@
                             </placeholder>
                         </TableView>
                     </VBox>
-                </TitledPane>                <!-- Observer Pattern Demo Section - Full Featured -->
-                <TitledPane text="Demo Observer Pattern - Đầy đủ tính năng" expanded="false">
-                    <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
-                        <Label text="Thử nghiệm mẫu Observer Pattern và Strategy Pattern trong ứng dụng MoneyKeeper" 
-                               style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
-                        
-                        <HBox spacing="20">
-                            <!-- Control Panel -->
-                            <VBox spacing="15" prefWidth="350" style="-fx-background-color: #f5f5f5; -fx-background-radius: 5; -fx-padding: 15;">
-                                <Label text="Bảng điều khiển" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-                                
-                                <!-- Transaction Section -->
-                                <TitledPane text="Thêm giao dịch (Test Wallet Observer)" expanded="true">
-                                    <VBox spacing="10">
-                                        <Label text="Chọn ví:"/>
-                                        <ComboBox fx:id="walletComboBox" prefWidth="300"/>
-                                        
-                                        <Label text="Chọn danh mục:"/>
-                                        <ComboBox fx:id="categoryComboBox" prefWidth="300"/>
-                                        
-                                        <Label text="Số tiền (VND):"/>
-                                        <TextField fx:id="transactionAmountField" promptText="Nhập số tiền (ví dụ: 50000)"/>
-                                        
-                                        <Label text="Mô tả:"/>
-                                        <TextField fx:id="transactionDescriptionField" promptText="Nhập mô tả"/>
-                                        
-                                        <Label text="Ngày giao dịch:"/>
-                                        <DatePicker fx:id="transactionDatePicker" prefWidth="300"/>
-                                        
-                                        <Label text="Loại giao dịch:"/>
-                                        <HBox spacing="10">
-                                            <RadioButton fx:id="incomeRadioButton" text="Thu nhập" selected="false"/>
-                                            <RadioButton fx:id="expenseRadioButton" text="Chi tiêu" selected="true"/>
-                                        </HBox>
-                                        
-                                        <Label text="Lựa chọn chiến lược:"/>
-                                        <VBox spacing="5" style="-fx-background-color: #e3f2fd; -fx-padding: 8; -fx-background-radius: 3;">
-                                            <Label text="Demo Strategy Pattern:" style="-fx-font-weight: bold; -fx-font-size: 12px;"/>
-                                            <CheckBox fx:id="autoStrategyCheckBox" text="Tự động chọn chiến lược theo loại" selected="true"/>
-                                            <ComboBox fx:id="strategyComboBox" prefWidth="280" disable="true"/>
-                                        </VBox>
-                                        
-                                        <Button fx:id="addTransactionButton" text="Thêm giao dịch" 
-                                                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                                    </VBox>
-                                </TitledPane>
-                                
-                                <!-- Advanced Transaction Details -->
-                                <TitledPane text="Chi tiết giao dịch nâng cao" expanded="false">
-                                    <VBox spacing="10">
-                                        <Label text="Ghi chú giao dịch:"/>
-                                        <TextArea fx:id="transactionNotesArea" prefRowCount="3" prefWidth="280" 
-                                                  promptText="Ghi chú bổ sung hoặc chi tiết về giao dịch này"/>
-                                        
-                                        <Label text="Thẻ (phân cách bằng dấu phẩy):"/>
-                                        <TextField fx:id="transactionTagsField" promptText="ví dụ: thực phẩm, nhà hàng, ăn trưa"/>
-                                        
-                                        <Label text="Mức độ ưu tiên:"/>
-                                        <ComboBox fx:id="priorityComboBox" prefWidth="280">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Thấp"/>
-                                                    <String fx:value="Bình thường"/>
-                                                    <String fx:value="Cao"/>
-                                                    <String fx:value="Khẩn cấp"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ComboBox>
-                                        
-                                        <CheckBox fx:id="recurringTransactionCheckBox" text="Giao dịch định kỳ"/>
-                                        
-                                        <VBox spacing="5" fx:id="recurringDetailsBox" disable="true">
-                                            <Label text="Tần suất:"/>
-                                            <ComboBox fx:id="frequencyComboBox" prefWidth="280">
-                                                <items>
-                                                    <FXCollections fx:factory="observableArrayList">
-                                                        <String fx:value="Hàng ngày"/>
-                                                        <String fx:value="Hàng tuần"/>
-                                                        <String fx:value="Hàng tháng"/>
-                                                        <String fx:value="Hàng năm"/>
-                                                    </FXCollections>
-                                                </items>
-                                            </ComboBox>
-                                        </VBox>
-                                    </VBox>
-                                </TitledPane>
-                                
-                                <!-- Observer Pattern Testing -->
-                                <TitledPane text="Kiểm tra Observer Pattern" expanded="false">
-                                    <VBox spacing="10">
-                                        <Label text="Kiểm tra các loại Observer khác nhau:" style="-fx-font-weight: bold;"/>
-                                        
-                                        <VBox spacing="5" style="-fx-background-color: #fff3e0; -fx-padding: 8; -fx-background-radius: 3;">
-                                            <CheckBox fx:id="emailNotificationCheckBox" text="Thông báo Email" selected="false"/>
-                                            <CheckBox fx:id="smsNotificationCheckBox" text="Thông báo SMS" selected="false"/>
-                                            <CheckBox fx:id="pushNotificationCheckBox" text="Thông báo Push" selected="true"/>
-                                            <CheckBox fx:id="logObserverCheckBox" text="Log Observer" selected="true"/>
-                                        </VBox>
-                                        
-                                        <Label text="Ngưỡng thông báo (VND):"/>
-                                        <TextField fx:id="thresholdField" promptText="ví dụ: 100000" text="50000"/>
-                                        
-                                        <Button fx:id="testObserversButton" text="Kiểm tra tất cả Observer" 
-                                                style="-fx-background-color: #9C27B0; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                                        
-                                        <Button fx:id="simulateErrorButton" text="Mô phỏng tình huống lỗi" 
-                                                style="-fx-background-color: #FF5722; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                                    </VBox>
-                                </TitledPane>
-                                
-                                <!-- Budget Section -->
-                                <TitledPane text="Cập nhật ngân sách (Test Budget Observer)" expanded="true">
-                                    <VBox spacing="10">
-                                        <Label text="Chọn ngân sách:"/>
-                                        <ComboBox fx:id="budgetComboBox" prefWidth="300"/>
-                                        
-                                        <Label text="Số tiền đã chi mới (VND):"/>
-                                        <TextField fx:id="budgetSpentField" promptText="Nhập số tiền đã chi"/>
-                                        
-                                        <Button fx:id="updateBudgetButton" text="Cập nhật ngân sách" 
-                                                style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                                    </VBox>
-                                </TitledPane>
-                                
-                                <!-- Controls -->
-                                <VBox spacing="10">
-                                    <CheckBox fx:id="enableAlertsCheckBox" text="Bật thông báo UI" selected="true"/>
-                                    <Button fx:id="clearNotificationsButton" text="Xóa thông báo" 
-                                            style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                                </VBox>
-                            </VBox>
-                            
-                            <!-- Notification Panel -->
-                            <VBox spacing="10" HBox.hgrow="ALWAYS">
-                                <Label text="Thông báo" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-                                
-                                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
-                                    <ListView fx:id="notificationListView" style="-fx-background-color: white;"/>
-                                </ScrollPane>
-                                
-                                <Label text="Lợi ích của Observer Pattern:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-                                <VBox spacing="5" style="-fx-background-color: #e8f5e8; -fx-padding: 10; -fx-background-radius: 5;">
-                                    <Label text="• Thông báo thời gian thực khi dữ liệu thay đổi" style="-fx-font-size: 12px;"/>
-                                    <Label text="• Kết nối lỏng lẻo giữa các thành phần" style="-fx-font-size: 12px;"/>
-                                    <Label text="• Cập nhật UI tự động không cần làm mới thủ công" style="-fx-font-size: 12px;"/>
-                                    <Label text="• Quản lý thông báo tập trung" style="-fx-font-size: 12px;"/>
-                                    <Label text="• Hỗ trợ nhiều loại observer" style="-fx-font-size: 12px;"/>
-                                </VBox>
-                            </VBox>
-                        </HBox>
-                    </VBox>
                 </TitledPane>
-
-            </VBox>        </ScrollPane>
+            </VBox>
+        </ScrollPane>
     </center>
 
     <bottom>

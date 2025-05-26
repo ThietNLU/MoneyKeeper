@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ood.application.moneykeeper.controller.CategoryController">
+
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets bottom="10" left="15" right="15" top="15" />
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label style="-fx-font-weight: bold;" text="Quản lý hạng mục">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="addCategoryButton" text="Thêm hạng mục" />
+            </HBox>
+            <Separator />
+        </VBox>
+    </top>
+
+    <center>
+        <SplitPane dividerPositions="0.3" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <VBox spacing="10">
+                <padding>
+                    <Insets bottom="10" left="10" right="10" top="10" />
+                </padding>
+                <Label style="-fx-font-weight: bold;" text="Danh sách hạng mục" />
+                <TableView fx:id="categoryTableView" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="nameColumn" prefWidth="120" text="Tên hạng mục" />
+                        <TableColumn fx:id="typeColumn" prefWidth="80" text="Loại" />
+                    </columns>
+                </TableView>
+                <HBox alignment="CENTER" spacing="10">
+                    <Button fx:id="editCategoryButton" disable="true" text="Chỉnh sửa" />
+                    <Button fx:id="deleteCategoryButton" disable="true" style="-fx-text-fill: red;" text="Xóa" />
+                </HBox>
+            </VBox>
+            <VBox spacing="15">
+                <padding>
+                    <Insets bottom="15" left="15" right="15" top="15" />
+                </padding>
+                <Label style="-fx-font-weight: bold;" text="Thêm / Sửa hạng mục">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+                <GridPane hgap="10" vgap="10">
+                    <Label text="Tên:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <TextField fx:id="nameField" promptText="Nhập tên hạng mục" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <Label text="Loại:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <ComboBox fx:id="typeComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Chi tiêu" />
+                                <String fx:value="Thu nhập" />
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                    <Button fx:id="clearFormButton" text="Xóa trắng" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                    <Button fx:id="saveCategoryButton" text="Lưu" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+                <HBox spacing="10" />
+                <Separator />
+                <Label style="-fx-font-weight: bold;" text="Chi tiết hạng mục">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Label>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="100.0">
+               <children>
+                      <Label fx:id="categoryTypeLabel" text="Loại: " />
+                      <Label fx:id="categoryIdLabel" text="ID: " />
+                      <Label fx:id="categoryNameLabel" text="Tên: " />
+               </children>
+            </HBox>
+                <Separator />
+                <Label style="-fx-font-weight: bold;" text="Giao dịch của hạng mục này">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Label>
+                <TableView fx:id="transactionTableView" prefHeight="180">
+                    <columns>
+                        <TableColumn fx:id="dateColumn" prefWidth="90" text="Ngày" />
+                        <TableColumn fx:id="amountColumn" prefWidth="90" text="Số tiền" />
+                        <TableColumn fx:id="noteColumn" prefWidth="120" text="Ghi chú" />
+                        <TableColumn fx:id="walletColumn" prefWidth="100" text="Ví" />
+                    </columns>
+                </TableView>
+                <Separator />
+                <Label style="-fx-font-weight: bold;" text="Ngân sách (Budget) của hạng mục này">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Label>
+                <TableView fx:id="budgetTableView" prefHeight="120">
+                    <columns>
+                        <TableColumn fx:id="budgetNameColumn" prefWidth="120" text="Tên ngân sách" />
+                        <TableColumn fx:id="budgetLimitColumn" prefWidth="90" text="Giới hạn" />
+                        <TableColumn fx:id="budgetPeriodColumn" prefWidth="100" text="Kỳ hạn" />
+                        <TableColumn fx:id="budgetSpentColumn" prefWidth="90" text="Đã dùng" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>

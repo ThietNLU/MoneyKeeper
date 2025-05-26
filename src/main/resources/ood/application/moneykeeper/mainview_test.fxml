@@ -111,6 +111,21 @@
                     <Tooltip text="Thống kê chi tiêu" />
                 </tooltip>
             </Button>
+            <Button fx:id="categoryBtn" onAction="#loadCategory" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" text="Category">
+                <graphic>
+                    <ImageView fx:id="categoryImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@image/category.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+                <tooltip>
+                    <Tooltip text="Quản lý hạng mục" />
+                </tooltip>
+            </Button>
 
             <!-- Spacer -->
             <VBox fx:id="spacer" VBox.vgrow="ALWAYS" />

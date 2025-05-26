@@ -143,14 +143,7 @@ public class DBTest {
                 if (budget.isOverLimit()) {
                     System.out.println("ALERT: " + budget.getName() + " is over limit!");
                 }
-            }            // Test Observer pattern by adding a test observer
-            BudgetObserver observer = new BudgetObserver();
-            retrievedFoodBudget.addObserver(observer);
-
-            // Initialize NotificationManager for enhanced observer pattern
-            NotificationManager notificationManager = NotificationManager.getInstance();
-            notificationManager.setupBudgetObservers(retrievedFoodBudget);
-            notificationManager.setupWalletObservers(testWallet);
+            }
 
             System.out.println("\n=== OBSERVER PATTERN DEMO ===");
             System.out.println("Setting up observers for budget and wallet...");
@@ -194,18 +187,6 @@ public class DBTest {
         }
     }
 
-    // Enhanced observer class for demonstration
-    static class BudgetObserver implements IObserver {
-        @Override
-        public void update(String message) {
-            System.out.println("LEGACY NOTIFICATION: " + message);
-        }
-        
-        @Override
-        public void update(NotificationData notificationData) {
-            System.out.println("ENHANCED NOTIFICATION: " + notificationData.toString());
-        }
-    }
 
 }
 

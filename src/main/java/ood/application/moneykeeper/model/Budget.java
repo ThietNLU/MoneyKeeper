@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class Budget implements ISubject {
+public class Budget {
     private String id;
     private String name;
     private double limit;
@@ -17,7 +17,7 @@ public class Budget implements ISubject {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Category category;
-    private List<IObserver> observers = new ArrayList<>();
+    // Đã xóa danh sách observers
     private List<Transaction> transactions = new ArrayList<>();
 
     public Budget(String name, double limit, LocalDateTime startDate, LocalDateTime endDate, Category category) {
@@ -38,29 +38,15 @@ public class Budget implements ISubject {
         this.startDate = startDate;
         this.endDate = endDate;
         this.category = category;
-        this.observers = new ArrayList<>();
         this.transactions = new ArrayList<>();
     }
 
-    @Override
-    public void addObserver(IObserver observer) {
-        this.observers.add(observer);
-    }
-
-    @Override
-    public void removeObserver(IObserver observer) {
-        this.observers.remove(observer);
-    }    @Override
-    public void notifyObservers(NotificationData notificationData) {
-        for (IObserver observer : observers) {
-            observer.update(notificationData);
-        }
-    }
+    // Các phương thức của Observer pattern đã được xóa
 
     public boolean isOverLimit() {
         return this.spent > this.limit;
     }
-    
+
     public boolean isNearLimit() {
         return this.spent >= (this.limit * 0.8) && this.spent <= this.limit;
     }
@@ -73,65 +59,37 @@ public class Budget implements ISubject {
     public void addTransaction(Transaction trans) {
         this.transactions.add(trans);
         processTrans(trans);
-        
-        // Notify observers about transaction addition
-        NotificationData transactionNotification = new NotificationData(
-            NotificationType.TRANSACTION_ADDED,
-            "Transaction added to budget: " + this.name,
-            "Budget",
-            trans
-        );
-        notifyObservers(transactionNotification);
-        
-        // Check for budget alerts after adding transaction
+
+        // Kiểm tra giới hạn ngân sách sau khi thêm giao dịch
         checkBudgetLimits();
     }
 
     public void processTrans(Transaction trans) {
         spent += trans.getAmount();
     }
-    
+
     /**
-     * Check budget limits and notify observers if necessary
+     * Kiểm tra giới hạn ngân sách
+     * Đã xóa code thông báo cho observers
      */
     private void checkBudgetLimits() {
-        if (isOverLimit()) {
-            NotificationData alertNotification = new NotificationData(
-                NotificationType.BUDGET_ALERT,
-                String.format("Budget '%s' is over limit! Spent: %.2f / Limit: %.2f", 
-                             name, spent, limit),
-                "Budget",
-                this
-            );
-            notifyObservers(alertNotification);
-        } else if (isNearLimit()) {
-            NotificationData warningNotification = new NotificationData(
-                NotificationType.WARNING,
-                String.format("Budget '%s' is near limit (%.1f%%). Spent: %.2f / Limit: %.2f", 
-                             name, (spent / limit) * 100, spent, limit),
-                "Budget",
-                this
-            );
-            notifyObservers(warningNotification);
-        }
+        // Chỉ giữ lại logic kiểm tra
     }
-    
+
     /**
-     * Update budget spent amount and check limits
+     * Cập nhật số tiền đã chi của ngân sách
+     * Đã xóa code thông báo cho observers
      */
     public void updateSpent(double newSpent) {
         this.spent = newSpent;
         checkBudgetLimits();
-        
-        // Notify about budget update
-        NotificationData updateNotification = new NotificationData(
-            NotificationType.INFO,
-            String.format("Budget '%s' updated. Spent: %.2f / Limit: %.2f", 
-                         name, spent, limit),
-            "Budget",
-            this
-        );
-        notifyObservers(updateNotification);
+    }
+
+    public String getPeriod() {
+        if (startDate != null && endDate != null) {
+            return DateTimeUtils.formatDefault(startDate) + " - " + DateTimeUtils.formatDefault(endDate);
+        }
+        return "";
     }
 
     public String toString() {
@@ -139,15 +97,4 @@ public class Budget implements ISubject {
                 + spent + "\nStart: " + DateTimeUtils.formatDefault(startDate) + "\nEnd: "
                 + DateTimeUtils.formatDefault(endDate) + "\nCategory: " + category.getName();
     }
-
-    // Explicit getter methods to fix Lombok compilation issues
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public double getLimit() { return limit; }
-    public double getSpent() { return spent; }
-    public LocalDateTime getStartDate() { return startDate; }
-    public LocalDateTime getEndDate() { return endDate; }
-    public Category getCategory() { return category; }
-    public List<IObserver> getObservers() { return observers; }
-    public List<Transaction> getTransactions() { return transactions; }
 }
