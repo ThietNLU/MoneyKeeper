@@ -8,6 +8,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
 <BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -116,12 +119,10 @@
                             </placeholder>
                         </TableView>
                     </VBox>
-                </TitledPane>
-
-                <!-- Observer Pattern Demo Section -->
-                <TitledPane text="Demo Observer Pattern" expanded="false">
+                </TitledPane>                <!-- Observer Pattern Demo Section - Full Featured -->
+                <TitledPane text="Demo Observer Pattern - Đầy đủ tính năng" expanded="false">
                     <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 5; -fx-padding: 15;">
-                        <Label text="Thử nghiệm mẫu Observer Pattern trong ứng dụng MoneyKeeper" 
+                        <Label text="Thử nghiệm mẫu Observer Pattern và Strategy Pattern trong ứng dụng MoneyKeeper" 
                                style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
                         
                         <HBox spacing="20">
@@ -135,14 +136,96 @@
                                         <Label text="Chọn ví:"/>
                                         <ComboBox fx:id="walletComboBox" prefWidth="300"/>
                                         
+                                        <Label text="Chọn danh mục:"/>
+                                        <ComboBox fx:id="categoryComboBox" prefWidth="300"/>
+                                        
                                         <Label text="Số tiền (VND):"/>
                                         <TextField fx:id="transactionAmountField" promptText="Nhập số tiền (ví dụ: 50000)"/>
                                         
                                         <Label text="Mô tả:"/>
                                         <TextField fx:id="transactionDescriptionField" promptText="Nhập mô tả"/>
                                         
+                                        <Label text="Ngày giao dịch:"/>
+                                        <DatePicker fx:id="transactionDatePicker" prefWidth="300"/>
+                                        
+                                        <Label text="Loại giao dịch:"/>
+                                        <HBox spacing="10">
+                                            <RadioButton fx:id="incomeRadioButton" text="Thu nhập" selected="false"/>
+                                            <RadioButton fx:id="expenseRadioButton" text="Chi tiêu" selected="true"/>
+                                        </HBox>
+                                        
+                                        <Label text="Lựa chọn chiến lược:"/>
+                                        <VBox spacing="5" style="-fx-background-color: #e3f2fd; -fx-padding: 8; -fx-background-radius: 3;">
+                                            <Label text="Demo Strategy Pattern:" style="-fx-font-weight: bold; -fx-font-size: 12px;"/>
+                                            <CheckBox fx:id="autoStrategyCheckBox" text="Tự động chọn chiến lược theo loại" selected="true"/>
+                                            <ComboBox fx:id="strategyComboBox" prefWidth="280" disable="true"/>
+                                        </VBox>
+                                        
                                         <Button fx:id="addTransactionButton" text="Thêm giao dịch" 
                                                 style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                                    </VBox>
+                                </TitledPane>
+                                
+                                <!-- Advanced Transaction Details -->
+                                <TitledPane text="Chi tiết giao dịch nâng cao" expanded="false">
+                                    <VBox spacing="10">
+                                        <Label text="Ghi chú giao dịch:"/>
+                                        <TextArea fx:id="transactionNotesArea" prefRowCount="3" prefWidth="280" 
+                                                  promptText="Ghi chú bổ sung hoặc chi tiết về giao dịch này"/>
+                                        
+                                        <Label text="Thẻ (phân cách bằng dấu phẩy):"/>
+                                        <TextField fx:id="transactionTagsField" promptText="ví dụ: thực phẩm, nhà hàng, ăn trưa"/>
+                                        
+                                        <Label text="Mức độ ưu tiên:"/>
+                                        <ComboBox fx:id="priorityComboBox" prefWidth="280">
+                                            <items>
+                                                <FXCollections fx:factory="observableArrayList">
+                                                    <String fx:value="Thấp"/>
+                                                    <String fx:value="Bình thường"/>
+                                                    <String fx:value="Cao"/>
+                                                    <String fx:value="Khẩn cấp"/>
+                                                </FXCollections>
+                                            </items>
+                                        </ComboBox>
+                                        
+                                        <CheckBox fx:id="recurringTransactionCheckBox" text="Giao dịch định kỳ"/>
+                                        
+                                        <VBox spacing="5" fx:id="recurringDetailsBox" disable="true">
+                                            <Label text="Tần suất:"/>
+                                            <ComboBox fx:id="frequencyComboBox" prefWidth="280">
+                                                <items>
+                                                    <FXCollections fx:factory="observableArrayList">
+                                                        <String fx:value="Hàng ngày"/>
+                                                        <String fx:value="Hàng tuần"/>
+                                                        <String fx:value="Hàng tháng"/>
+                                                        <String fx:value="Hàng năm"/>
+                                                    </FXCollections>
+                                                </items>
+                                            </ComboBox>
+                                        </VBox>
+                                    </VBox>
+                                </TitledPane>
+                                
+                                <!-- Observer Pattern Testing -->
+                                <TitledPane text="Kiểm tra Observer Pattern" expanded="false">
+                                    <VBox spacing="10">
+                                        <Label text="Kiểm tra các loại Observer khác nhau:" style="-fx-font-weight: bold;"/>
+                                        
+                                        <VBox spacing="5" style="-fx-background-color: #fff3e0; -fx-padding: 8; -fx-background-radius: 3;">
+                                            <CheckBox fx:id="emailNotificationCheckBox" text="Thông báo Email" selected="false"/>
+                                            <CheckBox fx:id="smsNotificationCheckBox" text="Thông báo SMS" selected="false"/>
+                                            <CheckBox fx:id="pushNotificationCheckBox" text="Thông báo Push" selected="true"/>
+                                            <CheckBox fx:id="logObserverCheckBox" text="Log Observer" selected="true"/>
+                                        </VBox>
+                                        
+                                        <Label text="Ngưỡng thông báo (VND):"/>
+                                        <TextField fx:id="thresholdField" promptText="ví dụ: 100000" text="50000"/>
+                                        
+                                        <Button fx:id="testObserversButton" text="Kiểm tra tất cả Observer" 
+                                                style="-fx-background-color: #9C27B0; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                                        
+                                        <Button fx:id="simulateErrorButton" text="Mô phỏng tình huống lỗi" 
+                                                style="-fx-background-color: #FF5722; -fx-text-fill: white; -fx-background-radius: 5;"/>
                                     </VBox>
                                 </TitledPane>
                                 
@@ -172,7 +255,7 @@
                             <VBox spacing="10" HBox.hgrow="ALWAYS">
                                 <Label text="Thông báo" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
                                 
-                                <ScrollPane fitToWidth="true" prefHeight="200">
+                                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
                                     <ListView fx:id="notificationListView" style="-fx-background-color: white;"/>
                                 </ScrollPane>
                                 

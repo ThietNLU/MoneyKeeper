@@ -10,15 +10,12 @@ public class WalletDAO implements DAO<Wallet, String> {
     DBConnection db = DBConnection.getInstance();
 
     public WalletDAO() throws SQLException {
-    }
-
-    @Override
+    }    @Override
     public List<Wallet> getAll() throws SQLException {
         List<Wallet> wallets = new ArrayList<>();
         Connection con = db.getConnection();
-        try {
-            Statement stm = con.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM Wallet");
+        try (Statement stm = con.createStatement();
+             ResultSet rs = stm.executeQuery("SELECT * FROM Wallet")) {
 
             while (rs.next()) {
                 String id = rs.getString("id");
@@ -31,41 +28,36 @@ public class WalletDAO implements DAO<Wallet, String> {
                 wallets.add(wallet);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error getting all wallets: " + e.getMessage());
+            throw e;
         }
 
         return wallets;
-    }
-
-    @Override
+    }    @Override
     public Wallet get(String id) throws SQLException {
         Wallet wallet = null;
         Connection con = db.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM Wallet WHERE id = ?");
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM Wallet WHERE id = ?")) {
             ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                String name = rs.getString("name");
-                double balance = rs.getDouble("balance");
-                String owner_id = rs.getString("owner_id");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String name = rs.getString("name");
+                    double balance = rs.getDouble("balance");
+                    String owner_id = rs.getString("owner_id");
 
-                User user = new UserDAO().get(owner_id);
-                wallet = new Wallet(id, name, balance, user);
+                    User user = new UserDAO().get(owner_id);
+                    wallet = new Wallet(id, name, balance, user);
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-
+            System.err.println("Error getting wallet: " + e.getMessage());
+            throw e;
         }
         return wallet;
-    }
-
-    @Override
+    }    @Override
     public boolean save(Wallet wallet) throws SQLException {
         Connection con = db.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO Wallet (id, name, balance, owner_id) VALUES (?, ?, ?, ?)");
+        try (PreparedStatement ps = con.prepareStatement("INSERT INTO Wallet (id, name, balance, owner_id) VALUES (?, ?, ?, ?)")) {
             ps.setString(1, wallet.getId());
             ps.setString(2, wallet.getName());
             ps.setDouble(3, wallet.getBalance());
@@ -73,18 +65,13 @@ public class WalletDAO implements DAO<Wallet, String> {
             int rows = ps.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-
+            System.err.println("Error saving wallet: " + e.getMessage());
+            throw e;
         }
-        return false;
-    }
-
-    @Override
+    }    @Override
     public boolean update(Wallet wallet) throws SQLException {
         Connection con = db.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("UPDATE Wallet SET name = ?, balance = ?, owner_id = ? WHERE id = ?");
+        try (PreparedStatement ps = con.prepareStatement("UPDATE Wallet SET name = ?, balance = ?, owner_id = ? WHERE id = ?")) {
             ps.setString(1, wallet.getName());
             ps.setDouble(2, wallet.getBalance());
             ps.setString(3, wallet.getOwner().getId());
@@ -92,46 +79,72 @@ public class WalletDAO implements DAO<Wallet, String> {
             int rows = ps.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-
+            System.err.println("Error updating wallet: " + e.getMessage());
+            throw e;
         }
-        return false;
-    }
-
-    @Override
+    }    @Override
     public boolean delete(Wallet wallet) throws SQLException {
         Connection con = db.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM Wallet WHERE id = ?");
+        try (PreparedStatement ps = con.prepareStatement("DELETE FROM Wallet WHERE id = ?")) {
             ps.setString(1, wallet.getId());
             int rows = ps.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-
+            System.err.println("Error deleting wallet: " + e.getMessage());
+            throw e;
         }
-        return false;
-    }
-
-    @Override
+    }@Override
     public boolean deleteById(String s) throws SQLException {
         Connection con = db.getConnection();
+        boolean success = false;
+        
         try {
-            // Delete all transactions for this wallet first
-            PreparedStatement ps1 = con.prepareStatement("DELETE FROM Transactions WHERE wallet_id = ?");
+            // Start transaction
+            con.setAutoCommit(false);
+            
+            // First, delete Budget_Transaction entries for transactions in this wallet
+            PreparedStatement ps1 = con.prepareStatement(
+                "DELETE FROM Budget_Transaction WHERE transaction_id IN " +
+                "(SELECT id FROM Transactions WHERE wallet_id = ?)"
+            );
             ps1.setString(1, s);
             ps1.executeUpdate();
-            // Now delete the wallet
-            PreparedStatement ps2 = con.prepareStatement("DELETE FROM Wallet WHERE id = ?");
+            ps1.close();
+            
+            // Then delete all transactions for this wallet
+            PreparedStatement ps2 = con.prepareStatement("DELETE FROM Transactions WHERE wallet_id = ?");
             ps2.setString(1, s);
-            int rows = ps2.executeUpdate();
-            return rows > 0;
+            ps2.executeUpdate();
+            ps2.close();
+            
+            // Finally delete the wallet
+            PreparedStatement ps3 = con.prepareStatement("DELETE FROM Wallet WHERE id = ?");
+            ps3.setString(1, s);
+            int rows = ps3.executeUpdate();
+            ps3.close();
+            
+            // Commit transaction
+            con.commit();
+            success = rows > 0;
+            
         } catch (SQLException e) {
-            e.printStackTrace();
+            // Rollback transaction on error
+            try {
+                con.rollback();
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error during rollback: " + rollbackEx.getMessage());
+            }
+            System.err.println("Error deleting wallet: " + e.getMessage());
+            throw e;
+        } finally {
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.err.println("Error resetting auto-commit: " + e.getMessage());
+            }
         }
-        return false;
+        
+        return success;
     }
 }
 

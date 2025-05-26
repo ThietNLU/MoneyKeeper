@@ -13,6 +13,18 @@ public class User {
     private String name;
     private WalletManager wallets;
     private BudgetManager budgets;
+    
+    // Explicit getter methods to fix Lombok compilation issues
+    public String getId() { return this.id; }
+    public String getName() { return this.name; }
+    public WalletManager getWallets() { return this.wallets; }
+    public BudgetManager getBudgets() { return this.budgets; }
+    
+    // Explicit setter methods to fix Lombok compilation issues
+    public void setId(String id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setWallets(WalletManager wallets) { this.wallets = wallets; }
+    public void setBudgets(BudgetManager budgets) { this.budgets = budgets; }
 
     public User(String name) {
         this.id = UUIDUtils.generateShortUUID();

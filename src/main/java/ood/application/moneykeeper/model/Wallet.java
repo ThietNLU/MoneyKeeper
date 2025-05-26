@@ -3,22 +3,20 @@ package ood.application.moneykeeper.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import ood.application.moneykeeper.utils.UUIDUtils;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Wallet implements ISubject {
     private String id;
     private String name;
     private double balance;
     private List<Transaction> transactions;
-    private User owner;
-    private List<IObserver> observers = new ArrayList<>();
-    private java.time.LocalDateTime creationDate;
+    private User owner;    private List<IObserver> observers = new ArrayList<>();
+    private java.time.LocalDateTime creationDate;    // Default constructor
+    public Wallet() {
+        this.id = UUIDUtils.generateShortUUID();
+        this.observers = new ArrayList<>();
+        this.transactions = new ArrayList<>();
+    }
 
     public Wallet(String name, double balance, User owner) {
         this.id = UUIDUtils.generateShortUUID();
@@ -180,10 +178,26 @@ public class Wallet implements ISubject {
     }
 
     public String getInfoAllTrans(){
-        return this.transactions.stream().map(t -> t.toString()).collect(Collectors.joining("\n"));
-    }
-
+        return this.transactions.stream().map(t -> t.toString()).collect(Collectors.joining("\n"));    }
+    
+    @Override
     public String toString(){
         return "Id: " + id + "\nName: " + name + "\nBalance: " + balance;
-    }
+    }// Explicit getter methods to fix Lombok compilation issues
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public double getBalance() { return balance; }
+    public List<Transaction> getTransactions() { return transactions; }
+    public User getOwner() { return owner; }
+    public List<IObserver> getObservers() { return observers; }
+    public java.time.LocalDateTime getCreationDate() { return creationDate; }
+    
+    // Explicit setter methods to fix Lombok compilation issues
+    public void setId(String id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setBalance(double balance) { this.balance = balance; }
+    public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }
+    public void setOwner(User owner) { this.owner = owner; }
+    public void setObservers(List<IObserver> observers) { this.observers = observers; }
+    public void setCreationDate(java.time.LocalDateTime creationDate) { this.creationDate = creationDate; }
 }

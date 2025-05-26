@@ -300,13 +300,11 @@ public class WalletController implements Initializable {
                 showErrorAlert("Database error", "Could not delete wallet: " + e.getMessage());
             }
         }
-    }
-
-    private void showTransactionDialog() {
+    }    private void showTransactionDialog() {
         Wallet selectedWallet = walletListView.getSelectionModel().getSelectedItem();
         if (selectedWallet == null) return;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ood/application/moneykeeper/Transaction.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ood/application/moneykeeper/transaction_test.fxml"));
             Parent root = loader.load();
             TransactionController controller = loader.getController();
             controller.initData(selectedWallet);

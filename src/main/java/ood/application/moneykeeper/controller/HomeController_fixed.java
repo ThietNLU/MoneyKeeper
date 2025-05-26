@@ -16,9 +16,11 @@ import javafx.util.StringConverter;
 import ood.application.moneykeeper.dao.BudgetDAO;
 import ood.application.moneykeeper.dao.TransactionDAO;
 import ood.application.moneykeeper.dao.WalletDAO;
+import ood.application.moneykeeper.dao.CategoryDAO;
 import ood.application.moneykeeper.model.Budget;
 import ood.application.moneykeeper.model.Transaction;
 import ood.application.moneykeeper.model.Wallet;
+import ood.application.moneykeeper.model.Category;
 import ood.application.moneykeeper.model.NotificationManager;
 import ood.application.moneykeeper.model.ExpenseTransactionStrategy;
 
@@ -79,15 +81,15 @@ public class HomeController_fixed implements Initializable {
     @FXML
     private TableColumn<Budget, String> budgetSpentColumn;
     @FXML
-    private TableColumn<Budget, String> budgetStatusColumn;
-
-    // Observer Demo Section
+    private TableColumn<Budget, String> budgetStatusColumn;    // Observer Demo Section
     @FXML
     private ListView<String> notificationListView;
     @FXML
     private ComboBox<Wallet> walletComboBox;
     @FXML
     private ComboBox<Budget> budgetComboBox;
+    @FXML
+    private ComboBox<Category> categoryComboBox;
     @FXML
     private TextField transactionAmountField;
     @FXML
@@ -101,12 +103,11 @@ public class HomeController_fixed implements Initializable {
     @FXML
     private Button clearNotificationsButton;
     @FXML
-    private CheckBox enableAlertsCheckBox;
-
-    // Data Access Objects
+    private CheckBox enableAlertsCheckBox;    // Data Access Objects
     private TransactionDAO transactionDAO;
     private WalletDAO walletDAO;
     private BudgetDAO budgetDAO;
+    private CategoryDAO categoryDAO;
     
     // Notification Management
     private NotificationManager notificationManager;
@@ -122,11 +123,11 @@ public class HomeController_fixed implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        try {
-            // Initialize DAOs
+        try {            // Initialize DAOs
             transactionDAO = new TransactionDAO();
             walletDAO = new WalletDAO();
             budgetDAO = new BudgetDAO();
+            categoryDAO = new CategoryDAO();
 
             // Initialize notification manager
             notificationManager = NotificationManager.getInstance();
@@ -161,18 +162,29 @@ public class HomeController_fixed implements Initializable {
         // Setup columns
         transactionDateColumn.setCellValueFactory(data -> 
             new ReadOnlyStringWrapper(data.getValue().getDateTime().format(dateFormatter)));
-        
-        transactionDescriptionColumn.setCellValueFactory(data -> 
+          transactionDescriptionColumn.setCellValueFactory(data -> 
             new ReadOnlyStringWrapper(data.getValue().getDescription()));
         
-        transactionWalletColumn.setCellValueFactory(data -> 
-            new ReadOnlyStringWrapper(data.getValue().getWallet().getName()));
+        transactionWalletColumn.setCellValueFactory(data -> {
+            Transaction transaction = data.getValue();
+            if (transaction.getWallet() != null) {
+                return new ReadOnlyStringWrapper(transaction.getWallet().getName());
+            } else {
+                return new ReadOnlyStringWrapper("Không xác định");
+            }
+        });
         
         transactionAmountColumn.setCellValueFactory(data -> 
             new ReadOnlyStringWrapper(formatMoney(data.getValue().getAmount())));
         
-        transactionTypeColumn.setCellValueFactory(data -> 
-            new ReadOnlyStringWrapper(data.getValue().getStrategy().isExpense() ? "Chi tiêu" : "Thu nhập"));
+        transactionTypeColumn.setCellValueFactory(data -> {
+            Transaction transaction = data.getValue();
+            if (transaction.getStrategy() != null) {
+                return new ReadOnlyStringWrapper(transaction.getStrategy().isExpense() ? "Chi tiêu" : "Thu nhập");
+            } else {
+                return new ReadOnlyStringWrapper("Không xác định");
+            }
+        });
 
         // Set color formatting for amount column
         transactionAmountColumn.setCellFactory(column -> new TableCell<Transaction, String>() {
@@ -261,9 +273,7 @@ public class HomeController_fixed implements Initializable {
                         return null;
                     }
                 });
-            }
-
-            if (budgetComboBox != null) {
+            }            if (budgetComboBox != null) {
                 List<Budget> budgets = budgetDAO.getAll();
                 budgetComboBox.setItems(FXCollections.observableArrayList(budgets));
                 budgetComboBox.setConverter(new StringConverter<Budget>() {
@@ -274,6 +284,23 @@ public class HomeController_fixed implements Initializable {
 
                     @Override
                     public Budget fromString(String string) {
+                        return null;
+                    }
+                });
+            }
+
+            // Load categories for combo box
+            if (categoryComboBox != null) {
+                List<Category> categories = categoryDAO.getAll();
+                categoryComboBox.setItems(FXCollections.observableArrayList(categories));
+                categoryComboBox.setConverter(new StringConverter<Category>() {
+                    @Override
+                    public String toString(Category category) {
+                        return category != null ? category.getName() + " (" + (category.isExpense() ? "Chi tiêu" : "Thu nhập") + ")" : "";
+                    }
+
+                    @Override
+                    public Category fromString(String string) {
                         return null;
                     }
                 });
@@ -314,15 +341,16 @@ public class HomeController_fixed implements Initializable {
             if (selectedWallet == null || amountText.isEmpty() || description.isEmpty()) {
                 showAlert("Vui lòng điền đầy đủ thông tin giao dịch");
                 return;
-            }
-
-            double amount = Double.parseDouble(amountText);
+            }            double amount = Double.parseDouble(amountText);
+            Category selectedCategory = categoryComboBox.getValue();
             
-            // Create a test transaction (expense)
-            Transaction testTransaction = new Transaction();
-            testTransaction.setWallet(selectedWallet);
-            testTransaction.setAmount(amount);
-            testTransaction.setDescription(description);
+            if (selectedCategory == null) {
+                showAlert("Vui lòng chọn danh mục giao dịch");
+                return;
+            }
+            
+            // Create a test transaction using correct constructor
+            Transaction testTransaction = new Transaction(selectedWallet, amount, selectedCategory, description);
             testTransaction.setDateTime(LocalDateTime.now());
             
             // Use expense strategy for demo

@@ -23,12 +23,6 @@ import java.util.ResourceBundle;
 
 public class TransactionTestController implements Initializable {
     @FXML
-    private RadioButton expenseRadio;
-    @FXML
-    private RadioButton incomeRadio;
-    @FXML
-    private ToggleGroup transactionType;
-    @FXML
     private ComboBox<Category> categoryComboBox;
     @FXML
     private ComboBox<Wallet> walletComboBox;
@@ -55,17 +49,8 @@ public class TransactionTestController implements Initializable {
     @FXML
     private TableColumn<Transaction, String> categoryColumn;
     @FXML
-    private TableColumn<Transaction, String> walletColumn;
-    @FXML
+    private TableColumn<Transaction, String> walletColumn;    @FXML
     private TableColumn<Transaction, Boolean> typeColumn;
-    @FXML
-    private ComboBox<?> filterComboBox;
-    @FXML
-    private TextField searchField;
-    @FXML
-    private Button searchButton;
-    @FXML
-    private Label errorLabel;
 
     private TransactionDAO transactionDAO;
     private CategoryDAO categoryDAO;
@@ -136,13 +121,10 @@ public class TransactionTestController implements Initializable {
                         if (newSelection != null) {
                             populateFields(newSelection);
                         }
-                    });
-
-            saveButton.setOnAction(event -> addTransaction());
+                    });            saveButton.setOnAction(event -> addTransaction());
             clearButton.setOnAction(event -> updateTransaction());
 
             transactionDate.setValue(LocalDate.now());
-            expenseRadio.setSelected(true);
         } catch (SQLException e) {
             showError("Lỗi khi khởi tạo: " + e.getMessage());
         }
@@ -162,45 +144,41 @@ public class TransactionTestController implements Initializable {
     private void loadWallets() throws SQLException {
         List<Wallet> wallets = walletDAO.getAll();
         walletComboBox.setItems(FXCollections.observableArrayList(wallets));
-    }
-
-    private void populateFields(Transaction transaction) {
+    }    private void populateFields(Transaction transaction) {
         amountField.setText(String.valueOf(transaction.getAmount()));
         descriptionFields.setText(transaction.getDescription());
         transactionDate.setValue(transaction.getDateTime().toLocalDate());
         categoryComboBox.setValue(transaction.getCategory());
         walletComboBox.setValue(transaction.getWallet());
-        if (transaction.isExpense()) {
-            expenseRadio.setSelected(true);
-        } else {
-            incomeRadio.setSelected(true);
-        }
-    }
-
-    private void clearFields() {
+        // Không cần set RadioButton nữa vì loại giao dịch được xác định từ Category
+    }    private void clearFields() {
         amountField.clear();
         descriptionFields.clear();
         transactionDate.setValue(LocalDate.now());
         categoryComboBox.getSelectionModel().clearSelection();
         walletComboBox.getSelectionModel().clearSelection();
-        expenseRadio.setSelected(true);
-    }
-
-    private void addTransaction() {
+        // Không cần set RadioButton nữa
+    }    private void addTransaction() {
         if (validateInput()) {
             try {
-                Transaction newTransaction = new Transaction();
-                newTransaction.setAmount(Double.parseDouble(amountField.getText().trim()));
-                newTransaction.setDescription(descriptionFields.getText().trim());
-                newTransaction.setDateTime(transactionDate.getValue().atStartOfDay());
-                newTransaction.setCategory(categoryComboBox.getValue());
-                newTransaction.setWallet(walletComboBox.getValue());
-                // Sử dụng Strategy pattern đúng cách
-                if (expenseRadio.isSelected()) {
+                Wallet selectedWallet = walletComboBox.getValue();
+                Category selectedCategory = categoryComboBox.getValue();
+                double amount = Double.parseDouble(amountField.getText().trim());
+                String description = descriptionFields.getText().trim();
+                
+                // Tạo transaction với constructor có sẵn
+                Transaction newTransaction = new Transaction(selectedWallet, amount, selectedCategory, description);
+                
+                // Tự động xác định strategy dựa vào thuộc tính isExpense của Category
+                if (selectedCategory.isExpense()) {
                     newTransaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
                 } else {
                     newTransaction.setStrategy(new ood.application.moneykeeper.model.IncomTransactionStrategy());
                 }
+                
+                // Set thời gian
+                newTransaction.setDateTime(transactionDate.getValue().atStartOfDay());
+                
                 transactionDAO.save(newTransaction);
                 loadTransactions();
                 clearFields();
@@ -209,9 +187,7 @@ public class TransactionTestController implements Initializable {
                 showError("Lỗi khi thêm giao dịch: " + e.getMessage());
             }
         }
-    }
-
-    private void updateTransaction() {
+    }    private void updateTransaction() {
         Transaction selectedTransaction = transactionTable.getSelectionModel().getSelectedItem();
         if (selectedTransaction == null) {
             showError("Vui lòng chọn giao dịch để cập nhật!");
@@ -219,49 +195,28 @@ public class TransactionTestController implements Initializable {
         }
         if (validateInput()) {
             try {
+                Category selectedCategory = categoryComboBox.getValue();
+                
                 selectedTransaction.setAmount(Double.parseDouble(amountField.getText().trim()));
                 selectedTransaction.setDescription(descriptionFields.getText().trim());
                 selectedTransaction.setDateTime(transactionDate.getValue().atStartOfDay());
-                selectedTransaction.setCategory(categoryComboBox.getValue());
+                selectedTransaction.setCategory(selectedCategory);
                 selectedTransaction.setWallet(walletComboBox.getValue());
-                // Sử dụng Strategy pattern đúng cách khi cập nhật
-                if (expenseRadio.isSelected()) {
+                
+                // Tự động xác định strategy dựa vào thuộc tính isExpense của Category
+                if (selectedCategory.isExpense()) {
                     selectedTransaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
                 } else {
                     selectedTransaction.setStrategy(new ood.application.moneykeeper.model.IncomTransactionStrategy());
                 }
+                
                 transactionDAO.update(selectedTransaction);
                 loadTransactions();
                 showInfo("Giao dịch đã được cập nhật thành công!");
             } catch (SQLException e) {
                 showError("Lỗi khi cập nhật giao dịch: " + e.getMessage());
             }
-        }
-    }
-
-    private void deleteTransaction() {
-        Transaction selectedTransaction = transactionTable.getSelectionModel().getSelectedItem();
-        if (selectedTransaction == null) {
-            showError("Vui lòng chọn giao dịch để xóa!");
-            return;
-        }
-        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmDialog.setTitle("Xác nhận xóa");
-        confirmDialog.setHeaderText(null);
-        confirmDialog.setContentText("Bạn có chắc chắn muốn xóa giao dịch này không?");
-        confirmDialog.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                try {
-                    transactionDAO.deleteById(selectedTransaction.getTId());
-                    loadTransactions();
-                    clearFields();
-                    showInfo("Giao dịch đã được xóa thành công!");
-                } catch (SQLException e) {
-                    showError("Lỗi khi xóa giao dịch: " + e.getMessage());
-                }
-            }
-        });
-    }
+        }    }
 
     private boolean validateInput() {
         StringBuilder errorMessage = new StringBuilder();

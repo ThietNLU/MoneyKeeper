@@ -22,9 +22,10 @@ public class Category {
         return this.name.equals(category.getName()) && this.isExpense == category.isExpense();
     }
 
-    public boolean isExpense() {
-        return isExpense;
-    }
+    // Explicit getter methods to fix Lombok compilation issues
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public boolean isExpense() { return isExpense; }
 
     public String toString() {
         return "id: " + id + ", name: " + name + ", isExpense: " + isExpense;

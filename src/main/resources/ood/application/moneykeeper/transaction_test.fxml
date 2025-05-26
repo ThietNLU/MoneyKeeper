@@ -8,7 +8,7 @@
 <BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #eceff1, #cfd8dc);"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ood.application.moneykeeper.controller.TransactionTestController">
+            fx:controller="ood.application.moneykeeper.controller.TransactionController">
 
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
@@ -32,23 +32,12 @@
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="250"/>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="80" prefWidth="120"/>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="150" prefWidth="150"/>
-                        </columnConstraints>
+                        </columnConstraints>                        <!-- Row 0 -->
+                        <Label text="Ngày giao dịch:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <DatePicker fx:id="transactionDate" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Chọn ngày"/>
 
-                        <!-- Row 0 -->
-                        <Label text="Loại giao dịch:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <HBox spacing="20" alignment="CENTER_LEFT" GridPane.rowIndex="0" GridPane.columnIndex="1">
-                            <RadioButton fx:id="expenseRadio" text="Chi tiêu" selected="true">
-                                <toggleGroup>
-                                    <ToggleGroup fx:id="transactionType"/>
-                                </toggleGroup>
-                            </RadioButton>
-                            <RadioButton fx:id="incomeRadio" text="Thu nhập" toggleGroup="$transactionType"/>
-                        </HBox>
-
-                        <Label text="Ngày giao dịch:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                        <DatePicker fx:id="transactionDate" GridPane.rowIndex="0" GridPane.columnIndex="3" promptText="Chọn ngày"/>
-
-                        <!-- Row 1 -->
+                        <Label text="Hạng mục:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                        <ComboBox fx:id="categoryComboBox" GridPane.rowIndex="0" GridPane.columnIndex="3" promptText="Chọn hạng mục" prefWidth="150"/>                        <!-- Row 1 -->
                         <Label text="Số tiền:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                         <TextField fx:id="amountField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Nhập số tiền"/>
 
@@ -56,20 +45,15 @@
                         <ComboBox fx:id="walletComboBox" GridPane.rowIndex="1" GridPane.columnIndex="3" promptText="Chọn ví" prefWidth="150"/>
 
                         <!-- Row 2 -->
-                        <Label text="Hạng mục:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <ComboBox fx:id="categoryComboBox" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Chọn hạng mục" prefWidth="200"/>
-
-                        <!-- Row 3 -->
-                        <Label text="Mô tả:" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.valignment="TOP">
+                        <Label text="Mô tả:" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="TOP">
                             <GridPane.margin>
                                 <Insets top="5"/>
                             </GridPane.margin>
                         </Label>
-                        <TextArea fx:id="descriptionFields" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                        <TextArea fx:id="descriptionFields" GridPane.rowIndex="2" GridPane.columnIndex="1"
                                   GridPane.columnSpan="3" promptText="Nhập mô tả cho giao dịch" prefHeight="60"/>
 
-                        <!-- Row 4: Buttons -->
-                        <HBox alignment="CENTER_RIGHT" spacing="10" GridPane.rowIndex="4"
+                        <!-- Row 3: Buttons -->                        <HBox alignment="CENTER_RIGHT" spacing="10" GridPane.rowIndex="3"
                               GridPane.columnIndex="1" GridPane.columnSpan="3">
                             <Button fx:id="clearButton" text="Xóa trắng"
                                     style="-fx-background-color: #6c757d; -fx-text-fill: white;"/>

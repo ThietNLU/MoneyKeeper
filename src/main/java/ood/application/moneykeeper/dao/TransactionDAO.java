@@ -253,9 +253,7 @@ public class TransactionDAO implements DAO<Transaction, String> {
             e.printStackTrace();
         }
         return transactions;
-    }
-
-    private Transaction extractTransactionFromResultSet(ResultSet rs) throws SQLException {
+    }    private Transaction extractTransactionFromResultSet(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         double amount = rs.getDouble("amount");
         String dateTimeStr = rs.getString("dateTime");
@@ -268,6 +266,11 @@ public class TransactionDAO implements DAO<Transaction, String> {
         Wallet wallet = walletDAO.get(walletId);
         Category category = categoryDAO.get(categoryId);
         LocalDateTime dateTime = DateTimeUtils.parse(dateTimeStr, DateTimeUtils.DEFAULT_DATE_TIME_FORMAT);
+
+        // Log warning if wallet not found
+        if (wallet == null) {
+            System.err.println("Warning: Wallet with ID '" + walletId + "' not found for transaction '" + id + "'");
+        }
 
         // Create transaction with appropriate strategy
         Transaction transaction = new Transaction(id, wallet, null , amount, dateTime, category, description);

@@ -319,3 +319,23 @@ public class HomeController implements Initializable {
 - **📜 History tracking:** Lưu lịch sử tất cả thông báo
 
 Đây là một implementation rất tinh tế và professional của Observer Pattern, kết hợp nhiều design patterns khác như Singleton, Strategy, và sử dụng functional programming với lambda expressions!
+
+## 🎯 **Observer Pattern Documentation**
+
+Tài liệu chi tiết về Observer Pattern implementation:
+
+1. **📖 [OBSERVER_PATTERN_GUIDE.md](OBSERVER_PATTERN_GUIDE.md)** - Hướng dẫn đầy đủ chi tiết
+2. **🚀 [OBSERVER_QUICK_START.md](OBSERVER_QUICK_START.md)** - Hướng dẫn nhanh cho việc tích hợp
+3. **💻 [ObserverPatternExamples.java](src/main/java/ood/application/moneykeeper/examples/ObserverPatternExamples.java)** - Ví dụ code thực tế
+
+### Demo Observer Pattern
+- Mở ứng dụng → Trang chủ → "Demo Observer Pattern - Đầy đủ tính năng"
+- Hoặc chạy file `observer_demo.fxml` độc lập
+
+### Cấu trúc Observer Pattern:
+```
+IObserver (interface) ← NotificationObserver, UINotificationObserver, WalletUpdateObserver
+ISubject (interface) ← Wallet, Budget 
+NotificationData (class) - Chứa thông tin thông báo
+NotificationManager (singleton) - Quản lý observers toàn cục
+```

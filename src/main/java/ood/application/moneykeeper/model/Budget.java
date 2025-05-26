@@ -139,4 +139,15 @@ public class Budget implements ISubject {
                 + spent + "\nStart: " + DateTimeUtils.formatDefault(startDate) + "\nEnd: "
                 + DateTimeUtils.formatDefault(endDate) + "\nCategory: " + category.getName();
     }
+
+    // Explicit getter methods to fix Lombok compilation issues
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public double getLimit() { return limit; }
+    public double getSpent() { return spent; }
+    public LocalDateTime getStartDate() { return startDate; }
+    public LocalDateTime getEndDate() { return endDate; }
+    public Category getCategory() { return category; }
+    public List<IObserver> getObservers() { return observers; }
+    public List<Transaction> getTransactions() { return transactions; }
 }

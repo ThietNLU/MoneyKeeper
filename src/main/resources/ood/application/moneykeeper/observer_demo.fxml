@@ -5,6 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="ood.application.moneykeeper.controller.ObserverTestController">
@@ -26,12 +28,14 @@
             <!-- Control Panel -->
             <VBox spacing="15" prefWidth="350" style="-fx-background-color: #f5f5f5; -fx-background-radius: 5; -fx-padding: 15;">
                 <Label text="Control Panel" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-                
-                <!-- Transaction Section -->
+                  <!-- Transaction Section -->
                 <TitledPane text="Add Transaction (Test Wallet Observer)" expanded="true">
                     <VBox spacing="10">
                         <Label text="Select Wallet:"/>
                         <ComboBox fx:id="walletComboBox" prefWidth="300"/>
+                        
+                        <Label text="Select Category:"/>
+                        <ComboBox fx:id="categoryComboBox" prefWidth="300"/>
                         
                         <Label text="Amount (VND):"/>
                         <TextField fx:id="transactionAmountField" promptText="Enter amount (e.g., 50000)"/>
@@ -39,8 +43,86 @@
                         <Label text="Description:"/>
                         <TextField fx:id="transactionDescriptionField" promptText="Enter description"/>
                         
-                        <Button fx:id="addTransactionButton" text="Add Transaction" 
+                        <Label text="Transaction Date:"/>
+                        <DatePicker fx:id="transactionDatePicker" prefWidth="300"/>
+                        
+                        <Label text="Transaction Type:"/>
+                        <HBox spacing="10">
+                            <RadioButton fx:id="incomeRadioButton" text="Income" selected="false"/>
+                            <RadioButton fx:id="expenseRadioButton" text="Expense" selected="true"/>
+                        </HBox>
+                        
+                        <Label text="Strategy Selection:"/>
+                        <VBox spacing="5" style="-fx-background-color: #e3f2fd; -fx-padding: 8; -fx-background-radius: 3;">
+                            <Label text="Strategy Pattern Demo:" style="-fx-font-weight: bold; -fx-font-size: 12px;"/>
+                            <CheckBox fx:id="autoStrategyCheckBox" text="Auto-select strategy based on type" selected="true"/>
+                            <ComboBox fx:id="strategyComboBox" prefWidth="280" disable="true"/>
+                        </VBox>
+                          <Button fx:id="addTransactionButton" text="Add Transaction" 
                                 style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </VBox>
+                </TitledPane>
+                
+                <!-- Advanced Transaction Details -->
+                <TitledPane text="Advanced Transaction Details" expanded="false">
+                    <VBox spacing="10">
+                        <Label text="Transaction Notes:"/>
+                        <TextArea fx:id="transactionNotesArea" prefRowCount="3" prefWidth="280" 
+                                  promptText="Additional notes or details about this transaction"/>
+                        
+                        <Label text="Tags (comma-separated):"/>
+                        <TextField fx:id="transactionTagsField" promptText="e.g., food, restaurant, lunch"/>
+                        
+                        <Label text="Priority Level:"/>
+                        <ComboBox fx:id="priorityComboBox" prefWidth="280">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Low"/>
+                                    <String fx:value="Normal"/>
+                                    <String fx:value="High"/>
+                                    <String fx:value="Critical"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        
+                        <CheckBox fx:id="recurringTransactionCheckBox" text="Recurring Transaction"/>
+                        
+                        <VBox spacing="5" fx:id="recurringDetailsBox" disable="true">
+                            <Label text="Frequency:"/>
+                            <ComboBox fx:id="frequencyComboBox" prefWidth="280">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="Daily"/>
+                                        <String fx:value="Weekly"/>
+                                        <String fx:value="Monthly"/>
+                                        <String fx:value="Yearly"/>
+                                    </FXCollections>
+                                </items>
+                            </ComboBox>
+                        </VBox>
+                    </VBox>
+                </TitledPane>
+                
+                <!-- Observer Pattern Testing -->
+                <TitledPane text="Observer Pattern Testing" expanded="false">
+                    <VBox spacing="10">
+                        <Label text="Test Different Observer Types:" style="-fx-font-weight: bold;"/>
+                        
+                        <VBox spacing="5" style="-fx-background-color: #fff3e0; -fx-padding: 8; -fx-background-radius: 3;">
+                            <CheckBox fx:id="emailNotificationCheckBox" text="Email Notifications" selected="false"/>
+                            <CheckBox fx:id="smsNotificationCheckBox" text="SMS Notifications" selected="false"/>
+                            <CheckBox fx:id="pushNotificationCheckBox" text="Push Notifications" selected="true"/>
+                            <CheckBox fx:id="logObserverCheckBox" text="Log Observer" selected="true"/>
+                        </VBox>
+                        
+                        <Label text="Notification Threshold (VND):"/>
+                        <TextField fx:id="thresholdField" promptText="e.g., 100000" text="50000"/>
+                        
+                        <Button fx:id="testObserversButton" text="Test All Observers" 
+                                style="-fx-background-color: #9C27B0; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        
+                        <Button fx:id="simulateErrorButton" text="Simulate Error Scenario" 
+                                style="-fx-background-color: #FF5722; -fx-text-fill: white; -fx-background-radius: 5;"/>
                     </VBox>
                 </TitledPane>
                 
