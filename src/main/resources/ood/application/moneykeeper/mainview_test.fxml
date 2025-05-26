@@ -149,7 +149,7 @@
 
             <!-- Add Button -->
             <HBox alignment="CENTER" style="-fx-padding: 10;">
-            <Button style="-fx-text-fill: white; -fx-background-color: #ff2147; -fx-alignment: CENTER; -fx-padding: 10 15; -fx-background-radius: 5;" text="Add ">
+            <Button fx:id="addTransactionBtn" onAction="#openTransactionWindow" style="-fx-text-fill: white; -fx-background-color: #ff2147; -fx-alignment: CENTER; -fx-padding: 10 15; -fx-background-radius: 5;" text="Add ">
                 <graphic>
                     <ImageView fx:id="addTransBtn" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                         <image>

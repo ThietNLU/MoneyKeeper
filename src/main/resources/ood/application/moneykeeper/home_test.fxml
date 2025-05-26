@@ -85,6 +85,7 @@
                                 <Label text="Không có giao dịch nào gần đây"/>
                             </placeholder>
                         </TableView>
+                        <Button fx:id="addTransactionButton" text="Thêm giao dịch" style="-fx-background-color: #43a047; -fx-text-fill: white; -fx-font-weight: bold;" onAction="#handleAddTransaction" />
                     </VBox>
                 </TitledPane>                <!-- Budget Overview Section -->
                 <TitledPane text="Tình trạng ngân sách" expanded="true">

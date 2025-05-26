@@ -138,7 +138,7 @@ public class ReportTest {
         if (isExpense) {
             transaction.setStrategy(new ExpenseTransactionStrategy());
         } else {
-            transaction.setStrategy(new IncomTransactionStrategy());
+            transaction.setStrategy(new IncomeTransactionStrategy());
         }
 
         transactionDAO.save(transaction);

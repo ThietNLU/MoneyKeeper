@@ -76,7 +76,7 @@ public class User {
         if (category.isExpense()) {
             re.setStrategy(new ExpenseTransactionStrategy());
         } else {
-            re.setStrategy(new IncomTransactionStrategy());
+            re.setStrategy(new IncomeTransactionStrategy());
         }
         re.processWallet();
         re.processBudget(budgets);

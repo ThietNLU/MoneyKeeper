@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane xmlns:fx="http://javafx.com/fxml" fx:controller="ood.application.moneykeeper.controller.AddTransactionController">
+    <content>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <Label text="Thêm giao dịch mới" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <GridPane hgap="10" vgap="10">
+                <Label text="Số tiền:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="amountField" promptText="Nhập số tiền" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label text="Ví:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="walletComboBox" prefWidth="180" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label text="Hạng mục:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="categoryComboBox" prefWidth="180" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <Label text="Ngày:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <DatePicker fx:id="datePicker" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <Label text="Mô tả:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <TextField fx:id="descriptionField" promptText="Nhập mô tả" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            </GridPane>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="saveButton" text="Lưu" />
+                <Button fx:id="cancelButton" text="Hủy" />
+            </HBox>
+            <Label fx:id="errorLabel" textFill="red" />
+        </VBox>
+    </content>
+</DialogPane>
+

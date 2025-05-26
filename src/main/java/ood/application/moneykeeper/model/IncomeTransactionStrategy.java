@@ -1,6 +1,6 @@
 package ood.application.moneykeeper.model;
 
-public class IncomTransactionStrategy implements ITransactionStrategy {
+public class IncomeTransactionStrategy implements ITransactionStrategy {
     @Override
     public void processWallet(Wallet wallet, double amount) {
         wallet.setBalance(wallet.getBalance() + amount);

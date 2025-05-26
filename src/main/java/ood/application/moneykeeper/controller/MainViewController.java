@@ -8,6 +8,9 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -61,28 +64,36 @@ public class MainViewController {
     @FXML
     private void openTransactionWindow() {
         try {
-            // Tải FXML cho cửa sổ thêm giao dịch
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ood/application/moneykeeper/add_trans.fxml"));
-            BorderPane root = loader.load();
+            // Sử dụng DialogPane thay vì Stage riêng biệt
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ood/application/moneykeeper/add_transaction.fxml"));
+            DialogPane dialogPane = loader.load();
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setDialogPane(dialogPane);
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setTitle("Thêm giao dịch mới");
+            dialog.showAndWait();
 
-            // Tạo một Stage mới (cửa sổ popup)
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Thêm Giao Dịch");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(mainPane.getScene().getWindow());
-
-            // Thiết lập cửa sổ
-            Scene scene = new Scene(root);
-            dialogStage.setScene(scene);
-
-            // Hiển thị cửa sổ
-            dialogStage.showAndWait();
+            // Nếu đang ở Home hoặc Transaction view, làm mới dữ liệu
+            if (mainPane.getCenter() != null && mainPane.getCenter().getId() != null) {
+                String currentView = mainPane.getCenter().getId();
+                if (currentView.contains("home") || currentView.contains("transaction")) {
+                    try {
+                        // Làm mới view hiện tại
+                        if (currentView.contains("home")) {
+                            loadHome();
+                        } else if (currentView.contains("transaction")) {
+                            loadTransaction();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         } catch (IOException e) {
-            // Hiển thị thông báo lỗi nếu không thể mở cửa sổ
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Lỗi");
-            alert.setHeaderText("Không thể mở cửa s�� thêm giao dịch");
-            alert.setContentText(e.getMessage());
+            alert.setHeaderText(null);
+            alert.setContentText("Không thể mở cửa sổ thêm giao dịch: " + e.getMessage());
             alert.showAndWait();
         }
     }

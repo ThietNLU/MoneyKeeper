@@ -278,7 +278,7 @@ public class TransactionDAO implements DAO<Transaction, String> {
         if (isExpense) {
             transaction.setStrategy(new ExpenseTransactionStrategy());
         } else {
-            transaction.setStrategy(new IncomTransactionStrategy());
+            transaction.setStrategy(new IncomeTransactionStrategy());
         }
 
         return transaction;

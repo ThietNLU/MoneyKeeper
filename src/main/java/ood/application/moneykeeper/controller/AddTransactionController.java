@@ -1,0 +1,148 @@
+package ood.application.moneykeeper.controller;
+
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import ood.application.moneykeeper.dao.CategoryDAO;
+import ood.application.moneykeeper.dao.TransactionDAO;
+import ood.application.moneykeeper.dao.UserDAO;
+import ood.application.moneykeeper.dao.WalletDAO;
+import ood.application.moneykeeper.model.Category;
+import ood.application.moneykeeper.model.IncomeTransactionStrategy;
+import ood.application.moneykeeper.model.Transaction;
+import ood.application.moneykeeper.model.User;
+import ood.application.moneykeeper.model.Wallet;
+
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
+
+public class AddTransactionController {
+    @FXML
+    private TextField amountField;
+    @FXML
+    private ComboBox<Wallet> walletComboBox;
+    @FXML
+    private ComboBox<Category> categoryComboBox;
+    @FXML
+    private DatePicker datePicker;
+    @FXML
+    private TextField descriptionField;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button cancelButton;
+    @FXML
+    private Label errorLabel;
+
+    private final WalletDAO walletDAO;
+    private final CategoryDAO categoryDAO;
+    private final TransactionDAO transactionDAO;
+    private final UserDAO userDAO = new UserDAO();
+    private User defaultUser;
+
+    public AddTransactionController() throws SQLException {
+        this.walletDAO = new WalletDAO();
+        this.categoryDAO = new CategoryDAO();
+        this.transactionDAO = new TransactionDAO();
+    }
+
+    @FXML
+    public void initialize() {
+        try {
+            defaultUser = getOrCreateDefaultUser();
+            // Load wallets and categories
+            List<Wallet> wallets = walletDAO.getAll();
+            List<Category> categories = categoryDAO.getAll();
+
+            // Set up wallet ComboBox
+            walletComboBox.setItems(FXCollections.observableArrayList(wallets));
+            walletComboBox.setConverter(new StringConverter<Wallet>() {
+                @Override
+                public String toString(Wallet wallet) {
+                    return wallet != null ? wallet.getName() : null;
+                }
+
+                @Override
+                public Wallet fromString(String string) {
+                    return null; // Not needed for ComboBox
+                }
+            });
+
+            // Set up category ComboBox
+            categoryComboBox.setItems(FXCollections.observableArrayList(categories));
+            categoryComboBox.setConverter(new StringConverter<Category>() {
+                @Override
+                public String toString(Category category) {
+                    return category != null ? category.getName() + " (" + (category.isExpense() ? "Chi tiêu" : "Thu nhập") + ")" : null;
+                }
+
+                @Override
+                public Category fromString(String string) {
+                    return null; // Not needed for ComboBox
+                }
+            });
+
+            // Set default date to today
+            datePicker.setValue(java.time.LocalDate.now());
+
+            // Add event handlers
+            saveButton.setOnAction(e -> handleSave());
+            cancelButton.setOnAction(e -> ((Stage) cancelButton.getScene().getWindow()).close());
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Print detailed error for debugging
+            errorLabel.setText("Không thể tải dữ liệu ví/hạng mục: " + e.getMessage());
+        }
+    }
+
+    private User getOrCreateDefaultUser() throws SQLException {
+        // Lấy tên user từ giao diện nếu có (ví dụ từ Settings hoặc MainView)
+        String userName = "Default User";
+        // Nếu có logic đồng bộ tên user với label trong mainview, lấy tên từ đó
+        // Ví dụ: userName = MainViewController.getCurrentUserName();
+        User user = userDAO.get("1");
+        if (user != null) {
+            // Nếu tên user đã thay đổi ở nơi khác, cập nhật lại tên cho đồng bộ
+            if (!user.getName().equals(userName)) {
+                user.setName(userName);
+                userDAO.update(user);
+            }
+            return user;
+        }
+        user = new User("1", userName);
+        userDAO.save(user);
+        return user;
+    }
+
+    private void handleSave() {
+        try {
+            Wallet wallet = walletComboBox.getValue();
+            Category category = categoryComboBox.getValue();
+            double amount = Double.parseDouble(amountField.getText().trim());
+            String desc = descriptionField.getText().trim();
+            LocalDate date = datePicker.getValue();
+            Transaction transaction = new Transaction(wallet, amount, category, desc);
+            transaction.setDateTime(date.atStartOfDay());
+            if (category.isExpense()) {
+                transaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
+            } else {
+                transaction.setStrategy(new IncomeTransactionStrategy());
+            }
+            // Gán user mặc định nếu Transaction có setUser
+            try {
+                java.lang.reflect.Method setUser = transaction.getClass().getMethod("setUser", User.class);
+                setUser.invoke(transaction, defaultUser);
+            } catch (Exception ignore) {}
+            if (transactionDAO.save(transaction)) {
+                ((Stage) saveButton.getScene().getWindow()).close();
+            } else {
+                errorLabel.setText("Lưu giao dịch thất bại!");
+            }
+        } catch (Exception ex) {
+            errorLabel.setText("Lỗi: " + ex.getMessage());
+        }
+    }
+}

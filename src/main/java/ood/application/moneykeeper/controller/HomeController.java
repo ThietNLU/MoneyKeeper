@@ -4,6 +4,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -12,6 +13,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import ood.application.moneykeeper.dao.BudgetDAO;
 import ood.application.moneykeeper.dao.TransactionDAO;
@@ -23,6 +25,7 @@ import ood.application.moneykeeper.model.Wallet;
 import ood.application.moneykeeper.model.Category;
 import ood.application.moneykeeper.model.ExpenseTransactionStrategy;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -303,8 +306,8 @@ public class HomeController implements Initializable {
                 });
             }
 
-            // Setup button actions
-            if (addTransactionButton != null) {
+            // Setup button actions (chỉ gán cho demo, không gán nếu đã có onAction trong FXML)
+            if (addTransactionButton != null && addTransactionButton.getOnAction() == null) {
                 addTransactionButton.setOnAction(e -> handleAddTestTransaction());
             }
 
@@ -330,6 +333,10 @@ public class HomeController implements Initializable {
 
     @FXML
     private void handleAddTestTransaction() {
+        if (walletComboBox == null || categoryComboBox == null || transactionAmountField == null || transactionDescriptionField == null) {
+            // Không thực hiện gì nếu các trường FXML không tồn tại (chỉ dùng cho demo UI)
+            return;
+        }
         try {
             Wallet selectedWallet = walletComboBox.getValue();
             String amountText = transactionAmountField.getText();
@@ -348,30 +355,19 @@ public class HomeController implements Initializable {
                 return;
             }
 
-            // Create a test transaction using correct constructor
             Transaction testTransaction = new Transaction(selectedWallet, amount, selectedCategory, description);
-            testTransaction.setDateTime(LocalDateTime.now());
-
-            // Use expense strategy for demo
-            testTransaction.setStrategy(new ExpenseTransactionStrategy());
-
-            // Save transaction
+            testTransaction.setDateTime(java.time.LocalDateTime.now());
+            testTransaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
             transactionDAO.save(testTransaction);
-
-            // Clear fields
             transactionAmountField.clear();
             transactionDescriptionField.clear();
-
-            // Refresh data to show changes
             refreshData();
-
-            if (enableAlertsCheckBox.isSelected()) {
+            if (enableAlertsCheckBox != null && enableAlertsCheckBox.isSelected()) {
                 showAlert("Giao dịch đã được thêm thành công!");
             }
-
         } catch (NumberFormatException e) {
             showAlert("Số tiền không hợp lệ");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             showError("Lỗi thêm giao dịch: " + e.getMessage());
         }
     }
@@ -420,6 +416,33 @@ public class HomeController implements Initializable {
         // Xóa thông báo (triển khai đơn giản)
         notificationHistory.clear();
         showAlert("Đã xóa tất cả thông báo");
+    }
+
+    @FXML
+    private void handleAddTransaction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ood/application/moneykeeper/add_transaction.fxml"));
+            DialogPane dialogPane = loader.load();
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setDialogPane(dialogPane);
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setTitle("Thêm giao dịch mới");
+
+            // Hiển thị dialog và đợi kết quả
+            dialog.showAndWait();
+
+            // Làm mới danh sách giao dịch sau khi đóng dialog
+            try {
+                loadRecentTransactions();
+                updateLastUpdateTime();
+                statusLabel.setText("Đã làm mới dữ liệu");
+            } catch (SQLException e) {
+                showError("Lỗi khi làm mới dữ liệu: " + e.getMessage());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Không thể mở form thêm giao dịch: " + e.getMessage());
+        }
     }
 
     private void showAlert(String message) {

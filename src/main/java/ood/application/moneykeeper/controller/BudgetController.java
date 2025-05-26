@@ -74,13 +74,19 @@ public class BudgetController implements Initializable {
     private CategoryDAO categoryDAO;
     private ObservableList<Budget> budgets;
     private Budget selectedBudget;
+    private static final String DEFAULT_USER_ID = "1";
+    private static final String DEFAULT_USER_NAME = "Default User";
+    private ood.application.moneykeeper.dao.UserDAO userDAO;
+    private ood.application.moneykeeper.model.User defaultUser;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             budgetDAO = new BudgetDAO();
             categoryDAO = new CategoryDAO();
-            
+            userDAO = new ood.application.moneykeeper.dao.UserDAO();
+            defaultUser = getOrCreateDefaultUser();
+
             // Initialize period options
             periodComboBox.setItems(FXCollections.observableArrayList(
                 "Tháng này", "Quý này", "Năm này", "Tùy chỉnh"
@@ -172,6 +178,14 @@ public class BudgetController implements Initializable {
         }
     }
 
+    private ood.application.moneykeeper.model.User getOrCreateDefaultUser() throws SQLException {
+        ood.application.moneykeeper.model.User user = userDAO.get(DEFAULT_USER_ID);
+        if (user != null) return user;
+        user = new ood.application.moneykeeper.model.User(DEFAULT_USER_ID, DEFAULT_USER_NAME);
+        userDAO.save(user);
+        return user;
+    }
+
     private void loadCategories() throws SQLException {
         List<Category> categories = categoryDAO.getAll();
         categoryComboBox.setItems(FXCollections.observableArrayList(categories));
@@ -231,7 +245,11 @@ public class BudgetController implements Initializable {
                     endDate,
                     categoryComboBox.getValue()
                 );
-                
+                // Gán user mặc định nếu Budget có thuộc tính user
+                try {
+                    java.lang.reflect.Method setUser = budget.getClass().getMethod("setUser", ood.application.moneykeeper.model.User.class);
+                    setUser.invoke(budget, defaultUser);
+                } catch (Exception ignore) {}
                 if (budgetDAO.save(budget)) {
                     showSuccess("Thêm ngân sách thành công");
                 } else {

@@ -334,20 +334,17 @@ public class WalletController implements Initializable {
     }
 
     /**
-     * Get the default user or create one if it doesn't exist
+     * Get the default user with id "1" or create one if it doesn't exist
      */
     private User getOrCreateDefaultUser() throws SQLException {
-        List<User> users = userDAO.getAll();
-        
-        // If there are existing users, return the first one
-        if (!users.isEmpty()) {
-            return users.get(0);
+        User user = userDAO.get("1");
+        if (user != null) {
+            return user;
         }
-        
-        // Otherwise, create a default user
-        User defaultUser = new User("Default User");
-        userDAO.save(defaultUser);
-        return defaultUser;
+        // Otherwise, create a default user with id "1"
+        user = new User("1", "Default User");
+        userDAO.save(user);
+        return user;
     }
 }
 

@@ -11,11 +11,7 @@ import ood.application.moneykeeper.dao.BudgetDAO;
 import ood.application.moneykeeper.dao.CategoryDAO;
 import ood.application.moneykeeper.dao.TransactionDAO;
 import ood.application.moneykeeper.dao.WalletDAO;
-import ood.application.moneykeeper.model.Budget;
-import ood.application.moneykeeper.model.BudgetManager;
-import ood.application.moneykeeper.model.Category;
-import ood.application.moneykeeper.model.Transaction;
-import ood.application.moneykeeper.model.Wallet;
+import ood.application.moneykeeper.model.*;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -194,7 +190,7 @@ public class TransactionController implements Initializable {
                 if (selectedCategory.isExpense()) {
                     newTransaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
                 } else {
-                    newTransaction.setStrategy(new ood.application.moneykeeper.model.IncomTransactionStrategy());
+                    newTransaction.setStrategy(new IncomeTransactionStrategy());
                 }
                   // Set date time
                 newTransaction.setDateTime(transactionDate.getValue().atStartOfDay());
@@ -253,7 +249,7 @@ public class TransactionController implements Initializable {
                 if (selectedCategory.isExpense()) {
                     selectedTransaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
                 } else {
-                    selectedTransaction.setStrategy(new ood.application.moneykeeper.model.IncomTransactionStrategy());
+                    selectedTransaction.setStrategy(new IncomeTransactionStrategy());
                 }
                 
                 transactionDAO.update(selectedTransaction);
