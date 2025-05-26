@@ -18,6 +18,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -59,13 +60,22 @@ public class TransactionTestController implements Initializable {
     @FXML
     private TableColumn<Transaction, Boolean> typeColumn;
     @FXML
-    private ComboBox<?> filterComboBox;
+    private ComboBox<String> filterComboBox;
     @FXML
     private TextField searchField;
     @FXML
     private Button searchButton;
     @FXML
     private Label errorLabel;
+
+    @FXML
+    private Label totalExpenseLabel;
+    @FXML
+    private Label totalIncomeLabel;
+
+    @FXML
+    private Button updateButton;
+
 
     private TransactionDAO transactionDAO;
     private CategoryDAO categoryDAO;
@@ -78,6 +88,16 @@ public class TransactionTestController implements Initializable {
             transactionDAO = new TransactionDAO();
             categoryDAO = new CategoryDAO();
             walletDAO = new WalletDAO();
+
+            // Initialize filter button
+            filterComboBox.setItems(FXCollections.observableArrayList("Tất cả", "Chi tiêu", "Thu nhập"));
+            filterComboBox.getSelectionModel().selectFirst(); // Mặc định chọn "Tất cả"
+
+            filterComboBox.setOnAction(event -> applyFilter());
+
+            // Initialize search button
+            searchButton.setOnAction(event -> searchTransactionByKeyword());
+
 
             // Change from 'date' to 'dateTime' to match the property name in Transaction class
             dateColumn.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
@@ -139,7 +159,7 @@ public class TransactionTestController implements Initializable {
                     });
 
             saveButton.setOnAction(event -> addTransaction());
-            clearButton.setOnAction(event -> updateTransaction());
+
 
             transactionDate.setValue(LocalDate.now());
             expenseRadio.setSelected(true);
@@ -147,6 +167,81 @@ public class TransactionTestController implements Initializable {
             showError("Lỗi khi khởi tạo: " + e.getMessage());
         }
     }
+
+    private void applyFilter() {
+        String selectedFilter = (String) filterComboBox.getValue();
+        try {
+            List<Transaction> allTransactions = transactionDAO.getAll();
+            List<Transaction> filtered = new ArrayList<Transaction>();
+            String keyword = searchField.getText().toLowerCase().trim();
+
+
+            for (int i = 0; i < allTransactions.size(); i++) {
+                Transaction t = allTransactions.get(i);
+                if ("Chi tiêu".equals(selectedFilter)) {
+                    if (t.isExpense()) {
+                        filtered.add(t);
+                    }
+                } else if ("Thu nhập".equals(selectedFilter)) {
+                    if (!t.isExpense()) {
+                        filtered.add(t);
+                    }
+                } else {
+                    // "Tất cả"
+                    filtered.add(t);
+                }
+            }
+
+            transactions = FXCollections.observableArrayList(filtered);
+            transactionTable.setItems(transactions);
+            updateTotalLabels(filtered);
+        } catch (SQLException e) {
+            showError("Lỗi khi lọc giao dịch: " + e.getMessage());
+        }
+    }
+
+    private void searchTransactionByKeyword() {
+        String keyword = searchField.getText().toLowerCase().trim();
+
+        if (keyword.isEmpty()) {
+            applyFilter(); // Nếu không nhập gì, áp dụng bộ lọc chung
+            return;
+        }
+
+        try {
+            List<Transaction> allTransactions = transactionDAO.getAll();
+            List<Transaction> filtered = new ArrayList<>();
+
+            for (Transaction t : allTransactions) {
+                if (t.getDescription() != null && t.getDescription().toLowerCase().contains(keyword)) {
+                    filtered.add(t);
+                }
+            }
+
+            transactions = FXCollections.observableArrayList(filtered);
+            transactionTable.setItems(transactions);
+            updateTotalLabels(filtered);
+        } catch (SQLException e) {
+            showError("Lỗi khi tìm kiếm: " + e.getMessage());
+        }
+    }
+
+    private void updateTotalLabels(List<Transaction> transactions) {
+        double totalExpense = 0;
+        double totalIncome = 0;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.isExpense()) {
+                totalExpense += transaction.getAmount();
+            } else {
+                totalIncome += transaction.getAmount();
+            }
+        }
+
+        totalExpenseLabel.setText(String.format("%.0f VNĐ", totalExpense));
+        totalIncomeLabel.setText(String.format("%.0f VNĐ", totalIncome));
+    }
+
 
     private void loadTransactions() throws SQLException {
         List<Transaction> transactionList = transactionDAO.getAll();
@@ -211,9 +306,16 @@ public class TransactionTestController implements Initializable {
         }
     }
 
+    private void reloadTransactions() throws SQLException {
+        List<Transaction> updatedList = transactionDAO.getAll();
+        transactions.setAll(updatedList); // Giữ nguyên ObservableList, chỉ thay nội dung
+    }
+
+
     private void updateTransaction() {
         Transaction selectedTransaction = transactionTable.getSelectionModel().getSelectedItem();
         if (selectedTransaction == null) {
+
             showError("Vui lòng chọn giao dịch để cập nhật!");
             return;
         }

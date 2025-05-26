@@ -11,16 +11,18 @@ import ood.application.moneykeeper.dao.BudgetDAO;
 import ood.application.moneykeeper.dao.CategoryDAO;
 import ood.application.moneykeeper.model.Budget;
 import ood.application.moneykeeper.model.Category;
+import ood.application.moneykeeper.model.Transaction;
 
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class BudgetController implements Initializable {
-    
+
     // Form controls
     @FXML
     private TextField budgetNameField;
@@ -80,27 +82,29 @@ public class BudgetController implements Initializable {
         try {
             budgetDAO = new BudgetDAO();
             categoryDAO = new CategoryDAO();
-            
+
             // Initialize period options
             periodComboBox.setItems(FXCollections.observableArrayList(
-                "Tháng này", "Quý này", "Năm này", "Tùy chỉnh"
+                    "Tháng này", "Quý này", "Năm này", "Tùy chỉnh"
             ));
             periodComboBox.getSelectionModel().selectFirst();
 
             // Initialize filter options
             filterComboBox.setItems(FXCollections.observableArrayList(
-                "Tất cả", "Hoạt động", "Vượt ngân sách", "Sắp hết hạn"
+                    "Tất cả", "Bình thường", "Vượt ngân sách", "Sắp hết hạn"
             ));
             filterComboBox.getSelectionModel().selectFirst();
+            filterComboBox.setOnAction(event -> filterBudgets());
+
 
             // Set up table columns
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-            categoryColumn.setCellValueFactory(cellData -> 
-                new ReadOnlyStringWrapper(cellData.getValue().getCategory().getName()));            limitColumn.setCellValueFactory(new PropertyValueFactory<>("limit"));
+            categoryColumn.setCellValueFactory(cellData ->
+                    new ReadOnlyStringWrapper(cellData.getValue().getCategory().getName()));            limitColumn.setCellValueFactory(new PropertyValueFactory<>("limit"));
             usedColumn.setCellValueFactory(new PropertyValueFactory<>("spent"));
-            remainingColumn.setCellValueFactory(cellData -> 
-                new javafx.beans.property.SimpleDoubleProperty(
-                    cellData.getValue().getLimit() - cellData.getValue().getSpent()).asObject());
+            remainingColumn.setCellValueFactory(cellData ->
+                    new javafx.beans.property.SimpleDoubleProperty(
+                            cellData.getValue().getLimit() - cellData.getValue().getSpent()).asObject());
             statusColumn.setCellValueFactory(cellData -> {
                 Budget budget = cellData.getValue();
                 double percentage = budget.getSpent() / budget.getLimit() * 100;
@@ -150,17 +154,17 @@ public class BudgetController implements Initializable {
 
             // Enable/disable buttons based on selection
             budgetTable.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldSelection, newSelection) -> {
-                    boolean isSelected = (newSelection != null);
-                    editButton.setDisable(!isSelected);
-                    deleteButton.setDisable(!isSelected);
-                    selectedBudget = newSelection;
-                    
-                    // Fill form with selected budget data
-                    if (newSelection != null) {
-                        fillFormWithBudget(newSelection);
+                    (obs, oldSelection, newSelection) -> {
+                        boolean isSelected = (newSelection != null);
+                        editButton.setDisable(!isSelected);
+                        deleteButton.setDisable(!isSelected);
+                        selectedBudget = newSelection;
+
+                        // Fill form with selected budget data
+                        if (newSelection != null) {
+                            fillFormWithBudget(newSelection);
+                        }
                     }
-                }
             );
 
             // Load initial data
@@ -171,6 +175,7 @@ public class BudgetController implements Initializable {
             showError("Lỗi khởi tạo: " + e.getMessage());
         }
     }
+
 
     private void loadCategories() throws SQLException {
         List<Category> categories = categoryDAO.getAll();
@@ -185,12 +190,12 @@ public class BudgetController implements Initializable {
                 showError("Vui lòng nhập tên ngân sách");
                 return;
             }
-            
+
             if (categoryComboBox.getValue() == null) {
                 showError("Vui lòng chọn hạng mục");
                 return;
             }
-            
+
             double limit;
             try {
                 limit = Double.parseDouble(limitField.getText().replace(",", ""));
@@ -216,7 +221,7 @@ public class BudgetController implements Initializable {
                 budget.setLimit(limit);
                 budget.setStartDate(startDate);
                 budget.setEndDate(endDate);
-                
+
                 if (budgetDAO.update(budget)) {
                     showSuccess("Cập nhật ngân sách thành công");
                 } else {
@@ -225,13 +230,13 @@ public class BudgetController implements Initializable {
             } else {
                 // Create new budget
                 budget = new Budget(
-                    budgetNameField.getText().trim(),
-                    limit,
-                    startDate,
-                    endDate,
-                    categoryComboBox.getValue()
+                        budgetNameField.getText().trim(),
+                        limit,
+                        startDate,
+                        endDate,
+                        categoryComboBox.getValue()
                 );
-                
+
                 if (budgetDAO.save(budget)) {
                     showSuccess("Thêm ngân sách thành công");
                 } else {
@@ -295,43 +300,62 @@ public class BudgetController implements Initializable {
         }
     }
 
+    private void filterBudgets() {
+        String filter = filterComboBox.getValue();
+
+        if (budgets == null) return;
+
+        ObservableList<Budget> filtered = FXCollections.observableArrayList();
+
+        for (Budget budget : budgets) {
+            boolean matchesFilter = true;
+            double percentage = budget.getSpent() / budget.getLimit() * 100;
+
+            switch (filter) {
+                case "Bình thường":
+                    matchesFilter = percentage < 80;
+                    break;
+                case "Vượt ngân sách":
+                    matchesFilter = percentage >= 100;
+                    break;
+                case "Sắp hết hạn":
+                    matchesFilter = percentage >= 80 && percentage < 100;
+                    break;
+                case "Tất cả":
+                default:
+                    matchesFilter = true;
+                    break;
+            }
+
+            if (matchesFilter) {
+                filtered.add(budget);
+            }
+        }
+
+        budgetTable.setItems(filtered);
+    }
+
     @FXML
     private void searchBudgets() {
-        String searchText = searchField.getText().toLowerCase();
-        String filter = filterComboBox.getValue();
-        
-        if (budgets != null) {
-            ObservableList<Budget> filteredBudgets = FXCollections.observableArrayList();
-            
-            for (Budget budget : budgets) {
-                boolean matchesSearch = searchText.isEmpty() || 
-                    budget.getName().toLowerCase().contains(searchText) ||
-                    budget.getCategory().getName().toLowerCase().contains(searchText);
-                
-                boolean matchesFilter = true;
-                if (!filter.equals("Tất cả")) {
-                    double percentage = budget.getSpent() / budget.getLimit() * 100;
-                    switch (filter) {
-                        case "Hoạt động":
-                            matchesFilter = percentage < 100;
-                            break;
-                        case "Vượt ngân sách":
-                            matchesFilter = percentage >= 100;
-                            break;
-                        case "Sắp hết hạn":
-                            matchesFilter = percentage >= 80 && percentage < 100;
-                            break;
-                    }
-                }
-                
-                if (matchesSearch && matchesFilter) {
-                    filteredBudgets.add(budget);
-                }
+        String searchText = searchField.getText().toLowerCase().trim();
+
+        if (budgets == null) return;
+
+        ObservableList<Budget> filtered = FXCollections.observableArrayList();
+
+        for (Budget budget : budgets) {
+            boolean matchesSearch = searchText.isEmpty()
+                    || budget.getName().toLowerCase().contains(searchText)
+                    || budget.getCategory().getName().toLowerCase().contains(searchText);
+
+            if (matchesSearch) {
+                filtered.add(budget);
             }
-            
-            budgetTable.setItems(filteredBudgets);
         }
+
+        budgetTable.setItems(filtered);
     }
+
 
     @FXML
     private void refreshData() {
@@ -359,8 +383,8 @@ public class BudgetController implements Initializable {
                 int currentQuarter = (startDate.getMonthValue() - 1) / 3;
                 int lastMonthOfQuarter = (currentQuarter + 1) * 3;
                 return startDate.withMonth(lastMonthOfQuarter)
-                    .with(TemporalAdjusters.lastDayOfMonth())
-                    .withHour(23).withMinute(59).withSecond(59);
+                        .with(TemporalAdjusters.lastDayOfMonth())
+                        .withHour(23).withMinute(59).withSecond(59);
             case "Năm này":
                 return startDate.with(TemporalAdjusters.lastDayOfYear()).withHour(23).withMinute(59).withSecond(59);
             default:
