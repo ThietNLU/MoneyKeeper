@@ -23,7 +23,6 @@ import ood.application.moneykeeper.model.Budget;
 import ood.application.moneykeeper.model.Transaction;
 import ood.application.moneykeeper.model.Wallet;
 import ood.application.moneykeeper.model.Category;
-import ood.application.moneykeeper.model.ExpenseTransactionStrategy;
 
 import java.io.IOException;
 import java.net.URL;
@@ -81,11 +80,10 @@ public class HomeController implements Initializable {
     @FXML
     private TableColumn<Budget, String> budgetLimitColumn;
     @FXML
-    private TableColumn<Budget, String> budgetSpentColumn;
-    @FXML
+    private TableColumn<Budget, String> budgetSpentColumn;    @FXML
     private TableColumn<Budget, String> budgetStatusColumn;
 
-    // Observer Demo Section
+    // Demo Section
     @FXML
     private ListView<String> notificationListView;
     @FXML
@@ -143,9 +141,7 @@ public class HomeController implements Initializable {
             // Setup tables
             setupRecentTransactionsTable();
             setupOverLimitBudgetsTable();
-            setupBudgetChart();
-
-            // Setup observer demo
+            setupBudgetChart();            // Setup demo UI
             setupDemoUI();
 
             // Load initial data
@@ -209,10 +205,10 @@ public class HomeController implements Initializable {
 
     private void setupOverLimitBudgetsTable() {
         // Setup columns
-        budgetNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-        budgetCategoryColumn.setCellValueFactory(data ->
-            new ReadOnlyStringWrapper(data.getValue().getCategory().getName()));
+        budgetNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));        budgetCategoryColumn.setCellValueFactory(data -> {
+            Category category = data.getValue().getCategory();
+            return new ReadOnlyStringWrapper(category != null ? category.getName() : "N/A");
+        });
 
         budgetLimitColumn.setCellValueFactory(data ->
             new ReadOnlyStringWrapper(formatMoney(data.getValue().getLimit())));
@@ -251,12 +247,9 @@ public class HomeController implements Initializable {
 
     private void setupDemoUI() {
         try {
-            // Setup notification list
             if (notificationListView != null) {
                 notificationListView.setItems(notificationHistory);
-            }
-
-            // Load wallets and budgets for combo boxes
+            }            // Load wallets and budgets for combo boxes
             if (walletComboBox != null) {
                 List<Wallet> wallets = walletDAO.getAll();
                 walletComboBox.setItems(FXCollections.observableArrayList(wallets));
@@ -428,7 +421,7 @@ public class HomeController implements Initializable {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setTitle("Thêm giao dịch mới");
 
-            // Hiển thị dialog và đợi kết quả
+            // Hi��n thị dialog và đợi kết quả
             dialog.showAndWait();
 
             // Làm mới danh sách giao dịch sau khi đóng dialog
@@ -543,9 +536,11 @@ public class HomeController implements Initializable {
         limitSeries.setName("Giới hạn");
 
         XYChart.Series<String, Number> spentSeries = new XYChart.Series<>();
-        spentSeries.setName("Đã chi");
-
-        for (Budget budget : activeBudgets) {
+        spentSeries.setName("Đã chi");        for (Budget budget : activeBudgets) {
+            // Skip budgets with null categories to prevent NullPointerException
+            if (budget.getCategory() == null) {
+                continue;
+            }
             String categoryName = budget.getCategory().getName();
             limitSeries.getData().add(new XYChart.Data<>(categoryName, budget.getLimit()));
             spentSeries.getData().add(new XYChart.Data<>(categoryName, budget.getSpent()));

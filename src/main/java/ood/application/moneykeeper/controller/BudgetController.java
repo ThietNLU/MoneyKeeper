@@ -14,8 +14,8 @@ import ood.application.moneykeeper.model.Category;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -25,11 +25,12 @@ public class BudgetController implements Initializable {
     @FXML
     private TextField budgetNameField;
     @FXML
-    private ComboBox<Category> categoryComboBox;
-    @FXML
+    private ComboBox<Category> categoryComboBox;    @FXML
     private TextField limitField;
     @FXML
-    private ComboBox<String> periodComboBox;
+    private DatePicker startDatePicker;
+    @FXML
+    private DatePicker endDatePicker;
     @FXML
     private TextArea descriptionField;
     @FXML
@@ -45,9 +46,7 @@ public class BudgetController implements Initializable {
     @FXML
     private TextField searchField;
     @FXML
-    private Button searchButton;
-
-    // Table controls
+    private Button searchButton;    // Table controls
     @FXML
     private TableView<Budget> budgetTable;
     @FXML
@@ -60,6 +59,10 @@ public class BudgetController implements Initializable {
     private TableColumn<Budget, Double> usedColumn;
     @FXML
     private TableColumn<Budget, Double> remainingColumn;
+    @FXML
+    private TableColumn<Budget, String> startDateColumn;
+    @FXML
+    private TableColumn<Budget, String> endDateColumn;
     @FXML
     private TableColumn<Budget, String> statusColumn;
 
@@ -83,15 +86,12 @@ public class BudgetController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             budgetDAO = new BudgetDAO();
-            categoryDAO = new CategoryDAO();
-            userDAO = new ood.application.moneykeeper.dao.UserDAO();
+            categoryDAO = new CategoryDAO();            userDAO = new ood.application.moneykeeper.dao.UserDAO();
             defaultUser = getOrCreateDefaultUser();
 
-            // Initialize period options
-            periodComboBox.setItems(FXCollections.observableArrayList(
-                "Tháng này", "Quý này", "Năm này", "Tùy chỉnh"
-            ));
-            periodComboBox.getSelectionModel().selectFirst();
+            // Initialize date pickers with current date
+            startDatePicker.setValue(LocalDate.now());
+            endDatePicker.setValue(LocalDate.now().plusMonths(1));
 
             // Initialize filter options
             filterComboBox.setItems(FXCollections.observableArrayList(
@@ -100,13 +100,23 @@ public class BudgetController implements Initializable {
             filterComboBox.getSelectionModel().selectFirst();
 
             // Set up table columns
-            nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-            categoryColumn.setCellValueFactory(cellData -> 
-                new ReadOnlyStringWrapper(cellData.getValue().getCategory().getName()));            limitColumn.setCellValueFactory(new PropertyValueFactory<>("limit"));
-            usedColumn.setCellValueFactory(new PropertyValueFactory<>("spent"));
-            remainingColumn.setCellValueFactory(cellData -> 
+            nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));            categoryColumn.setCellValueFactory(cellData -> {
+                Category category = cellData.getValue().getCategory();
+                return new ReadOnlyStringWrapper(category != null ? category.getName() : "N/A");
+            });limitColumn.setCellValueFactory(new PropertyValueFactory<>("limit"));
+            usedColumn.setCellValueFactory(new PropertyValueFactory<>("spent"));            remainingColumn.setCellValueFactory(cellData -> 
                 new javafx.beans.property.SimpleDoubleProperty(
                     cellData.getValue().getLimit() - cellData.getValue().getSpent()).asObject());
+            startDateColumn.setCellValueFactory(cellData -> {
+                Budget budget = cellData.getValue();
+                return new ReadOnlyStringWrapper(budget.getStartDate() != null ? 
+                    budget.getStartDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A");
+            });
+            endDateColumn.setCellValueFactory(cellData -> {
+                Budget budget = cellData.getValue();
+                return new ReadOnlyStringWrapper(budget.getEndDate() != null ? 
+                    budget.getEndDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A");
+            });
             statusColumn.setCellValueFactory(cellData -> {
                 Budget budget = cellData.getValue();
                 double percentage = budget.getSpent() / budget.getLimit() * 100;
@@ -199,9 +209,23 @@ public class BudgetController implements Initializable {
                 showError("Vui lòng nhập tên ngân sách");
                 return;
             }
-            
-            if (categoryComboBox.getValue() == null) {
+              if (categoryComboBox.getValue() == null) {
                 showError("Vui lòng chọn hạng mục");
+                return;
+            }
+            
+            if (startDatePicker.getValue() == null) {
+                showError("Vui lòng chọn ngày bắt đầu");
+                return;
+            }
+            
+            if (endDatePicker.getValue() == null) {
+                showError("Vui lòng chọn ngày kết thúc");
+                return;
+            }
+            
+            if (endDatePicker.getValue().isBefore(startDatePicker.getValue())) {
+                showError("Ngày kết thúc phải sau ngày bắt đầu");
                 return;
             }
             
@@ -214,12 +238,11 @@ public class BudgetController implements Initializable {
                 }
             } catch (NumberFormatException e) {
                 showError("Giới hạn không hợp lệ");
-                return;
-            }
+                return;            }
 
-            // Calculate start and end dates based on period
-            LocalDateTime startDate = LocalDateTime.now();
-            LocalDateTime endDate = calculateEndDate(startDate, periodComboBox.getValue());
+            // Convert LocalDate to LocalDateTime
+            LocalDateTime startDate = startDatePicker.getValue().atStartOfDay();
+            LocalDateTime endDate = endDatePicker.getValue().atTime(23, 59, 59);
 
             Budget budget;
             if (selectedBudget != null) {
@@ -263,14 +286,13 @@ public class BudgetController implements Initializable {
         } catch (SQLException e) {
             showError("Lỗi cơ sở dữ liệu: " + e.getMessage());
         }
-    }
-
-    @FXML
+    }    @FXML
     private void clearForm() {
         budgetNameField.clear();
         categoryComboBox.setValue(null);
         limitField.clear();
-        periodComboBox.getSelectionModel().selectFirst();
+        startDatePicker.setValue(LocalDate.now());
+        endDatePicker.setValue(LocalDate.now().plusMonths(1));
         descriptionField.clear();
         selectedBudget = null;
         budgetTable.getSelectionModel().clearSelection();
@@ -320,11 +342,10 @@ public class BudgetController implements Initializable {
         
         if (budgets != null) {
             ObservableList<Budget> filteredBudgets = FXCollections.observableArrayList();
-            
-            for (Budget budget : budgets) {
+              for (Budget budget : budgets) {
                 boolean matchesSearch = searchText.isEmpty() || 
                     budget.getName().toLowerCase().contains(searchText) ||
-                    budget.getCategory().getName().toLowerCase().contains(searchText);
+                    (budget.getCategory() != null && budget.getCategory().getName().toLowerCase().contains(searchText));
                 
                 boolean matchesFilter = true;
                 if (!filter.equals("Tất cả")) {
@@ -360,30 +381,19 @@ public class BudgetController implements Initializable {
         } catch (SQLException e) {
             showError("Lỗi tải dữ liệu: " + e.getMessage());
         }
-    }
-
-    private void fillFormWithBudget(Budget budget) {
+    }    private void fillFormWithBudget(Budget budget) {
         budgetNameField.setText(budget.getName());
         categoryComboBox.setValue(budget.getCategory());
         limitField.setText(String.format("%.0f", budget.getLimit()));
-        // Note: description field is not part of Budget model
-    }
-
-    private LocalDateTime calculateEndDate(LocalDateTime startDate, String period) {
-        switch (period) {
-            case "Tháng này":
-                return startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
-            case "Quý này":
-                int currentQuarter = (startDate.getMonthValue() - 1) / 3;
-                int lastMonthOfQuarter = (currentQuarter + 1) * 3;
-                return startDate.withMonth(lastMonthOfQuarter)
-                    .with(TemporalAdjusters.lastDayOfMonth())
-                    .withHour(23).withMinute(59).withSecond(59);
-            case "Năm này":
-                return startDate.with(TemporalAdjusters.lastDayOfYear()).withHour(23).withMinute(59).withSecond(59);
-            default:
-                return startDate.plusMonths(1);
+        
+        // Set date pickers if budget has dates
+        if (budget.getStartDate() != null) {
+            startDatePicker.setValue(budget.getStartDate().toLocalDate());        }
+        if (budget.getEndDate() != null) {
+            endDatePicker.setValue(budget.getEndDate().toLocalDate());
         }
+        
+        // Note: description field is not part of Budget model
     }
 
     private void showError(String message) {

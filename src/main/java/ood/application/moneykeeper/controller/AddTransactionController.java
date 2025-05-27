@@ -17,17 +17,21 @@ import ood.application.moneykeeper.model.Wallet;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class AddTransactionController {
     @FXML
     private TextField amountField;
     @FXML
-    private ComboBox<Wallet> walletComboBox;
-    @FXML
+    private ComboBox<Wallet> walletComboBox;    @FXML
     private ComboBox<Category> categoryComboBox;
     @FXML
     private DatePicker datePicker;
+    @FXML
+    private Spinner<Integer> hourSpinner;
+    @FXML
+    private Spinner<Integer> minuteSpinner;
     @FXML
     private TextField descriptionField;
     @FXML
@@ -83,10 +87,15 @@ public class AddTransactionController {
                 public Category fromString(String string) {
                     return null; // Not needed for ComboBox
                 }
-            });
-
-            // Set default date to today
+            });            // Set default date to today
             datePicker.setValue(java.time.LocalDate.now());
+
+            // Set up time spinners
+            hourSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, LocalDateTime.now().getHour()));
+            hourSpinner.setEditable(true);
+            
+            minuteSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, LocalDateTime.now().getMinute()));
+            minuteSpinner.setEditable(true);
 
             // Add event handlers
             saveButton.setOnAction(e -> handleSave());
@@ -115,17 +124,19 @@ public class AddTransactionController {
         user = new User("1", userName);
         userDAO.save(user);
         return user;
-    }
-
-    private void handleSave() {
+    }    private void handleSave() {
         try {
             Wallet wallet = walletComboBox.getValue();
             Category category = categoryComboBox.getValue();
             double amount = Double.parseDouble(amountField.getText().trim());
             String desc = descriptionField.getText().trim();
             LocalDate date = datePicker.getValue();
+            int hour = hourSpinner.getValue();
+            int minute = minuteSpinner.getValue();
+            
             Transaction transaction = new Transaction(wallet, amount, category, desc);
-            transaction.setDateTime(date.atStartOfDay());
+            transaction.setDateTime(date.atTime(hour, minute));
+            
             if (category.isExpense()) {
                 transaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
             } else {

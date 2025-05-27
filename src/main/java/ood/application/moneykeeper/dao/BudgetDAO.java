@@ -201,4 +201,13 @@ public class BudgetDAO implements DAO<Budget, String> {
             stmt.executeUpdate();
         }
     }
+
+    public void clearBudgetTransactionsByTransactionId(String transactionId) throws SQLException {
+        String sql = "DELETE FROM Budget_Transaction WHERE transaction_id = ?";
+        try (Connection con = db.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, transactionId);
+            stmt.executeUpdate();
+        }
+    }
 }

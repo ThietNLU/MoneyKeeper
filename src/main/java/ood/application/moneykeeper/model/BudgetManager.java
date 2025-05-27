@@ -15,20 +15,15 @@ public class BudgetManager {
 
     public BudgetManager(List<Budget> budgets) {
         this.budgets = budgets;
-    }
-
-    public void addBudget(Budget budget) {
+    }    public void addBudget(Budget budget) {
         this.budgets.add(budget);
-        // Đã xóa đoạn code tự động thiết lập observers
     }
 
     public void removeBudget(String id) {
         Iterator<Budget> iterator = this.budgets.iterator();
-        while (iterator.hasNext()) {
-            Budget budget = iterator.next();
+        while (iterator.hasNext()) {            Budget budget = iterator.next();
             if (budget.getId().equals(id)) {
                 iterator.remove();
-                // Đã xóa đoạn code thông báo qua Observer
             }
         }
     }

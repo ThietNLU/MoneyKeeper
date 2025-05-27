@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import ood.application.moneykeeper.dao.TransactionDAO;
 import ood.application.moneykeeper.dao.WalletDAO;
 import ood.application.moneykeeper.dao.UserDAO;
+import ood.application.moneykeeper.model.Category;
 import ood.application.moneykeeper.model.Transaction;
 import ood.application.moneykeeper.model.Wallet;
 import ood.application.moneykeeper.model.User;
@@ -103,11 +104,12 @@ public class WalletController implements Initializable {
         transactionTableView.setItems(FXCollections.observableArrayList());
         expenseChartContainer.setCenter(null);
         incomeExpenseContainer.setCenter(null);
-    }
-
-    private void setupTransactionTable() {
+    }    private void setupTransactionTable() {
         dateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDateTime().format(dateFormatter)));
-        categoryColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCategory().getName()));
+        categoryColumn.setCellValueFactory(cellData -> {
+            Category category = cellData.getValue().getCategory();
+            return new SimpleStringProperty(category != null ? category.getName() : "N/A");
+        });
         descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
         amountColumn.setCellValueFactory(cellData -> {
             double amount = cellData.getValue().getAmount();

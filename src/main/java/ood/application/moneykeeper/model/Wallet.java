@@ -81,14 +81,7 @@ public class Wallet {
     public boolean isLowBalance() {
         return this.balance < 1000.0; // Default threshold
     }
-    
-    /**
-     * Check if previous balance was low
-     */
-    private boolean wasLowBalance(double previousBalance) {
-        return previousBalance < 1000.0; // Default threshold
-    }
-    
+
     /**
      * Update wallet balance directly
      */
@@ -104,7 +97,7 @@ public class Wallet {
         Iterator<Transaction> iterator = this.transactions.iterator();
         while (iterator.hasNext()) {
             Transaction trans = iterator.next();
-            if(trans.getTId().equals(id)) {
+            if (trans.getTId().equals(id)) {
                 iterator.remove();
                 return true;
             }
@@ -112,32 +105,66 @@ public class Wallet {
         return false;
     }
 
-    public String getInfo(){
+    public String getInfo() {
         return this.id + "\t" + this.name + "\t" + this.balance;
     }
 
-    public String getInfoAllTrans(){
+    public String getInfoAllTrans() {
         return this.transactions.stream().map(t -> t.toString()).collect(Collectors.joining("\n"));
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Id: " + id + "\nName: " + name + "\nBalance: " + balance;
     }
 
     // Explicit getter methods to fix Lombok compilation issues
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public double getBalance() { return balance; }
-    public List<Transaction> getTransactions() { return transactions; }
-    public User getOwner() { return owner; }
-    public java.time.LocalDateTime getCreationDate() { return creationDate; }
-    
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public java.time.LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
     // Explicit setter methods to fix Lombok compilation issues
-    public void setId(String id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
-    public void setBalance(double balance) { this.balance = balance; }
-    public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }
-    public void setOwner(User owner) { this.owner = owner; }
-    public void setCreationDate(java.time.LocalDateTime creationDate) { this.creationDate = creationDate; }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public void setCreationDate(java.time.LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
 }

@@ -15,9 +15,7 @@ public class Budget {
     private double limit;
     private double spent;
     private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private Category category;
-    // Đã xóa danh sách observers
+    private LocalDateTime endDate;    private Category category;
     private List<Transaction> transactions = new ArrayList<>();
 
     public Budget(String name, double limit, LocalDateTime startDate, LocalDateTime endDate, Category category) {
@@ -37,11 +35,8 @@ public class Budget {
         this.spent = spent;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.category = category;
-        this.transactions = new ArrayList<>();
+        this.category = category;        this.transactions = new ArrayList<>();
     }
-
-    // Các phương thức của Observer pattern đã được xóa
 
     public boolean isOverLimit() {
         return this.spent > this.limit;
@@ -49,11 +44,9 @@ public class Budget {
 
     public boolean isNearLimit() {
         return this.spent >= (this.limit * 0.8) && this.spent <= this.limit;
-    }
-
-    public String getInfo() {
+    }    public String getInfo() {
         return this.name + "\n" + this.limit + "\n" + this.spent + "\n" + this.startDate
-                + "\n" + this.endDate + "\n" + this.category.getName();
+                + "\n" + this.endDate + "\n" + (this.category != null ? this.category.getName() : "N/A");
     }
 
     public void addTransaction(Transaction trans) {
@@ -66,11 +59,8 @@ public class Budget {
 
     public void processTrans(Transaction trans) {
         spent += trans.getAmount();
-    }
-
-    /**
+    }    /**
      * Kiểm tra giới hạn ngân sách
-     * Đã xóa code thông báo cho observers
      */
     private void checkBudgetLimits() {
         // Chỉ giữ lại logic kiểm tra
@@ -78,7 +68,6 @@ public class Budget {
 
     /**
      * Cập nhật số tiền đã chi của ngân sách
-     * Đã xóa code thông báo cho observers
      */
     public void updateSpent(double newSpent) {
         this.spent = newSpent;
@@ -90,11 +79,9 @@ public class Budget {
             return DateTimeUtils.formatDefault(startDate) + " - " + DateTimeUtils.formatDefault(endDate);
         }
         return "";
-    }
-
-    public String toString() {
+    }    public String toString() {
         return "Id: " + id + "\nName: " + name + "\nLimit: " + limit + "\nSpent: "
                 + spent + "\nStart: " + DateTimeUtils.formatDefault(startDate) + "\nEnd: "
-                + DateTimeUtils.formatDefault(endDate) + "\nCategory: " + category.getName();
+                + DateTimeUtils.formatDefault(endDate) + "\nCategory: " + (category != null ? category.getName() : "N/A");
     }
 }

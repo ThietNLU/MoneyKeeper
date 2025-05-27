@@ -13,10 +13,9 @@ public class CategoryReport extends Report {
     @Override
     protected ReportData processData(List<Transaction> transactions) throws SQLException {
         Map<String, Double> categoryExpenses = new HashMap<>();
-        Map<String, Double> categoryIncome = new HashMap<>();
-
-        for (Transaction transaction : transactions) {
-            String categoryName = transaction.getCategory().getName();
+        Map<String, Double> categoryIncome = new HashMap<>();        for (Transaction transaction : transactions) {
+            String categoryName = transaction.getCategory() != null ? 
+                transaction.getCategory().getName() : "N/A";
             double amount = transaction.getAmount();
 
             if (transaction.isExpense()) {

@@ -137,49 +137,48 @@ public class DBTest {
                     + " (" + (retrievedEntertainmentBudget.getSpent() / retrievedEntertainmentBudget.getLimit() * 100) + "%)");
 
             // Check for over limit budgets
-            List<Budget> allBudgets = budgetDAO.getAll();
-            System.out.println("\nChecking for over-limit budgets:");
+            List<Budget> allBudgets = budgetDAO.getAll();            System.out.println("\nChecking for over-limit budgets:");
             for (Budget budget : allBudgets) {
                 if (budget.isOverLimit()) {
                     System.out.println("ALERT: " + budget.getName() + " is over limit!");
                 }
             }
 
-            System.out.println("\n=== OBSERVER PATTERN DEMO ===");
-            System.out.println("Setting up observers for budget and wallet...");
+            System.out.println("\n=== TRANSACTION TEST ===");
+            System.out.println("Adding a test transaction...");
 
-            // Add another transaction that would push the budget over limit
+            // Add another transaction 
             Transaction overLimitTrans = new Transaction(testWallet, 800.0, foodCategory, "Expensive dinner");
             overLimitTrans.setDateTime(now.plusDays(5));
             overLimitTrans.setStrategy(new ExpenseTransactionStrategy());
 
-            System.out.println("\nAdding transaction that will trigger budget over-limit...");
+            System.out.println("\nAdding transaction...");
             transactionDAO.save(overLimitTrans);
             
-            // Process transaction (this will trigger observers)
-            testWallet.addTransaction(overLimitTrans);  // This will notify wallet observers
+            // Process transaction
+            testWallet.addTransaction(overLimitTrans);
             walletDAO.update(testWallet);
 
-            retrievedFoodBudget.addTransaction(overLimitTrans);  // This will notify budget observers
+            retrievedFoodBudget.addTransaction(overLimitTrans);
             budgetDAO.update(retrievedFoodBudget);
 
-            // Test different notification types
-            System.out.println("\n=== Testing different notification types ===");
+            // Test different updates
+            System.out.println("\n=== Testing different update types ===");
             
             // Test wallet balance update
-            System.out.println("Testing wallet balance update notification...");
+            System.out.println("Testing wallet balance update...");
             testWallet.updateBalance(testWallet.getBalance() - 100);
             
             // Test budget spending update
-            System.out.println("Testing budget update notification...");
+            System.out.println("Testing budget update...");
             retrievedFoodBudget.updateSpent(retrievedFoodBudget.getSpent() + 50);
             
-            // Test low balance notification
-            System.out.println("Testing low balance notification...");
-            testWallet.updateBalance(500.0);  // Set to low balance
+            // Test balance check
+            System.out.println("Testing balance check...");
+            testWallet.updateBalance(500.0);  // Set to lower balance
 
             System.out.println("\nFinal wallet balance: " + testWallet.getBalance());
-            System.out.println("=== OBSERVER PATTERN DEMO COMPLETE ===");
+            System.out.println("=== TEST COMPLETE ===");
 
         } catch (SQLException e) {
             System.err.println("Database error: " + e.getMessage());

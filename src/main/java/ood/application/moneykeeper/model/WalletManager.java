@@ -15,20 +15,15 @@ public class WalletManager {
 
     public WalletManager(List<Wallet> wallets) {
         this.wallets = wallets;
-    }
-
-    public void addWallet(Wallet wallet) {
+    }    public void addWallet(Wallet wallet) {
         this.wallets.add(wallet);
-        // Đã xóa đoạn code tự động thiết lập observers
     }
 
     public boolean removeWallet(String id) {
         Iterator<Wallet> iterator = this.wallets.iterator();
         while (iterator.hasNext()) {
-            Wallet wallet = iterator.next();
-            if (wallet.getId().equals(id)) {
+            Wallet wallet = iterator.next();            if (wallet.getId().equals(id)) {
                 iterator.remove();
-                // Đã xóa đoạn code thông báo qua Observer
                 return true;
             }
         }

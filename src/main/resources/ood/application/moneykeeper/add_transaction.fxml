@@ -15,11 +15,16 @@
                 <Label text="Ví:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                 <ComboBox fx:id="walletComboBox" prefWidth="180" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
                 <Label text="Hạng mục:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <ComboBox fx:id="categoryComboBox" prefWidth="180" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                <Label text="Ngày:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="categoryComboBox" prefWidth="180" GridPane.rowIndex="2" GridPane.columnIndex="1"/>                <Label text="Ngày:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
                 <DatePicker fx:id="datePicker" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-                <Label text="Mô tả:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <TextField fx:id="descriptionField" promptText="Nhập mô tả" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <Label text="Thời gian:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <HBox spacing="5" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                    <Spinner fx:id="hourSpinner" prefWidth="60" />
+                    <Label text=":" style="-fx-alignment: center;"/>
+                    <Spinner fx:id="minuteSpinner" prefWidth="60" />
+                </HBox>
+                <Label text="Mô tả:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <TextField fx:id="descriptionField" promptText="Nhập mô tả" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
             </GridPane>
             <HBox spacing="10" alignment="CENTER_RIGHT">
                 <Button fx:id="saveButton" text="Lưu" />

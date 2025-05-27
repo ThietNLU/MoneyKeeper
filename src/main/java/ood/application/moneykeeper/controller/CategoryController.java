@@ -85,6 +85,10 @@ public class CategoryController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        // Setup ComboBox options
+        typeComboBox.getItems().addAll("Chi tiêu", "Thu nhập");
+        
         nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         typeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().isExpense() ? "Chi tiêu" : "Thu nhập"));
         categoryTableView.setItems(categories);
@@ -98,10 +102,9 @@ public class CategoryController implements Initializable {
             if (selected) {
                 fillForm(newVal);
             }
-        });
-        saveCategoryButton.setOnAction(e -> saveCategory());
+        });        saveCategoryButton.setOnAction(e -> saveCategory());
         clearFormButton.setOnAction(e -> clearForm());
-        addCategoryButton.setOnAction(e -> clearForm());
+        addCategoryButton.setOnAction(e -> initializeAddCategory());
         editCategoryButton.setOnAction(e -> {
             Category selected = categoryTableView.getSelectionModel().getSelectedItem();
             if (selected != null) fillForm(selected);
@@ -126,14 +129,7 @@ public class CategoryController implements Initializable {
         budgetNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         budgetLimitColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getLimit())));
         budgetPeriodColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPeriod()));
-        budgetSpentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getSpent())));
-        budgetTableView.setItems(budgets);
-
-        // Demo data
-        categories.addAll(
-                new Category("Ăn uống", true),
-                new Category("Lương", false)
-        );
+        budgetSpentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getSpent())));        budgetTableView.setItems(budgets);
     }
 
     private void showCategoryDetails(Category category) {
@@ -156,58 +152,106 @@ public class CategoryController implements Initializable {
             transactions.clear();
             budgets.clear();
         }
-    }
-
-    private void fillForm(Category category) {
+    }    private void fillForm(Category category) {
         editingCategory = category;
         nameField.setText(category.getName());
         typeComboBox.setValue(category.isExpense() ? "Chi tiêu" : "Thu nhập");
-    }
-
-    private void clearForm() {
+        
+        // Update button text for editing mode
+        saveCategoryButton.setText("Cập nhật danh mục");
+    }private void clearForm() {
         editingCategory = null;
         nameField.clear();
         typeComboBox.getSelectionModel().clearSelection();
         categoryTableView.getSelectionModel().clearSelection();
-    }
-
-    private void saveCategory() {
+        
+        // Update button text based on mode
+        saveCategoryButton.setText("Thêm danh mục");
+    }private void saveCategory() {
         String name = nameField.getText().trim();
         String type = typeComboBox.getValue();
-        if (name.isEmpty() || type == null) return;
+        
+        // Validation
+        if (name.isEmpty()) {
+            showAlert("Lỗi", "Vui lòng nhập tên danh mục");
+            nameField.requestFocus();
+            return;
+        }
+        if (type == null) {
+            showAlert("Lỗi", "Vui lòng chọn loại danh mục");
+            typeComboBox.requestFocus();
+            return;
+        }
+        
         boolean isExpense = "Chi tiêu".equals(type);
         try {
             if (editingCategory == null) {
+                // Adding new category
                 Category newCat = new Category(name, isExpense);
                 if (categoryDAO.save(newCat)) {
                     categories.add(newCat);
                     clearForm();
+                    showAlert("Thành công", "Đã thêm danh mục mới thành công!");
+                } else {
+                    showAlert("Lỗi", "Không thể thêm danh mục mới");
                 }
             } else {
+                // Editing existing category
                 editingCategory.setName(name);
                 editingCategory.setExpense(isExpense);
                 if (categoryDAO.update(editingCategory)) {
                     categoryTableView.refresh();
                     clearForm();
+                    showAlert("Thành công", "Đã cập nhật danh mục thành công!");
+                } else {
+                    showAlert("Lỗi", "Không thể cập nhật danh mục");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-
+            showAlert("Lỗi", "Đã xảy ra lỗi: " + e.getMessage());
         }
     }
 
-    private void deleteCategory() {
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }    private void deleteCategory() {
         Category selected = categoryTableView.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-        try {
-            if (categoryDAO.delete(selected)) {
-                categories.remove(selected);
-                clearForm();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (selected == null) {
+            showAlert("Lỗi", "Vui lòng chọn danh mục để xóa");
+            return;
         }
+        
+        // Confirmation dialog
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Xác nhận xóa");
+        confirmAlert.setHeaderText("Xóa danh mục");
+        confirmAlert.setContentText("Bạn có chắc chắn muốn xóa danh mục '" + selected.getName() + "'?");
+        
+        if (confirmAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            try {
+                if (categoryDAO.delete(selected)) {
+                    categories.remove(selected);
+                    clearForm();
+                    showAlert("Thành công", "Đã xóa danh mục thành công!");
+                } else {
+                    showAlert("Lỗi", "Không thể xóa danh mục");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Lỗi", "Đã xảy ra lỗi khi xóa: " + e.getMessage());
+            }
+        }
+    }
+
+    private void initializeAddCategory() {
+        clearForm();
+        // Focus on name field for new category
+        nameField.requestFocus();
     }
 }
 
