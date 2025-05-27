@@ -292,24 +292,25 @@ public class TransactionController implements Initializable {
                     
                     // THÊM: Thông báo wallet balance được cập nhật
                     ObserverManager.getInstance().notifyWalletBalanceUpdated(chosenWallet);
-                    
-                    // Process budget for expense transactions
+                      // Process budget for expense transactions
                     if (selectedCategory.isExpense()) {
-                        // Get all budgets for this category
-                        List<Budget> budgets = budgetDAO.getAll();
+                        // Get budgets for this specific category
+                        List<Budget> budgets = budgetDAO.getBudgetsByCategory(selectedCategory.getId());
+                        
                         for (Budget budget : budgets) {
-                            if (budget.getCategory().getId().equals(selectedCategory.getId())) {
-                                // Check if transaction is within budget period
-                                LocalDateTime transactionDateTime = newTransaction.getDateTime();
-                                if (transactionDateTime.isAfter(budget.getStartDate()) && 
-                                    transactionDateTime.isBefore(budget.getEndDate())) {
-                                    
-                                    // THÊM: Đăng ký observers cho budget trước khi thêm transaction
-                                    ObserverManager.getInstance().registerBudgetObservers(budget);
-                                    
-                                    budget.addTransaction(newTransaction);
-                                    budgetDAO.update(budget);
-                                }
+                            // Check if transaction is within budget period
+                            LocalDateTime transactionDateTime = newTransaction.getDateTime();
+                            if (transactionDateTime.isAfter(budget.getStartDate().minusDays(1)) && 
+                                transactionDateTime.isBefore(budget.getEndDate().plusDays(1))) {
+                                
+                                // THÊM: Đăng ký observers cho budget trước khi thêm transaction
+                                ObserverManager.getInstance().registerBudgetObservers(budget);
+                                
+                                budget.addTransaction(newTransaction);
+                                budgetDAO.update(budget);
+                                
+                                System.out.println("Added transaction to budget: " + budget.getName() + 
+                                                 " | Spent: " + budget.getSpent() + "/" + budget.getLimit());
                             }
                         }
                     }
@@ -354,25 +355,26 @@ public class TransactionController implements Initializable {
                 
                 // THÊM: Thông báo wallet balance được cập nhật
                 ObserverManager.getInstance().notifyWalletBalanceUpdated(wallet);
-                
-                // Process budget removal for expense transactions
+                  // Process budget removal for expense transactions
                 if (selectedTransaction.getCategory().isExpense()) {
-                    // Get all budgets for this category
-                    List<Budget> budgets = budgetDAO.getAll();
+                    // Get budgets for this specific category
+                    List<Budget> budgets = budgetDAO.getBudgetsByCategory(selectedTransaction.getCategory().getId());
+                    
                     for (Budget budget : budgets) {
-                        if (budget.getCategory().getId().equals(selectedTransaction.getCategory().getId())) {
-                            // Check if transaction was within budget period
-                            LocalDateTime transactionDateTime = selectedTransaction.getDateTime();
-                            if (transactionDateTime.isAfter(budget.getStartDate()) && 
-                                transactionDateTime.isBefore(budget.getEndDate())) {
-                                
-                                // THÊM: Đăng ký observers cho budget trước khi xóa transaction
-                                ObserverManager.getInstance().registerBudgetObservers(budget);
-                                
-                                // Remove transaction from budget and update spent amount
-                                budget.removeTransaction(selectedTransaction);
-                                budgetDAO.update(budget);
-                            }
+                        // Check if transaction was within budget period
+                        LocalDateTime transactionDateTime = selectedTransaction.getDateTime();
+                        if (transactionDateTime.isAfter(budget.getStartDate().minusDays(1)) && 
+                            transactionDateTime.isBefore(budget.getEndDate().plusDays(1))) {
+                            
+                            // THÊM: Đăng ký observers cho budget trước khi xóa transaction
+                            ObserverManager.getInstance().registerBudgetObservers(budget);
+                            
+                            // Remove transaction from budget and update spent amount
+                            budget.removeTransaction(selectedTransaction);
+                            budgetDAO.update(budget);
+                            
+                            System.out.println("Removed transaction from budget: " + budget.getName() + 
+                                             " | Spent: " + budget.getSpent() + "/" + budget.getLimit());
                         }
                     }
                 }

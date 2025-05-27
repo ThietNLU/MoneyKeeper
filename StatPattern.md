@@ -618,3 +618,161 @@ Với kiến trúc pattern này, project có thể dễ dàng mở rộng:
 - Thêm UI components mới (MVC + Observer)
 
 Project MoneyKeeper là một **excellent example** của việc áp dụng design patterns trong Java desktop application, tạo ra một hệ thống vừa mạnh mẽ vừa linh hoạt.
+
+Tôi sẽ phân tích các đối tượng chính của dự án MoneyKeeper bằng cách khám phá cấu trúc code và các model classes. Bây giờ tôi sẽ khám phá cấu trúc model để xác định các đối tượng chính: Dựa trên việc phân tích cấu trúc code và các file model, đây là **các đối tượng chính của dự án MoneyKeeper**:
+
+## 🎯 **CÁC ĐỐI TƯỢNG CHÍNH (CORE ENTITIES)**
+
+### 1. **👤 User (Người dùng)**
+```java
+public class User {
+    private String id;
+    private String name;
+    private WalletManager wallets;
+    private BudgetManager budgets;
+}
+```
+- **Vai trò**: Đối tượng trung tâm đại diện cho người sử dụng ứng dụng
+- **Chức năng**: Quản lý tất cả ví và ngân sách của một người dùng
+- **Quan hệ**: Sở hữu nhiều Wallet và Budget thông qua Manager classes
+
+### 2. **💰 Wallet (Ví tiền)**
+```java
+public class Wallet extends AbstractSubject {
+    private String id;
+    private String name;
+    private double balance;
+    private List<Transaction> transactions;
+    private User owner;
+    private LocalDateTime creationDate;
+}
+```
+- **Vai trò**: Lưu trữ tiền và quản lý giao dịch
+- **Chức năng**: Theo dõi số dư, chứa danh sách giao dịch
+- **Observer Pattern**: Thông báo khi số dư thay đổi
+- **Quan hệ**: Thuộc về 1 User, chứa nhiều Transaction
+
+### 3. **💸 Transaction (Giao dịch)**
+```java
+public class Transaction {
+    private String tId;
+    private Wallet wallet;
+    private ITransactionStrategy strategy;
+    private double amount;
+    private LocalDateTime dateTime;
+    private Category category;
+    private String description;
+}
+```
+- **Vai trò**: Đại diện cho một giao dịch tài chính
+- **Chức năng**: Lưu trữ thông tin chi tiết về giao dịch (thu/chi)
+- **Strategy Pattern**: Sử dụng strategy để xử lý khác nhau cho thu nhập và chi tiêu
+- **Quan hệ**: Thuộc về 1 Wallet, có 1 Category
+
+### 4. **📊 Budget (Ngân sách)**
+```java
+public class Budget extends AbstractSubject {
+    private String id;
+    private String name;
+    private double limit;
+    private double spent;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private Category category;
+    private List<Transaction> transactions;
+}
+```
+- **Vai trò**: Quản lý giới hạn chi tiêu theo category
+- **Chức năng**: Theo dõi số tiền đã chi và so sánh với giới hạn
+- **Observer Pattern**: Thông báo khi vượt giới hạn hoặc gần đạt giới hạn
+- **Quan hệ**: Liên kết với 1 Category, chứa nhiều Transaction
+
+### 5. **🏷️ Category (Danh mục)**
+```java
+public class Category {
+    private String id;
+    private String name;
+    private boolean isExpense;
+}
+```
+- **Vai trò**: Phân loại các giao dịch
+- **Chức năng**: Xác định loại giao dịch (thu nhập/chi tiêu)
+- **Quan hệ**: Được sử dụng bởi nhiều Transaction và Budget
+
+---
+
+## 🔧 **CÁC ĐỐI TƯỢNG HỖ TRỢ (SUPPORTING OBJECTS)**
+
+### 6. **📁 Manager Classes**
+- **`WalletManager`**: Quản lý tập hợp các ví của user
+- **`BudgetManager`**: Quản lý tập hợp các ngân sách của user
+
+### 7. **🎮 Strategy Objects**
+- **`ITransactionStrategy`**: Interface cho strategy pattern
+- **`IncomeTransactionStrategy`**: Xử lý giao dịch thu nhập
+- **`ExpenseTransactionStrategy`**: Xử lý giao dịch chi tiêu
+
+### 8. **🏭 Factory Objects**
+- **`ITransactionFactory`**: Interface cho factory pattern
+- **`IncomeTransactionFactory`**: Tạo giao dịch thu nhập
+- **`ExpenseTransactionFactory`**: Tạo giao dịch chi tiêu
+
+---
+
+## 🎯 **CÁC ĐỐI TƯỢNG CONTROLLER (MVC PATTERN)**
+
+### 9. **🎛️ Controller Classes**
+- **`UserController`**: Quản lý thao tác với User
+- **`WalletController`**: Quản lý thao tác với Wallet
+- **`TransactionController`**: Quản lý thao tác với Transaction
+- **`BudgetController`**: Quản lý thao tác với Budget
+- **`CategoryController`**: Quản lý thao tác với Category
+- **`HomeController`**: Controller cho trang chủ
+- **`AddTransactionController`**: Controller cho việc thêm giao dịch
+- **`ReportController`**: Controller cho báo cáo
+
+---
+
+## 💾 **CÁC ĐỐI TƯỢNG DAO (DATA ACCESS OBJECTS)**
+
+### 10. **🗄️ DAO Classes**
+- **`UserDAO`**: Truy cập dữ liệu User
+- **`WalletDAO`**: Truy cập dữ liệu Wallet
+- **`TransactionDAO`**: Truy cập dữ liệu Transaction
+- **`BudgetDAO`**: Truy cập dữ liệu Budget
+- **`CategoryDAO`**: Truy cập dữ liệu Category
+- **`DBConnection`**: Singleton quản lý kết nối database
+
+---
+
+## 🔔 **CÁC ĐỐI TƯỢNG OBSERVER PATTERN**
+
+### 11. **👁️ Observer Classes**
+- **`Observer`**: Interface observer
+- **`Subject`**: Interface subject
+- **`AbstractSubject`**: Abstract implementation của subject
+- **`NotificationObserver`**: Observer để hiển thị thông báo
+- **`UIUpdateObserver`**: Observer để cập nhật giao diện
+- **`ObserverManager`**: Singleton quản lý observers
+
+---
+
+## 📈 **QUAN HỆ GIỮA CÁC ĐỐI TƯỢNG**
+
+```
+User (1) ──────────────┐
+    │                  │
+    │ (1:n)            │ (1:n)
+    ▼                  ▼
+Wallet (n) ────────► Budget (n)
+    │                  │
+    │ (1:n)            │ (n:n)
+    ▼                  ▼
+Transaction (n) ───► Category (1)
+    │
+    │ (1:1)
+    ▼
+TransactionStrategy
+```
+
+**Đây là kiến trúc đối tượng hoàn chỉnh của MoneyKeeper**, với 5 entity chính (User, Wallet, Transaction, Budget, Category) làm nền tảng, được hỗ trợ bởi các pattern implementations và quản lý thông qua MVC architecture với Observer pattern để real-time updates.
