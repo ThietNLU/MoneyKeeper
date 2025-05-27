@@ -6,13 +6,11 @@
 ## Singleton Pattern
 ## Observer Pattern
 
-Tôi sẽ phân tích và giải thích Observer Pattern trong project MoneyKeeper này. Hãy để tôi kiểm tra các file liên quan để hiểu rõ cách triển khai. Dựa trên việc phân tích các file trong project MoneyKeeper, tôi sẽ giải thích chi tiết Observer Pattern đã được triển khai. Đây là một phân tích toàn diện:
+# 📋 Phân tích Observer Pattern trong Project MoneyKeeper
 
-## **Observer Pattern trong Project MoneyKeeper**
+## 🏗️ 1. Cấu trúc tổng thể của Observer Pattern
 
-### **1. 🏗️ Cấu trúc tổng thể của Observer Pattern**
-
-Observer Pattern trong project này được triển khai theo chuẩn Gang of Four với các thành phần chính:
+### 📐 **Các thành phần chính:**
 
 #### **🔸 Core Interfaces:**
 - **Observer.java**: Interface định nghĩa method `update(String message, Object data)`
@@ -34,97 +32,78 @@ Observer Pattern trong project này được triển khai theo chuẩn Gang of F
 
 ---
 
-### **2. 📋 Chi tiết triển khai các thành phần**
+## 🔍 2. Chi tiết implementation
 
-#### **🔹 Observer Interface**
-```java
-public interface Observer {
-    void update(String message, Object data);
-}
-```
-
-#### **🔹 Subject Interface**
-```java
-public interface Subject {
-    void addObserver(Observer observer);
-    void removeObserver(Observer observer);
-    void notifyObservers(String message, Object data);
-}
-```
-
-#### **🔹 AbstractSubject Class**
-```java
-public abstract class AbstractSubject implements Subject {
-    protected List<Observer> observers = new ArrayList<>();
-    
-    // Triển khai các method quản lý observers
-    // Đảm bảo không duplicate observers
-    // Thông báo đến tất cả observers đã đăng ký
-}
-```
-
----
-
-### **3. 🏦 Budget Observer Implementation**
-
-**Budget** làm Subject thông báo về:
-- **`BUDGET_WARNING`**: Khi chi tiêu đạt 80% giới hạn
-- **`BUDGET_EXCEEDED`**: Khi chi tiêu vượt quá 100% giới hạn
-- **`TRANSACTION_ADDED`**: Khi có giao dịch mới được thêm vào budget
+### **💼 Budget Subject Implementation**
 
 ```java
 public class Budget extends AbstractSubject {
-    private void checkLimitAndNotify() {
-        double percentage = (spent / limit) * 100;
-        
-        if (percentage >= 100) {
+    // Kiểm tra giới hạn ngân sách và thông báo
+    private void checkBudgetLimits() {
+        if (isOverLimit()) {
             notifyObservers("BUDGET_EXCEEDED", this);
-        } else if (percentage >= 80) {
+        } else if (isNearLimit()) {
             notifyObservers("BUDGET_WARNING", this);
         }
+    }
+    
+    // Được gọi khi thêm transaction hoặc cập nhật spent
+    public void addTransaction(Transaction trans) {
+        this.transactions.add(trans);
+        processTrans(trans);
+        checkBudgetLimits(); // ✅ Tự động kiểm tra và notify
     }
 }
 ```
 
----
+**Thông báo các sự kiện:**
+- **`BUDGET_WARNING`**: Khi chi tiêu đạt 80% giới hạn
+- **`BUDGET_EXCEEDED`**: Khi chi tiêu vượt quá 100% giới hạn
 
-### **4. 💰 Wallet Observer Implementation**
+### **💰 Wallet Subject Implementation**
 
-**Wallet** được mở rộng để làm Subject thông báo về:
+```java
+public class Wallet extends AbstractSubject {
+    // Kiểm tra điều kiện số dư và thông báo
+    private void checkBalanceConditions(double oldBalance) {
+        notifyObservers("WALLET_BALANCE_UPDATED", this);
+        
+        if (isCriticallyLowBalance()) {
+            notifyObservers("WALLET_CRITICALLY_LOW", this);
+        } else if (isLowBalance() && oldBalance >= 100000.0) {
+            notifyObservers("WALLET_LOW_BALANCE", this);
+        }
+        
+        if (this.balance < 0) {
+            notifyObservers("WALLET_NEGATIVE_BALANCE", this);
+        }
+    }
+    
+    // Được gọi khi thêm transaction
+    public void addTransaction(Transaction transaction) {
+        this.transactions.add(transaction);
+        double oldBalance = this.balance;
+        transaction.processWallet();
+        
+        notifyObservers("TRANSACTION_ADDED_TO_WALLET", transaction);
+        checkBalanceConditions(oldBalance); // ✅ Tự động kiểm tra và notify
+    }
+}
+```
+
+**Thông báo các sự kiện:**
 - **`WALLET_BALANCE_UPDATED`**: Khi số dư thay đổi
-- **`WALLET_LOW_BALANCE`**: Khi số dư thấp (< 10% hoặc < 100,000 VND)
+- **`WALLET_LOW_BALANCE`**: Khi số dư thấp (< 100,000 VND)
 - **`WALLET_CRITICALLY_LOW`**: Khi số dư rất thấp (< 50,000 VND)
 - **`WALLET_NEGATIVE_BALANCE`**: Khi số dư âm (thấu chi)
 - **`TRANSACTION_ADDED_TO_WALLET`**: Khi thêm giao dịch vào ví
 
-```java
-public class Wallet extends AbstractSubject {
-    public void updateBalance(double newBalance) {
-        double oldBalance = this.balance;
-        this.balance = newBalance;
-        checkBalanceConditions(oldBalance);
-    }
-    
-    private void checkBalanceConditions(double oldBalance) {
-        // Kiểm tra các điều kiện và thông báo tương ứng
-        notifyObservers("WALLET_BALANCE_UPDATED", this);
-        
-        if (balance < 0) {
-            notifyObservers("WALLET_NEGATIVE_BALANCE", this);
-        } else if (isCriticallyLowBalance()) {
-            notifyObservers("WALLET_CRITICALLY_LOW", this);
-        } else if (isLowBalance()) {
-            notifyObservers("WALLET_LOW_BALANCE", this);
-        }
-    }
-}
-```
-
 ---
 
-### **5. 🔔 NotificationObserver - Xử lý thông báo**
+## 🔔 3. Concrete Observers
 
-Hiển thị popup alerts cho người dùng:
+### **📢 NotificationObserver**
+Xử lý thông báo popup cho người dùng:
 
 ```java
 public class NotificationObserver implements Observer {
@@ -132,10 +111,13 @@ public class NotificationObserver implements Observer {
     public void update(String message, Object data) {
         switch (message) {
             case "BUDGET_EXCEEDED":
-                handleBudgetExceeded(data); // Hiển thị alert cảnh báo vượt ngân sách
+                handleBudgetExceeded(data); // Hiển thị Alert popup
+                break;
+            case "BUDGET_WARNING":
+                handleBudgetWarning(data);   // Hiển thị Alert popup
                 break;
             case "WALLET_LOW_BALANCE":
-                handleWalletLowBalance(data); // Hiển thị alert số dư thấp
+                handleWalletLowBalance(data); // Hiển thị Alert popup
                 break;
             // ... các cases khác
         }
@@ -143,11 +125,8 @@ public class NotificationObserver implements Observer {
 }
 ```
 
----
-
-### **6. 🖥️ UIUpdateObserver - Cập nhật giao diện**
-
-Cập nhật các ObservableList trong JavaFX:
+### **🖥️ UIUpdateObserver**
+Cập nhật JavaFX ObservableList và giao diện:
 
 ```java
 public class UIUpdateObserver implements Observer {
@@ -163,8 +142,8 @@ public class UIUpdateObserver implements Observer {
                     updateTransactionList(data);
                     addNotification("Đã thêm giao dịch mới");
                     break;
-                case "WALLET_LOW_BALANCE":
-                    addNotification("Cảnh báo: Ví có số dư thấp!");
+                case "BUDGET_EXCEEDED":
+                    addNotification("Cảnh báo: Ngân sách đã vượt quá giới hạn!");
                     break;
                 // ... các cases khác
             }
@@ -175,9 +154,9 @@ public class UIUpdateObserver implements Observer {
 
 ---
 
-### **7. 🎛️ ObserverManager - Quản lý tập trung**
+## 🎛️ 4. ObserverManager - Quản lý tập trung
 
-Singleton pattern để quản lý tất cả observers:
+Sử dụng Singleton pattern để quản lý tất cả observers:
 
 ```java
 public class ObserverManager {
@@ -204,45 +183,101 @@ public class ObserverManager {
             wallet.addObserver(uiUpdateObserver);
         }
     }
+    
+    // Các method notify trực tiếp
+    public void notifyTransactionAdded(Transaction transaction) {
+        if (notificationObserver != null) {
+            notificationObserver.update("TRANSACTION_ADDED", transaction);
+        }
+        if (uiUpdateObserver != null) {
+            uiUpdateObserver.update("TRANSACTION_ADDED", transaction);
+        }
+    }
 }
 ```
 
 ---
 
-### **8. 🧪 Testing và Validation**
+## 🔗 5. Tích hợp với Controllers
 
-Project có các file test để kiểm tra Observer Pattern:
+### **📊 BudgetController Integration**
+```java
+public class BudgetController {
+    private void initializeObservers() {
+        // Đăng ký observers cho tất cả budgets hiện có
+        List<Budget> allBudgets = budgetDAO.getAll();
+        for (Budget budget : allBudgets) {
+            ObserverManager.getInstance().registerBudgetObservers(budget);
+        }
+    }
+}
+```
 
-#### **🔹 SimpleObserverValidation.java**
-- Test cơ bản không cần JavaFX
-- Kiểm tra Budget và Wallet observer notifications
-- Test đăng ký/hủy đăng ký observers
-
-#### **🔹 ObserverPatternTest.java**
-- JUnit tests với JavaFX
-- Test integration với UI components
-- Kiểm tra ObserverManager functionality
+### **💸 AddTransactionController Integration**
+```java
+public class AddTransactionController {
+    private void updateBudgetsForTransaction(Transaction transaction) {
+        List<Budget> budgets = budgetDAO.getBudgetsByCategory(transaction.getCategory().getId());
+        ObserverManager observerManager = ObserverManager.getInstance();
+        
+        for (Budget budget : budgets) {
+            // Đăng ký observers cho budget
+            observerManager.registerBudgetObservers(budget);
+            
+            // Thêm transaction sẽ tự động trigger observers
+            budget.addTransaction(transaction); // ✅ Tự động notify!
+        }
+    }
+}
+```
 
 ---
 
-### **9. ✅ Ưu điểm của implementation này**
+## ✅ 6. Ưu điểm của implementation này
 
 1. **🔄 Loose Coupling**: Subjects không biết chi tiết về observers
-2. **📈 Scalability**: Dễ thêm observers mới
-3. **🎯 Single Responsibility**: Mỗi observer có nhiệm vụ riêng
+2. **📈 Scalability**: Dễ thêm observers mới mà không thay đổi subjects
+3. **🎯 Single Responsibility**: Mỗi observer có nhiệm vụ riêng biệt
 4. **🔧 Centralized Management**: ObserverManager quản lý tập trung
 5. **⚡ Real-time Updates**: Thông báo ngay lập tức khi có thay đổi
-6. **🎨 UI Integration**: Tích hợp tốt với JavaFX ObservableList
+6. **🎨 JavaFX Integration**: Tích hợp tốt với ObservableList
+7. **🛡️ Error Handling**: Có xử lý lỗi trong ObserverManager
+8. **🧪 Testable**: Có unit tests và validation
 
 ---
 
-### **10. 📝 Kết luận**
+## 🔧 7. Các tính năng đặc biệt
 
-Observer Pattern trong MoneyKeeper được triển khai rất chuyên nghiệp với:
-- **Architecture chuẩn**: Theo đúng mẫu thiết kế Gang of Four
-- **Đầy đủ tính năng**: Hỗ trợ cả Budget và Wallet notifications
-- **Tích hợp UI**: Cập nhật giao diện real-time
-- **Error handling**: Xử lý lỗi và edge cases
-- **Testing coverage**: Có đầy đủ tests validation
+### **🎚️ Threshold-based Notifications**
+- Budget: Cảnh báo ở 80% và 100% giới hạn
+- Wallet: Cảnh báo ở ngưỡng thấp (100k VND) và rất thấp (50k VND)
 
-Pattern này giúp ứng dụng MoneyKeeper có khả năng thông báo tức thời khi ngân sách vượt giới hạn hoặc ví có số dư thấp, cải thiện trải nghiệm người dùng đáng kể.
+### **📱 Platform Integration**
+- Sử dụng `Platform.runLater()` cho thread-safe UI updates
+- JavaFX Alert dialogs cho notification popups
+
+### **💾 Database Integration**  
+- Tự động cập nhật database khi có thay đổi
+- Đồng bộ observers khi load dữ liệu từ database
+
+### **🔄 Lifecycle Management**
+- Register/unregister observers khi cần thiết
+- Singleton ObserverManager đảm bảo consistency
+
+---
+
+## 🎯 8. Kết luận
+
+Observer Pattern trong MoneyKeeper được triển khai một cách **hoàn chỉnh và chuyên nghiệp**, với:
+
+- ✅ **Cấu trúc rõ ràng** với interfaces và abstract classes
+- ✅ **Tích hợp tốt** với JavaFX và database
+- ✅ **Quản lý tập trung** qua ObserverManager
+- ✅ **Real-time notifications** cho người dùng
+- ✅ **Error handling** và thread safety
+- ✅ **Unit tests** và validation
+
+Pattern này giúp ứng dụng **tự động thông báo** khi:
+- 💰 Ngân sách sắp đạt hoặc vượt giới hạn
+- 🏦 Số dư ví thấp hoặc âm
+- 📊 Có giao dịch mới được thêm vào
