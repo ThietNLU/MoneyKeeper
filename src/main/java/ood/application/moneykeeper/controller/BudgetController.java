@@ -96,7 +96,7 @@ public class BudgetController implements Initializable {
 
             // Initialize filter options
             filterComboBox.setItems(FXCollections.observableArrayList(
-                    "Tất cả", "Bình thường", "Vượt ngân sách", "Sắp hết hạn"
+                    "Tất cả", "Bình thường", "Vượt ngân sách", "Cảnh báo"
             ));
             filterComboBox.getSelectionModel().selectFirst();
             filterComboBox.setOnAction(event -> filterBudgets());
