@@ -23,6 +23,7 @@ import ood.application.moneykeeper.model.Budget;
 import ood.application.moneykeeper.model.Transaction;
 import ood.application.moneykeeper.model.Wallet;
 import ood.application.moneykeeper.model.Category;
+import ood.application.moneykeeper.observer.ObserverManager;
 
 import java.io.IOException;
 import java.net.URL;
@@ -138,17 +139,38 @@ public class HomeController implements Initializable {
             overLimitBudgets = FXCollections.observableArrayList();
             notificationHistory = FXCollections.observableArrayList();
 
+            // THÊM: Khởi tạo Observer Pattern
+            ObserverManager.getInstance().initializeObservers(
+                recentTransactions, 
+                overLimitBudgets, 
+                notificationHistory
+            );
+
             // Setup tables
             setupRecentTransactionsTable();
             setupOverLimitBudgetsTable();
-            setupBudgetChart();            // Setup demo UI
+            setupBudgetChart();
+            // Setup demo UI
             setupDemoUI();
 
             // Load initial data
             refreshData();
 
+            // THÊM: Đăng ký observers cho tất cả budgets hiện tại
+            registerObserversForExistingBudgets();
+
         } catch (SQLException e) {
             showError("Lỗi khởi tạo: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Đăng ký observers cho tất cả budgets hiện có
+     */
+    private void registerObserversForExistingBudgets() throws SQLException {
+        List<Budget> allBudgets = budgetDAO.getAll();
+        for (Budget budget : allBudgets) {
+            ObserverManager.getInstance().registerBudgetObservers(budget);
         }
     }
 

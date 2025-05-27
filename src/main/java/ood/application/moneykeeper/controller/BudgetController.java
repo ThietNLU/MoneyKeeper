@@ -11,6 +11,7 @@ import ood.application.moneykeeper.dao.BudgetDAO;
 import ood.application.moneykeeper.dao.CategoryDAO;
 import ood.application.moneykeeper.model.Budget;
 import ood.application.moneykeeper.model.Category;
+import ood.application.moneykeeper.observer.ObserverManager;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -177,11 +178,12 @@ public class BudgetController implements Initializable {
                         fillFormWithBudget(newSelection);
                     }
                 }
-            );
-
-            // Load initial data
+            );            // Load initial data
             loadCategories();
             refreshData();
+            
+            // THÊM: Khởi tạo ObserverManager và đăng ký observers cho budgets hiện có
+            initializeObservers();
 
         } catch (SQLException e) {
             showError("Lỗi khởi tạo: " + e.getMessage());
@@ -253,8 +255,9 @@ public class BudgetController implements Initializable {
                 budget.setLimit(limit);
                 budget.setStartDate(startDate);
                 budget.setEndDate(endDate);
-                
-                if (budgetDAO.update(budget)) {
+                  if (budgetDAO.update(budget)) {
+                    // THÊM: Đăng ký observers cho budget được cập nhật
+                    ObserverManager.getInstance().registerBudgetObservers(budget);
                     showSuccess("Cập nhật ngân sách thành công");
                 } else {
                     showError("Không thể cập nhật ngân sách");
@@ -272,8 +275,9 @@ public class BudgetController implements Initializable {
                 try {
                     java.lang.reflect.Method setUser = budget.getClass().getMethod("setUser", ood.application.moneykeeper.model.User.class);
                     setUser.invoke(budget, defaultUser);
-                } catch (Exception ignore) {}
-                if (budgetDAO.save(budget)) {
+                } catch (Exception ignore) {}                if (budgetDAO.save(budget)) {
+                    // THÊM: Đăng ký observers cho budget mới được tạo
+                    ObserverManager.getInstance().registerBudgetObservers(budget);
                     showSuccess("Thêm ngân sách thành công");
                 } else {
                     showError("Không thể thêm ngân sách");
@@ -317,11 +321,11 @@ public class BudgetController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Xác nhận xóa");
             alert.setHeaderText("Xóa ngân sách");
-            alert.setContentText("Bạn có chắc chắn muốn xóa ngân sách \"" + selected.getName() + "\"?");
-
-            if (alert.showAndWait().get() == ButtonType.OK) {
+            alert.setContentText("Bạn có chắc chắn muốn xóa ngân sách \"" + selected.getName() + "\"?");            if (alert.showAndWait().get() == ButtonType.OK) {
                 try {
                     if (budgetDAO.delete(selected)) {
+                        // THÊM: Hủy đăng ký observers khi xóa budget
+                        ObserverManager.getInstance().unregisterBudgetObservers(selected);
                         showSuccess("Xóa ngân sách thành công");
                         clearForm();
                         refreshData();
@@ -407,9 +411,29 @@ public class BudgetController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    private void hideError() {
+    }    private void hideError() {
         errorLabel.setVisible(false);
+    }
+    
+    /**
+     * Khởi tạo Observer pattern cho BudgetController
+     */
+    private void initializeObservers() {
+        try {
+            // Đăng ký observers cho tất cả budgets hiện có
+            registerObserversForExistingBudgets();
+        } catch (SQLException e) {
+            showError("Lỗi khởi tạo observers: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Đăng ký observers cho tất cả budgets hiện có
+     */
+    private void registerObserversForExistingBudgets() throws SQLException {
+        List<Budget> allBudgets = budgetDAO.getAll();
+        for (Budget budget : allBudgets) {
+            ObserverManager.getInstance().registerBudgetObservers(budget);
+        }
     }
 }

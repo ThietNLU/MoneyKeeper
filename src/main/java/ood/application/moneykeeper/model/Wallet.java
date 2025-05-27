@@ -4,8 +4,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import ood.application.moneykeeper.utils.UUIDUtils;
+import ood.application.moneykeeper.observer.AbstractSubject;
 
-public class Wallet {
+public class Wallet extends AbstractSubject {
     private String id;
     private String name;
     private double balance;
@@ -51,19 +52,28 @@ public class Wallet {
         this.transactions = new ArrayList<>();
         this.owner = user;
         this.creationDate = creationDate;
-    }
-
-    public void income(double amount) {
+    }    public void income(double amount) {
+        double oldBalance = this.balance;
         this.balance += amount;
+        checkBalanceConditions(oldBalance);
     }
 
     public void expense(double amount) {
+        double oldBalance = this.balance;
         this.balance -= amount;
+        checkBalanceConditions(oldBalance);
     }
 
     public void addTransaction(Transaction transaction) {
         this.transactions.add(transaction);
+        double oldBalance = this.balance;
         transaction.processWallet();
+        
+        // Thông báo transaction được thêm vào ví
+        notifyObservers("TRANSACTION_ADDED_TO_WALLET", transaction);
+        
+        // Kiểm tra số dư sau khi thêm transaction
+        checkBalanceConditions(oldBalance);
     }
 
     public String printTransactions() {
@@ -73,20 +83,51 @@ public class Wallet {
 
     public int countTransactions() {
         return this.transactions.size();
-    }
-
-    /**
-     * Check if current balance is considered low
+    }    /**
+     * Check if current balance is considered low (below 10% of initial balance or below 100,000 VND)
      */
     public boolean isLowBalance() {
-        return this.balance < 1000.0; // Default threshold
+        double lowThreshold = Math.max(100000.0, this.balance * 0.1); // Minimum 100k VND or 10% of current balance
+        return this.balance < lowThreshold;
     }
 
     /**
-     * Update wallet balance directly
+     * Check if current balance is critically low (below 50,000 VND)
+     */
+    public boolean isCriticallyLowBalance() {
+        return this.balance < 50000.0;
+    }
+
+    /**
+     * Update wallet balance directly and notify observers
      */
     public void updateBalance(double newBalance) {
+        double oldBalance = this.balance;
         this.balance = newBalance;
+        
+        // Check balance conditions and notify observers
+        checkBalanceConditions(oldBalance);
+    }
+
+    /**
+     * Kiểm tra điều kiện số dư và thông báo cho observers
+     */
+    private void checkBalanceConditions(double oldBalance) {
+        // Thông báo khi số dư thay đổi
+        notifyObservers("WALLET_BALANCE_UPDATED", this);
+        
+        // Thông báo khi số dư thấp
+        if (isCriticallyLowBalance()) {
+            notifyObservers("WALLET_CRITICALLY_LOW", this);
+        } else if (isLowBalance() && oldBalance >= 100000.0) {
+            // Chỉ thông báo khi chuyển từ số dư bình thường sang thấp
+            notifyObservers("WALLET_LOW_BALANCE", this);
+        }
+        
+        // Thông báo khi số dư âm (thấu chi)
+        if (this.balance < 0) {
+            notifyObservers("WALLET_NEGATIVE_BALANCE", this);
+        }
     }
 
     public boolean isId(String id) {

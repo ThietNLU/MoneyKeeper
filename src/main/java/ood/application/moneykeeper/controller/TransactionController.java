@@ -12,6 +12,7 @@ import ood.application.moneykeeper.dao.CategoryDAO;
 import ood.application.moneykeeper.dao.TransactionDAO;
 import ood.application.moneykeeper.dao.WalletDAO;
 import ood.application.moneykeeper.model.*;
+import ood.application.moneykeeper.observer.ObserverManager;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -232,10 +233,23 @@ public class TransactionController implements Initializable {
                     
                     // Update transaction in database
                     transactionDAO.update(selectedTransaction);
+                    
+                    // Process wallet balance update for updated transaction
+                    selectedTransaction.processWallet();
+                    
+                    // Update wallet in database
+                    walletDAO.update(chosenWallet);
+                    
+                    // THÊM: Thông báo transaction được cập nhật
+                    ObserverManager.getInstance().notifyTransactionUpdated(selectedTransaction);
+                    
                     showInfo("Giao dịch đã được cập nhật thành công!");
                 } else {
                     // Create new transaction
                     Transaction newTransaction = new Transaction(chosenWallet, amount, selectedCategory, description);
+                    
+                    // Set date and time from form inputs
+                    newTransaction.setDateTime(transactionDate.getValue().atTime(hour, minute));
                     
                     // Automatically determine strategy based on Category's isExpense property
                     if (selectedCategory.isExpense()) {
@@ -244,10 +258,7 @@ public class TransactionController implements Initializable {
                         newTransaction.setStrategy(new IncomeTransactionStrategy());
                     }
                     
-                    // Set date time with selected hour and minute
-                    newTransaction.setDateTime(transactionDate.getValue().atTime(hour, minute));
-                    
-                    // Save transaction to database first
+                    // Save transaction
                     transactionDAO.save(newTransaction);
                     
                     // Process wallet balance update
@@ -255,6 +266,9 @@ public class TransactionController implements Initializable {
                     
                     // Update wallet in database
                     walletDAO.update(chosenWallet);
+                    
+                    // THÊM: Thông báo wallet balance được cập nhật
+                    ObserverManager.getInstance().notifyWalletBalanceUpdated(chosenWallet);
                     
                     // Process budget for expense transactions
                     if (selectedCategory.isExpense()) {
@@ -266,12 +280,20 @@ public class TransactionController implements Initializable {
                                 LocalDateTime transactionDateTime = newTransaction.getDateTime();
                                 if (transactionDateTime.isAfter(budget.getStartDate()) && 
                                     transactionDateTime.isBefore(budget.getEndDate())) {
+                                    
+                                    // THÊM: Đăng ký observers cho budget trước khi thêm transaction
+                                    ObserverManager.getInstance().registerBudgetObservers(budget);
+                                    
                                     budget.addTransaction(newTransaction);
                                     budgetDAO.update(budget);
                                 }
                             }
                         }
                     }
+                    
+                    // THÊM: Thông báo transaction được thêm
+                    ObserverManager.getInstance().notifyTransactionAdded(newTransaction);
+                    
                     showInfo("Giao dịch đã được thêm thành công!");
                 }
                 
@@ -306,11 +328,40 @@ public class TransactionController implements Initializable {
                 
                 // Update wallet in database
                 walletDAO.update(wallet);
-                  // Clear any budget-transaction relationships first
+                
+                // THÊM: Thông báo wallet balance được cập nhật
+                ObserverManager.getInstance().notifyWalletBalanceUpdated(wallet);
+                
+                // Process budget removal for expense transactions
+                if (selectedTransaction.getCategory().isExpense()) {
+                    // Get all budgets for this category
+                    List<Budget> budgets = budgetDAO.getAll();
+                    for (Budget budget : budgets) {
+                        if (budget.getCategory().getId().equals(selectedTransaction.getCategory().getId())) {
+                            // Check if transaction was within budget period
+                            LocalDateTime transactionDateTime = selectedTransaction.getDateTime();
+                            if (transactionDateTime.isAfter(budget.getStartDate()) && 
+                                transactionDateTime.isBefore(budget.getEndDate())) {
+                                
+                                // THÊM: Đăng ký observers cho budget trước khi xóa transaction
+                                ObserverManager.getInstance().registerBudgetObservers(budget);
+                                
+                                // Remove transaction from budget and update spent amount
+                                budget.removeTransaction(selectedTransaction);
+                                budgetDAO.update(budget);
+                            }
+                        }
+                    }
+                }
+                
+                // Clear any budget-transaction relationships first
                 budgetDAO.clearBudgetTransactionsByTransactionId(selectedTransaction.getTId());
                 
                 // Delete transaction from database
                 transactionDAO.delete(selectedTransaction);
+                
+                // THÊM: Thông báo transaction được xóa
+                ObserverManager.getInstance().notifyTransactionDeleted(selectedTransaction);
                 
                 // Refresh the transaction list
                 loadTransactions();

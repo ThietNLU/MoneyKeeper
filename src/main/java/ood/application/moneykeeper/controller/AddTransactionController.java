@@ -9,11 +9,14 @@ import ood.application.moneykeeper.dao.CategoryDAO;
 import ood.application.moneykeeper.dao.TransactionDAO;
 import ood.application.moneykeeper.dao.UserDAO;
 import ood.application.moneykeeper.dao.WalletDAO;
+import ood.application.moneykeeper.dao.BudgetDAO;
 import ood.application.moneykeeper.model.Category;
 import ood.application.moneykeeper.model.IncomeTransactionStrategy;
 import ood.application.moneykeeper.model.Transaction;
 import ood.application.moneykeeper.model.User;
 import ood.application.moneykeeper.model.Wallet;
+import ood.application.moneykeeper.model.Budget;
+import ood.application.moneykeeper.observer.ObserverManager;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -39,16 +42,18 @@ public class AddTransactionController {
     @FXML
     private Button cancelButton;
     @FXML
-    private Label errorLabel;
-
-    private final WalletDAO walletDAO;
-    private final CategoryDAO categoryDAO;
-    private final TransactionDAO transactionDAO;
+    private Label errorLabel;    private final WalletDAO walletDAO;
+    private CategoryDAO categoryDAO;
+    private TransactionDAO transactionDAO;
+    private final BudgetDAO budgetDAO;
     private final UserDAO userDAO = new UserDAO();
     private User defaultUser;
 
     public AddTransactionController() throws SQLException {
         this.walletDAO = new WalletDAO();
+        this.categoryDAO = new CategoryDAO();
+        this.transactionDAO = new TransactionDAO();
+        this.budgetDAO = new BudgetDAO();
         this.categoryDAO = new CategoryDAO();
         this.transactionDAO = new TransactionDAO();
     }
@@ -147,13 +152,50 @@ public class AddTransactionController {
                 java.lang.reflect.Method setUser = transaction.getClass().getMethod("setUser", User.class);
                 setUser.invoke(transaction, defaultUser);
             } catch (Exception ignore) {}
+            
+            // Save transaction first
             if (transactionDAO.save(transaction)) {
+                // Update budgets if this is an expense transaction
+                if (category.isExpense()) {
+                    updateBudgetsForTransaction(transaction);
+                }
                 ((Stage) saveButton.getScene().getWindow()).close();
             } else {
                 errorLabel.setText("Lưu giao dịch thất bại!");
             }
         } catch (Exception ex) {
             errorLabel.setText("Lỗi: " + ex.getMessage());
+        }
+    }
+    
+    /**
+     * Update budgets when a new transaction is added
+     */
+    private void updateBudgetsForTransaction(Transaction transaction) throws SQLException {
+        // Get all budgets for this category
+        List<Budget> budgets = budgetDAO.getBudgetsByCategory(transaction.getCategory().getId());
+        
+        // Initialize ObserverManager if not already done
+        ObserverManager observerManager = ObserverManager.getInstance();
+          for (Budget budget : budgets) {
+            // Check if this budget is active (transaction date within budget period)
+            LocalDateTime transactionDate = transaction.getDateTime();
+            if (transactionDate != null && 
+                transactionDate.isAfter(budget.getStartDate().minusDays(1)) && 
+                transactionDate.isBefore(budget.getEndDate().plusDays(1))) {
+                
+                // Register observers for this budget
+                observerManager.registerBudgetObservers(budget);
+                
+                // Add transaction to budget (this will trigger observer notifications)
+                budget.addTransaction(transaction);
+                
+                // Update budget in database
+                budgetDAO.update(budget);
+                
+                System.out.println("Updated budget: " + budget.getName() + 
+                                 " | Spent: " + budget.getSpent() + "/" + budget.getLimit());
+            }
         }
     }
 }

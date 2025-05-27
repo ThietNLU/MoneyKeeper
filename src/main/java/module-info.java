@@ -1,18 +1,17 @@
-module ood.application.moneykeeper {    // JavaFX
+module ood.application.moneykeeper {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+    requires javafx.base;
 
-    // JDBC
     requires java.sql;
     requires org.xerial.sqlitejdbc;
 
-    // Lombok (dùng static vì nó không có mã byte tại runtime)
-    requires static lombok;    // Mở package cho FXML sử dụng
+    requires static lombok;
     opens ood.application.moneykeeper.controller to javafx.fxml;
     opens ood.application.moneykeeper.model to javafx.fxml;
     opens ood.application.moneykeeper.report to javafx.fxml;
-    opens ood.application.moneykeeper.main to javafx.fxml;    // Export package cho các phần khác sử dụng
+    opens ood.application.moneykeeper.main to javafx.fxml;
     exports ood.application.moneykeeper.controller;
     exports ood.application.moneykeeper.model;
     exports ood.application.moneykeeper.dao;

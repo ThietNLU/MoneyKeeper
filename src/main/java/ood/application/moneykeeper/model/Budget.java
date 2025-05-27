@@ -1,6 +1,8 @@
 package ood.application.moneykeeper.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import ood.application.moneykeeper.observer.AbstractSubject;
 import ood.application.moneykeeper.utils.DateTimeUtils;
 import ood.application.moneykeeper.utils.UUIDUtils;
 
@@ -9,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class Budget {
+@EqualsAndHashCode(callSuper=false)
+public class Budget extends AbstractSubject {
     private String id;
     private String name;
     private double limit;
@@ -57,13 +60,33 @@ public class Budget {
         checkBudgetLimits();
     }
 
+    public void removeTransaction(Transaction trans) {
+        this.transactions.remove(trans);
+        processTransRemoval(trans);
+
+        // Kiểm tra giới hạn ngân sách sau khi xóa giao dịch
+        checkBudgetLimits();
+    }
+
     public void processTrans(Transaction trans) {
         spent += trans.getAmount();
+    }
+
+    public void processTransRemoval(Transaction trans) {
+        spent -= trans.getAmount();
+        // Đảm bảo spent không bị âm
+        if (spent < 0) {
+            spent = 0;
+        }
     }    /**
-     * Kiểm tra giới hạn ngân sách
+     * Kiểm tra giới hạn ngân sách và thông báo cho observers
      */
     private void checkBudgetLimits() {
-        // Chỉ giữ lại logic kiểm tra
+        if (isOverLimit()) {
+            notifyObservers("BUDGET_EXCEEDED", this);
+        } else if (isNearLimit()) {
+            notifyObservers("BUDGET_WARNING", this);
+        }
     }
 
     /**
