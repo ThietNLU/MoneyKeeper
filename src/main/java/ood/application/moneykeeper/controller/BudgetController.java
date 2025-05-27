@@ -358,7 +358,7 @@ public class BudgetController implements Initializable {
                 case "Vượt ngân sách":
                     matchesFilter = percentage >= 100;
                     break;
-                case "Sắp hết hạn":
+                case "Cảnh báo":
                     matchesFilter = percentage >= 80 && percentage < 100;
                     break;
                 case "Tất cả":

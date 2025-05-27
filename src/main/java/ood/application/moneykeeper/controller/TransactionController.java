@@ -38,14 +38,16 @@ public class TransactionController implements Initializable {
     @FXML
     private ComboBox<Wallet> walletComboBox;
     @FXML
-    private TextField amountField;    @FXML
+    private TextField amountField;
+    @FXML
     private TextArea descriptionFields;
     @FXML
     private DatePicker transactionDate;
     @FXML
     private Spinner<Integer> hourSpinner;
     @FXML
-    private Spinner<Integer> minuteSpinner;    @FXML
+    private Spinner<Integer> minuteSpinner;
+    @FXML
     private Button saveButton;
     @FXML
     private Button clearButton;
@@ -66,9 +68,11 @@ public class TransactionController implements Initializable {
     @FXML
     private TableColumn<Transaction, String> walletColumn;
     @FXML
-    private TableColumn<Transaction, Boolean> typeColumn;    private TransactionDAO transactionDAO;
+    private TableColumn<Transaction, Boolean> typeColumn;
+    private TransactionDAO transactionDAO;
     private CategoryDAO categoryDAO;
-    private WalletDAO walletDAO;    private BudgetDAO budgetDAO;
+    private WalletDAO walletDAO;
+    private BudgetDAO budgetDAO;
     private ObservableList<Transaction> transactions;
     private Wallet selectedWallet; // Store the wallet passed from WalletController
     private Transaction selectedTransaction; // Track the selected transaction for editing
@@ -77,7 +81,8 @@ public class TransactionController implements Initializable {
     private ComboBox<String> filterComboBox;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {        try {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
             transactionDAO = new TransactionDAO();
             categoryDAO = new CategoryDAO();
             walletDAO = new WalletDAO();
@@ -87,7 +92,8 @@ public class TransactionController implements Initializable {
             dateColumn.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
             if (descriptionColumn != null) {
                 descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-            }            amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+            }
+            amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
             categoryColumn.setCellValueFactory(cellData -> {
                 Category category = cellData.getValue().getCategory();
                 return new ReadOnlyStringWrapper(category != null ? category.getName() : "N/A");
@@ -116,7 +122,7 @@ public class TransactionController implements Initializable {
                     }
                 }
             });
-            
+
             amountColumn.setCellFactory(column -> new TableCell<>() {
                 @Override
                 protected void updateItem(Double amount, boolean empty) {
@@ -128,7 +134,7 @@ public class TransactionController implements Initializable {
                     }
                 }
             });
-            
+
             typeColumn.setCellFactory(column -> new TableCell<>() {
                 @Override
                 protected void updateItem(Boolean isExpense, boolean empty) {
@@ -144,11 +150,12 @@ public class TransactionController implements Initializable {
             loadCategories();
             loadWallets();            // Set up event handlers
             transactionTable.getSelectionModel().selectedItemProperty().addListener(
-                    (obs, oldSelection, newSelection) -> {                        selectedTransaction = newSelection;
+                    (obs, oldSelection, newSelection) -> {
+                        selectedTransaction = newSelection;
                         boolean isSelected = (newSelection != null);
                         editButton.setDisable(!isSelected);
                         deleteButton.setDisable(!isSelected);
-                        
+
                         if (newSelection != null) {
                             populateFields(newSelection);
                             saveButton.setText("Cập nhật giao dịch");
@@ -156,30 +163,30 @@ public class TransactionController implements Initializable {
                             saveButton.setText("Lưu giao dịch");
                         }
                     });
-              
+
             saveButton.setOnAction(event -> addTransaction());
             clearButton.setOnAction(event -> clearFields());
             editButton.setOnAction(event -> addTransaction());
             deleteButton.setOnAction(event -> deleteTransaction());
 
-        // Initialize filter button
-        filterComboBox.setItems(FXCollections.observableArrayList("Tất cả", "Chi tiêu", "Thu nhập"));
-        filterComboBox.getSelectionModel().selectFirst(); // Mặc định chọn "Tất cả"
+            // Initialize filter button
+            filterComboBox.setItems(FXCollections.observableArrayList("Tất cả", "Chi tiêu", "Thu nhập", "Lương", "Ăn sáng", "Mua sắm", "Giải trí"));
+            filterComboBox.getSelectionModel().selectFirst(); // Mặc định chọn "Tất cả"
+            filterComboBox.setOnAction(event -> applyFilter());
 
-        filterComboBox.setOnAction(event -> applyFilter());
 
-        // Initialize search button
-        searchButton.setOnAction(event -> searchTransactionByKeyword());
+            // Initialize search button
+            searchButton.setOnAction(event -> searchTransactionByKeyword());
 
             transactionDate.setValue(LocalDate.now());
-            
+
             // Set up time spinners
             hourSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, LocalDateTime.now().getHour()));
             hourSpinner.setEditable(true);
-            
+
             minuteSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, LocalDateTime.now().getMinute()));
             minuteSpinner.setEditable(true);
-            
+
             // If a wallet was pre-selected via initData, set it in the combo box
             if (selectedWallet != null && walletComboBox != null) {
                 walletComboBox.setValue(selectedWallet);
@@ -198,15 +205,19 @@ public class TransactionController implements Initializable {
     private void loadCategories() throws SQLException {
         List<Category> categories = categoryDAO.getAll();
         categoryComboBox.setItems(FXCollections.observableArrayList(categories));
-    }    private void loadWallets() throws SQLException {
+    }
+
+    private void loadWallets() throws SQLException {
         List<Wallet> wallets = walletDAO.getAll();
         walletComboBox.setItems(FXCollections.observableArrayList(wallets));
-        
+
         // If a wallet was pre-selected via initData, set it in the combo box
         if (selectedWallet != null) {
             walletComboBox.setValue(selectedWallet);
         }
-    }    private void populateFields(Transaction transaction) {
+    }
+
+    private void populateFields(Transaction transaction) {
         amountField.setText(String.valueOf(transaction.getAmount()));
         descriptionFields.setText(transaction.getDescription());
         transactionDate.setValue(transaction.getDateTime().toLocalDate());
@@ -214,7 +225,9 @@ public class TransactionController implements Initializable {
         minuteSpinner.getValueFactory().setValue(transaction.getDateTime().getMinute());
         categoryComboBox.setValue(transaction.getCategory());
         walletComboBox.setValue(transaction.getWallet());
-    }    private void clearFields() {
+    }
+
+    private void clearFields() {
         amountField.clear();
         descriptionFields.clear();
         transactionDate.setValue(LocalDate.now());
@@ -222,14 +235,16 @@ public class TransactionController implements Initializable {
         minuteSpinner.getValueFactory().setValue(LocalDateTime.now().getMinute());
         categoryComboBox.getSelectionModel().clearSelection();
         walletComboBox.getSelectionModel().clearSelection();
-        
+
         // Clear selection and reset button text
         transactionTable.getSelectionModel().clearSelection();
         selectedTransaction = null;
         saveButton.setText("Lưu giao dịch");
         editButton.setDisable(true);
         deleteButton.setDisable(true);
-    }private void addTransaction() {
+    }
+
+    private void addTransaction() {
         if (validateInput()) {
             try {
                 Wallet chosenWallet = walletComboBox.getValue();
@@ -238,7 +253,7 @@ public class TransactionController implements Initializable {
                 String description = descriptionFields.getText().trim();
                 int hour = hourSpinner.getValue();
                 int minute = minuteSpinner.getValue();
-                
+
                 if (selectedTransaction != null) {
                     // Update existing transaction
                     selectedTransaction.setAmount(amount);
@@ -246,53 +261,53 @@ public class TransactionController implements Initializable {
                     selectedTransaction.setDateTime(transactionDate.getValue().atTime(hour, minute));
                     selectedTransaction.setCategory(selectedCategory);
                     selectedTransaction.setWallet(chosenWallet);
-                    
+
                     // Automatically determine strategy based on Category's isExpense property
                     if (selectedCategory.isExpense()) {
                         selectedTransaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
                     } else {
                         selectedTransaction.setStrategy(new IncomeTransactionStrategy());
                     }
-                    
+
                     // Update transaction in database
                     transactionDAO.update(selectedTransaction);
-                    
+
                     // Process wallet balance update for updated transaction
                     selectedTransaction.processWallet();
-                    
+
                     // Update wallet in database
                     walletDAO.update(chosenWallet);
-                    
+
                     // THÊM: Thông báo transaction được cập nhật
                     ObserverManager.getInstance().notifyTransactionUpdated(selectedTransaction);
-                    
+
                     showInfo("Giao dịch đã được cập nhật thành công!");
                 } else {
                     // Create new transaction
                     Transaction newTransaction = new Transaction(chosenWallet, amount, selectedCategory, description);
-                    
+
                     // Set date and time from form inputs
                     newTransaction.setDateTime(transactionDate.getValue().atTime(hour, minute));
-                    
+
                     // Automatically determine strategy based on Category's isExpense property
                     if (selectedCategory.isExpense()) {
                         newTransaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
                     } else {
                         newTransaction.setStrategy(new IncomeTransactionStrategy());
                     }
-                    
+
                     // Save transaction
                     transactionDAO.save(newTransaction);
-                    
+
                     // Process wallet balance update
                     newTransaction.processWallet();
-                    
+
                     // Update wallet in database
                     walletDAO.update(chosenWallet);
-                    
+
                     // THÊM: Thông báo wallet balance được cập nhật
                     ObserverManager.getInstance().notifyWalletBalanceUpdated(chosenWallet);
-                    
+
                     // Process budget for expense transactions
                     if (selectedCategory.isExpense()) {
                         // Get all budgets for this category
@@ -301,42 +316,45 @@ public class TransactionController implements Initializable {
                             if (budget.getCategory().getId().equals(selectedCategory.getId())) {
                                 // Check if transaction is within budget period
                                 LocalDateTime transactionDateTime = newTransaction.getDateTime();
-                                if (transactionDateTime.isAfter(budget.getStartDate()) && 
-                                    transactionDateTime.isBefore(budget.getEndDate())) {
-                                    
+                                if (transactionDateTime.isAfter(budget.getStartDate()) &&
+                                        transactionDateTime.isBefore(budget.getEndDate())) {
+
                                     // THÊM: Đăng ký observers cho budget trước khi thêm transaction
                                     ObserverManager.getInstance().registerBudgetObservers(budget);
-                                    
+
                                     budget.addTransaction(newTransaction);
                                     budgetDAO.update(budget);
                                 }
                             }
                         }
                     }
-                    
+
                     // THÊM: Thông báo transaction được thêm
                     ObserverManager.getInstance().notifyTransactionAdded(newTransaction);
-                    
+
                     showInfo("Giao dịch đã được thêm thành công!");
                 }
-                
+
                 loadTransactions();
                 clearFields();
             } catch (SQLException e) {
                 showError("Lỗi khi lưu giao dịch: " + e.getMessage());
             }
-        }    }    private void deleteTransaction() {
+        }
+    }
+
+    private void deleteTransaction() {
         if (selectedTransaction == null) {
             showError("Vui lòng chọn giao dịch để xóa!");
             return;
         }
-        
+
         // Show confirmation dialog
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Xác nhận xóa");
         confirmAlert.setHeaderText("Bạn có chắc chắn muốn xóa giao dịch này?");
         confirmAlert.setContentText("Thao tác này không thể hoàn tác.");
-        
+
         if (confirmAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try {
                 // Reverse the wallet balance change before deleting
@@ -348,13 +366,13 @@ public class TransactionController implements Initializable {
                     // Remove money from wallet (reverse income)
                     wallet.setBalance(wallet.getBalance() - selectedTransaction.getAmount());
                 }
-                
+
                 // Update wallet in database
                 walletDAO.update(wallet);
-                
+
                 // THÊM: Thông báo wallet balance được cập nhật
                 ObserverManager.getInstance().notifyWalletBalanceUpdated(wallet);
-                
+
                 // Process budget removal for expense transactions
                 if (selectedTransaction.getCategory().isExpense()) {
                     // Get all budgets for this category
@@ -363,12 +381,12 @@ public class TransactionController implements Initializable {
                         if (budget.getCategory().getId().equals(selectedTransaction.getCategory().getId())) {
                             // Check if transaction was within budget period
                             LocalDateTime transactionDateTime = selectedTransaction.getDateTime();
-                            if (transactionDateTime.isAfter(budget.getStartDate()) && 
-                                transactionDateTime.isBefore(budget.getEndDate())) {
-                                
+                            if (transactionDateTime.isAfter(budget.getStartDate()) &&
+                                    transactionDateTime.isBefore(budget.getEndDate())) {
+
                                 // THÊM: Đăng ký observers cho budget trước khi xóa transaction
                                 ObserverManager.getInstance().registerBudgetObservers(budget);
-                                
+
                                 // Remove transaction from budget and update spent amount
                                 budget.removeTransaction(selectedTransaction);
                                 budgetDAO.update(budget);
@@ -376,20 +394,20 @@ public class TransactionController implements Initializable {
                         }
                     }
                 }
-                
+
                 // Clear any budget-transaction relationships first
                 budgetDAO.clearBudgetTransactionsByTransactionId(selectedTransaction.getTId());
-                
+
                 // Delete transaction from database
                 transactionDAO.delete(selectedTransaction);
-                
+
                 // THÊM: Thông báo transaction được xóa
                 ObserverManager.getInstance().notifyTransactionDeleted(selectedTransaction);
-                
+
                 // Refresh the transaction list
                 loadTransactions();
                 clearFields();
-                
+
                 showInfo("Giao dịch đã được xóa thành công!");
             } catch (SQLException e) {
                 showError("Lỗi khi xóa giao dịch: " + e.getMessage());
@@ -452,25 +470,28 @@ public class TransactionController implements Initializable {
     }
 
     private void applyFilter() {
-        String selectedFilter = (String) filterComboBox.getValue();
+        String selectedFilter = filterComboBox.getValue();
+        String keyword = searchField.getText().toLowerCase().trim();
         try {
             List<Transaction> allTransactions = transactionDAO.getAll();
-            List<Transaction> filtered = new ArrayList<Transaction>();
-            String keyword = searchField.getText().toLowerCase().trim();
+            List<Transaction> filtered = new ArrayList<>();
 
+            for (Transaction t : allTransactions) {
+                boolean matchesFilter = false;
+                boolean matchesKeyword = keyword.isEmpty() ||
+                        (t.getDescription() != null && t.getDescription().toLowerCase().contains(keyword));
 
-            for (int i = 0; i < allTransactions.size(); i++) {
-                Transaction t = allTransactions.get(i);
-                if ("Chi tiêu".equals(selectedFilter)) {
-                    if (t.isExpense()) {
-                        filtered.add(t);
-                    }
-                } else if ("Thu nhập".equals(selectedFilter)) {
-                    if (!t.isExpense()) {
-                        filtered.add(t);
-                    }
-                } else {
-                    // "Tất cả"
+                if ("Tất cả".equals(selectedFilter)) {
+                    matchesFilter = true;
+                } else if ("Chi tiêu".equals(selectedFilter) && t.isExpense()) {
+                    matchesFilter = true;
+                } else if ("Thu nhập".equals(selectedFilter) && !t.isExpense()) {
+                    matchesFilter = true;
+                } else if (t.getCategory() != null && t.getCategory().getName().equals(selectedFilter)) {
+                    matchesFilter = true;
+                }
+
+                if (matchesFilter && matchesKeyword) {
                     filtered.add(t);
                 }
             }
