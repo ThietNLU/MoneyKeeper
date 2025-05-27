@@ -5,7 +5,7 @@
 ## DAO Pattern
 ## Singleton Pattern
 ## Observer Pattern
-
+git ad
 # 📋 Phân tích Observer Pattern trong Project MoneyKeeper
 
 ## 🏗️ 1. Cấu trúc tổng thể của Observer Pattern
