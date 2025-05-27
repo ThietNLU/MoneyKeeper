@@ -95,9 +95,10 @@ public class BudgetController implements Initializable {
 
             // Initialize filter options
             filterComboBox.setItems(FXCollections.observableArrayList(
-                "Tất cả", "Hoạt động", "Vượt ngân sách", "Sắp hết hạn"
+                    "Tất cả", "Bình thường", "Vượt ngân sách", "Sắp hết hạn"
             ));
             filterComboBox.getSelectionModel().selectFirst();
+            filterComboBox.setOnAction(event -> filterBudgets());
 
             // Set up table columns
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));            categoryColumn.setCellValueFactory(cellData -> {
@@ -335,42 +336,62 @@ public class BudgetController implements Initializable {
         }
     }
 
+    private void filterBudgets() {
+        String filter = filterComboBox.getValue();
+
+        if (budgets == null) return;
+
+        ObservableList<Budget> filtered = FXCollections.observableArrayList();
+
+        for (Budget budget : budgets) {
+            boolean matchesFilter = true;
+            double percentage = budget.getSpent() / budget.getLimit() * 100;
+
+            switch (filter) {
+                case "Bình thường":
+                    matchesFilter = percentage < 80;
+                    break;
+                case "Vượt ngân sách":
+                    matchesFilter = percentage >= 100;
+                    break;
+                case "Sắp hết hạn":
+                    matchesFilter = percentage >= 80 && percentage < 100;
+                    break;
+                case "Tất cả":
+                default:
+                    matchesFilter = true;
+                    break;
+            }
+
+            if (matchesFilter) {
+                filtered.add(budget);
+            }
+        }
+
+        budgetTable.setItems(filtered);
+    }
+
     @FXML
     private void searchBudgets() {
-        String searchText = searchField.getText().toLowerCase();
-        String filter = filterComboBox.getValue();
-        
-        if (budgets != null) {
-            ObservableList<Budget> filteredBudgets = FXCollections.observableArrayList();
-              for (Budget budget : budgets) {
-                boolean matchesSearch = searchText.isEmpty() || 
-                    budget.getName().toLowerCase().contains(searchText) ||
-                    (budget.getCategory() != null && budget.getCategory().getName().toLowerCase().contains(searchText));
-                
-                boolean matchesFilter = true;
-                if (!filter.equals("Tất cả")) {
-                    double percentage = budget.getSpent() / budget.getLimit() * 100;
-                    switch (filter) {
-                        case "Hoạt động":
-                            matchesFilter = percentage < 100;
-                            break;
-                        case "Vượt ngân sách":
-                            matchesFilter = percentage >= 100;
-                            break;
-                        case "Sắp hết hạn":
-                            matchesFilter = percentage >= 80 && percentage < 100;
-                            break;
-                    }
-                }
-                
-                if (matchesSearch && matchesFilter) {
-                    filteredBudgets.add(budget);
-                }
+        String searchText = searchField.getText().toLowerCase().trim();
+
+        if (budgets == null) return;
+
+        ObservableList<Budget> filtered = FXCollections.observableArrayList();
+
+        for (Budget budget : budgets) {
+            boolean matchesSearch = searchText.isEmpty()
+                    || budget.getName().toLowerCase().contains(searchText)
+                    || budget.getCategory().getName().toLowerCase().contains(searchText);
+
+            if (matchesSearch) {
+                filtered.add(budget);
             }
-            
-            budgetTable.setItems(filteredBudgets);
         }
+
+        budgetTable.setItems(filtered);
     }
+
 
     @FXML
     private void refreshData() {

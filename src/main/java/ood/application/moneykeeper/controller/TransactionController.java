@@ -17,10 +17,21 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class TransactionController implements Initializable {
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Button searchButton;
+
+    @FXML
+    private Label totalExpenseLabel;
+    @FXML
+    private Label totalIncomeLabel;
+
     @FXML
     private ComboBox<Category> categoryComboBox;
     @FXML
@@ -60,6 +71,9 @@ public class TransactionController implements Initializable {
     private ObservableList<Transaction> transactions;
     private Wallet selectedWallet; // Store the wallet passed from WalletController
     private Transaction selectedTransaction; // Track the selected transaction for editing
+
+    @FXML
+    private ComboBox<String> filterComboBox;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {        try {
@@ -146,6 +160,15 @@ public class TransactionController implements Initializable {
             clearButton.setOnAction(event -> clearFields());
             editButton.setOnAction(event -> addTransaction());
             deleteButton.setOnAction(event -> deleteTransaction());
+
+        // Initialize filter button
+        filterComboBox.setItems(FXCollections.observableArrayList("Tất cả", "Chi tiêu", "Thu nhập"));
+        filterComboBox.getSelectionModel().selectFirst(); // Mặc định chọn "Tất cả"
+
+        filterComboBox.setOnAction(event -> applyFilter());
+
+        // Initialize search button
+        searchButton.setOnAction(event -> searchTransactionByKeyword());
 
             transactionDate.setValue(LocalDate.now());
             
@@ -375,6 +398,80 @@ public class TransactionController implements Initializable {
             // Pre-select the wallet in the combo box
             walletComboBox.setValue(wallet);
         }
+    }
+
+    private void applyFilter() {
+        String selectedFilter = (String) filterComboBox.getValue();
+        try {
+            List<Transaction> allTransactions = transactionDAO.getAll();
+            List<Transaction> filtered = new ArrayList<Transaction>();
+            String keyword = searchField.getText().toLowerCase().trim();
+
+
+            for (int i = 0; i < allTransactions.size(); i++) {
+                Transaction t = allTransactions.get(i);
+                if ("Chi tiêu".equals(selectedFilter)) {
+                    if (t.isExpense()) {
+                        filtered.add(t);
+                    }
+                } else if ("Thu nhập".equals(selectedFilter)) {
+                    if (!t.isExpense()) {
+                        filtered.add(t);
+                    }
+                } else {
+                    // "Tất cả"
+                    filtered.add(t);
+                }
+            }
+
+            transactions = FXCollections.observableArrayList(filtered);
+            transactionTable.setItems(transactions);
+            updateTotalLabels(filtered);
+        } catch (SQLException e) {
+            showError("Lỗi khi lọc giao dịch: " + e.getMessage());
+        }
+    }
+
+    private void searchTransactionByKeyword() {
+        String keyword = searchField.getText().toLowerCase().trim();
+
+        if (keyword.isEmpty()) {
+            applyFilter(); // Nếu không nhập gì, áp dụng bộ lọc chung
+            return;
+        }
+
+        try {
+            List<Transaction> allTransactions = transactionDAO.getAll();
+            List<Transaction> filtered = new ArrayList<>();
+
+            for (Transaction t : allTransactions) {
+                if (t.getDescription() != null && t.getDescription().toLowerCase().contains(keyword)) {
+                    filtered.add(t);
+                }
+            }
+
+            transactions = FXCollections.observableArrayList(filtered);
+            transactionTable.setItems(transactions);
+            updateTotalLabels(filtered);
+        } catch (SQLException e) {
+            showError("Lỗi khi tìm kiếm: " + e.getMessage());
+        }
+    }
+
+    private void updateTotalLabels(List<Transaction> transactions) {
+        double totalExpense = 0;
+        double totalIncome = 0;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.isExpense()) {
+                totalExpense += transaction.getAmount();
+            } else {
+                totalIncome += transaction.getAmount();
+            }
+        }
+
+        totalExpenseLabel.setText(String.format("%.0f VNĐ", totalExpense));
+        totalIncomeLabel.setText(String.format("%.0f VNĐ", totalIncome));
     }
 }
 
