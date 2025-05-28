@@ -644,4 +644,3 @@ ExpenseStrategy    IncomeStrategy
 - **1:N**: Wallet-Transaction, User-Wallet, Category-Transaction, Category-Budget
 - **M:N**: Budget-Transaction (qua join table)
 
-Thiết kế tổng thể của MoneyKeeper thể hiện sự hiểu biết tốt về OOD principles với việc sử dụng đúng các design patterns và quan hệ phù hợp cho domain quản lý tài chính cá nhân.
