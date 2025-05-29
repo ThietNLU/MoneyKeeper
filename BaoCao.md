@@ -1,5 +1,3 @@
-Ah hiểu rồi! Bạn muốn chia project thành 6 phần để mỗi người có thể báo cáo code riêng biệt với giảng viên. Tôi sẽ đề xuất cách chia code cụ thể để mỗi người có thể tập trung vào một phần nhất định. Bây giờ tôi hiểu rồi! Bạn muốn chia project thành 6 phần để mỗi bạn có thể báo cáo code với giảng viên riêng biệt. Tôi sẽ chia project theo chức năng và phạm vi code cụ thể để mỗi người có thể tập trung vào một nhóm file/package nhất định. ## **📋 ĐỀ XUẤT CHIA PROJECT MONEYKEEPER THÀNH 6 PHẦN BÁO CÁO**
-
 ### **👨‍💻 PHẦN 1: CORE MODEL & DOMAIN LOGIC**
 **Người báo cáo 1**
 

@@ -19,11 +19,22 @@ public class MainTest {
                 new Category("Launch", true)
         );
 
-        Transaction trans = user.createTransaction(cash, 15000.0, new Category("Launch", true), "Bánh mì 2 trứng");
+        Transaction trans = user.createTransaction(cash, 15000.0,
+                new Category("Launch", true), "Bánh mì 2 trứng");
         System.out.println(trans.toString());
         System.out.println("====***====");
         System.out.println(budget.toString());
         System.out.println("====***====");
         System.out.println(cash.toString());
+
+        User user1 = new User("John Doe");
+
+        Wallet wallet = user.createWallet("Main Wallet", 1000000.0);
+
+        Category foodCategory = new Category("Food", true);
+
+        Transaction trans1 = user.createTransaction(wallet, 150000.0, foodCategory, "Lunch");
+
+
     }
 }
