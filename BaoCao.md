@@ -152,11 +152,3 @@ Tất cả có thể dùng cùng một user story: **"User tạo wallet → Add 
 **Phần 4**: Database design, data integrity, DAO pattern benefits
 **Phần 5**: MVC implementation, UI/UX decisions, event handling
 **Phần 6**: Reporting algorithms, testing approach, project structure
-
-Cách chia này đảm bảo mỗi người có:
-- **Scope rõ ràng** với files cụ thể
-- **Độ phức tạp tương đương**
-- **Tính độc lập** để có thể báo cáo riêng
-- **Mối liên kết** để hiểu integration
-
-Bạn có muốn tôi tạo detailed checklist cho bất kỳ phần nào không?
