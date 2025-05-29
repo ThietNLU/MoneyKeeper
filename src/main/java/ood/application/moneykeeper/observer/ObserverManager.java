@@ -5,40 +5,29 @@ import ood.application.moneykeeper.model.Budget;
 import ood.application.moneykeeper.model.Transaction;
 import ood.application.moneykeeper.model.Wallet;
 
-/**
- * ObserverManager - quản lý tập trung các observers trong ứng dụng
- */
 public class ObserverManager {
     private static ObserverManager instance;
-    
     private NotificationObserver notificationObserver;
     private UIUpdateObserver uiUpdateObserver;
-    
+
     private ObserverManager() {
-        // Private constructor for singleton
     }
-    
+
     public static ObserverManager getInstance() {
         if (instance == null) {
             instance = new ObserverManager();
         }
         return instance;
     }
-    
-    /**
-     * Khởi tạo các observers
-     */
+
     public void initializeObservers(ObservableList<Transaction> transactionList,
-                                   ObservableList<Budget> budgetList,
-                                   ObservableList<String> notificationHistory) {
-        // Khởi tạo NotificationObserver
+                                    ObservableList<Budget> budgetList,
+                                    ObservableList<String> notificationHistory) {
         notificationObserver = new NotificationObserver("System Notification");
-        
-        // Khởi tạo UIUpdateObserver
-        uiUpdateObserver = new UIUpdateObserver(transactionList, budgetList, notificationHistory);    }
-      /**
-     * Đăng ký observers cho một wallet
-     */
+
+        uiUpdateObserver = new UIUpdateObserver(transactionList, budgetList, notificationHistory);
+    }
+
     public void registerWalletObservers(Wallet wallet) {
         if (wallet != null) {
             try {
@@ -54,9 +43,7 @@ public class ObserverManager {
             }
         }
     }
-      /**
-     * Hủy đăng ký observers cho một wallet
-     */
+
     public void unregisterWalletObservers(Wallet wallet) {
         if (wallet != null) {
             try {
@@ -73,9 +60,6 @@ public class ObserverManager {
         }
     }
 
-    /**
-     * Đăng ký observers cho một budget
-     */
     public void registerBudgetObservers(Budget budget) {
         if (budget != null) {
             try {
@@ -91,9 +75,7 @@ public class ObserverManager {
             }
         }
     }
-      /**
-     * Hủy đăng ký observers cho một budget
-     */
+
     public void unregisterBudgetObservers(Budget budget) {
         if (budget != null) {
             try {
@@ -109,9 +91,7 @@ public class ObserverManager {
             }
         }
     }
-      /**
-     * Thông báo transaction mới được thêm
-     */
+
     public void notifyTransactionAdded(Transaction transaction) {
         try {
             if (notificationObserver != null) {
@@ -125,10 +105,7 @@ public class ObserverManager {
             e.printStackTrace();
         }
     }
-    
-    /**
-     * Thông báo transaction được cập nhật
-     */
+
     public void notifyTransactionUpdated(Transaction transaction) {
         if (notificationObserver != null) {
             notificationObserver.update("TRANSACTION_UPDATED", transaction);
@@ -137,10 +114,7 @@ public class ObserverManager {
             uiUpdateObserver.update("TRANSACTION_UPDATED", transaction);
         }
     }
-    
-    /**
-     * Thông báo transaction được xóa
-     */
+
     public void notifyTransactionDeleted(Transaction transaction) {
         if (notificationObserver != null) {
             notificationObserver.update("TRANSACTION_DELETED", transaction);
@@ -149,10 +123,7 @@ public class ObserverManager {
             uiUpdateObserver.update("TRANSACTION_DELETED", transaction);
         }
     }
-    
-    /**
-     * Thông báo số dư ví được cập nhật
-     */
+
     public void notifyWalletBalanceUpdated(Object walletData) {
         if (notificationObserver != null) {
             notificationObserver.update("WALLET_BALANCE_UPDATED", walletData);
@@ -161,12 +132,11 @@ public class ObserverManager {
             uiUpdateObserver.update("WALLET_BALANCE_UPDATED", walletData);
         }
     }
-    
-    // Getters for observers
+
     public NotificationObserver getNotificationObserver() {
         return notificationObserver;
     }
-    
+
     public UIUpdateObserver getUIUpdateObserver() {
         return uiUpdateObserver;
     }

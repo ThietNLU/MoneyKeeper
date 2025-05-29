@@ -78,9 +78,8 @@ public class Budget extends AbstractSubject {
         if (spent < 0) {
             spent = 0;
         }
-    }    /**
-     * Kiểm tra giới hạn ngân sách và thông báo cho observers
-     */
+    } 
+    
     private void checkBudgetLimits() {
         if (isOverLimit()) {
             notifyObservers("BUDGET_EXCEEDED", this);
@@ -89,9 +88,6 @@ public class Budget extends AbstractSubject {
         }
     }
 
-    /**
-     * Cập nhật số tiền đã chi của ngân sách
-     */
     public void updateSpent(double newSpent) {
         this.spent = newSpent;
         checkBudgetLimits();

@@ -146,9 +146,6 @@ public class SimpleObserverValidation {
         }
     }
 
-    /**
-     * Simple test observer to verify notifications without JavaFX dependencies
-     */
     private static class TestObserver implements Observer {
         private int notificationCount = 0;
         private String lastMessage = "";

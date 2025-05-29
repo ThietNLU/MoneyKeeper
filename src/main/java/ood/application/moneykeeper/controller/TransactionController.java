@@ -238,9 +238,25 @@ public class TransactionController implements Initializable {
                 String description = descriptionFields.getText().trim();
                 int hour = hourSpinner.getValue();
                 int minute = minuteSpinner.getValue();
-                
-                if (selectedTransaction != null) {
-                    // Update existing transaction
+                  if (selectedTransaction != null) {
+                    // Store old values for reversal
+                    Wallet oldWallet = selectedTransaction.getWallet();
+                    double oldAmount = selectedTransaction.getAmount();
+                    Category oldCategory = selectedTransaction.getCategory();
+                    
+                    // THÊM: Đăng ký observers cho wallet cũ trước khi hoàn tác
+                    ObserverManager.getInstance().registerWalletObservers(oldWallet);
+                    
+                    // Reverse the old transaction from wallet
+                    if (oldCategory.isExpense()) {
+                        // Add money back to wallet (reverse old expense)
+                        oldWallet.income(oldAmount);
+                    } else {
+                        // Remove money from wallet (reverse old income)
+                        oldWallet.expense(oldAmount);
+                    }
+                    
+                    // Update existing transaction with new values
                     selectedTransaction.setAmount(amount);
                     selectedTransaction.setDescription(description);
                     selectedTransaction.setDateTime(transactionDate.getValue().atTime(hour, minute));
@@ -257,11 +273,57 @@ public class TransactionController implements Initializable {
                     // Update transaction in database
                     transactionDAO.update(selectedTransaction);
                     
-                    // Process wallet balance update for updated transaction
-                    selectedTransaction.processWallet();
+                    // THÊM: Đăng ký observers cho wallet mới nếu khác wallet cũ
+                    if (!chosenWallet.getId().equals(oldWallet.getId())) {
+                        ObserverManager.getInstance().registerWalletObservers(chosenWallet);
+                    }
                     
-                    // Update wallet in database
-                    walletDAO.update(chosenWallet);
+                    // Apply the new transaction to wallet
+                    selectedTransaction.processWallet();
+                      // Update wallet(s) in database
+                    walletDAO.update(oldWallet);
+                    if (!chosenWallet.getId().equals(oldWallet.getId())) {
+                        walletDAO.update(chosenWallet);
+                    }
+                    
+                    // Process budget updates for expense transactions
+                    if (oldCategory.isExpense() || selectedCategory.isExpense()) {
+                        List<Budget> budgets = budgetDAO.getAll();
+                        
+                        // Remove from old budget if it was an expense
+                        if (oldCategory.isExpense()) {
+                            for (Budget budget : budgets) {
+                                if (budget.getCategory().getId().equals(oldCategory.getId())) {
+                                    LocalDateTime oldTransactionDateTime = selectedTransaction.getDateTime();
+                                    if (oldTransactionDateTime.isAfter(budget.getStartDate()) && 
+                                        oldTransactionDateTime.isBefore(budget.getEndDate())) {
+                                        
+                                        // Remove old transaction from budget
+                                        budget.removeTransaction(selectedTransaction);
+                                        budgetDAO.update(budget);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Add to new budget if it's an expense
+                        if (selectedCategory.isExpense()) {
+                            for (Budget budget : budgets) {
+                                if (budget.getCategory().getId().equals(selectedCategory.getId())) {
+                                    LocalDateTime newTransactionDateTime = selectedTransaction.getDateTime();
+                                    if (newTransactionDateTime.isAfter(budget.getStartDate()) && 
+                                        newTransactionDateTime.isBefore(budget.getEndDate())) {
+                                        
+                                        // THÊM: Đăng ký observers cho budget trước khi thêm transaction
+                                        ObserverManager.getInstance().registerBudgetObservers(budget);
+                                        
+                                        budget.addTransaction(selectedTransaction);
+                                        budgetDAO.update(budget);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     
                     // THÊM: Thông báo transaction được cập nhật
                     ObserverManager.getInstance().notifyTransactionUpdated(selectedTransaction);
@@ -279,19 +341,16 @@ public class TransactionController implements Initializable {
                         newTransaction.setStrategy(new ood.application.moneykeeper.model.ExpenseTransactionStrategy());
                     } else {
                         newTransaction.setStrategy(new IncomeTransactionStrategy());
-                    }
-                    
-                    // Save transaction
+                    }                    // Save transaction
                     transactionDAO.save(newTransaction);
+                      // THÊM: Đăng ký observers cho wallet trước khi cập nhật số dư
+                    ObserverManager.getInstance().registerWalletObservers(chosenWallet);
                     
-                    // Process wallet balance update
-                    newTransaction.processWallet();
+                    // Process wallet balance update using wallet.addTransaction to trigger notifications
+                    chosenWallet.addTransaction(newTransaction);
                     
                     // Update wallet in database
                     walletDAO.update(chosenWallet);
-                    
-                    // THÊM: Thông báo wallet balance được cập nhật
-                    ObserverManager.getInstance().notifyWalletBalanceUpdated(chosenWallet);
                     
                     // Process budget for expense transactions
                     if (selectedCategory.isExpense()) {
@@ -337,23 +396,23 @@ public class TransactionController implements Initializable {
         confirmAlert.setHeaderText("Bạn có chắc chắn muốn xóa giao dịch này?");
         confirmAlert.setContentText("Thao tác này không thể hoàn tác.");
         
-        if (confirmAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            try {
+        if (confirmAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {            try {
                 // Reverse the wallet balance change before deleting
                 Wallet wallet = selectedTransaction.getWallet();
+                
+                // THÊM: Đăng ký observers cho wallet trước khi thay đổi balance
+                ObserverManager.getInstance().registerWalletObservers(wallet);
+                
                 if (selectedTransaction.getCategory().isExpense()) {
-                    // Add money back to wallet (reverse expense)
-                    wallet.setBalance(wallet.getBalance() + selectedTransaction.getAmount());
+                    // Add money back to wallet (reverse expense) - use income method to trigger notifications
+                    wallet.income(selectedTransaction.getAmount());
                 } else {
-                    // Remove money from wallet (reverse income)
-                    wallet.setBalance(wallet.getBalance() - selectedTransaction.getAmount());
+                    // Remove money from wallet (reverse income) - use expense method to trigger notifications
+                    wallet.expense(selectedTransaction.getAmount());
                 }
                 
                 // Update wallet in database
                 walletDAO.update(wallet);
-                
-                // THÊM: Thông báo wallet balance được cập nhật
-                ObserverManager.getInstance().notifyWalletBalanceUpdated(wallet);
                 
                 // Process budget removal for expense transactions
                 if (selectedTransaction.getCategory().isExpense()) {

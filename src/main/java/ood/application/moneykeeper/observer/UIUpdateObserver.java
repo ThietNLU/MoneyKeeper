@@ -6,16 +6,12 @@ import ood.application.moneykeeper.model.Budget;
 import ood.application.moneykeeper.model.Transaction;
 import ood.application.moneykeeper.model.Wallet;
 
-/**
- * UIUpdateObserver - cập nhật giao diện người dùng khi có thay đổi
- */
 public class UIUpdateObserver implements Observer {
     private ObservableList<Transaction> transactionList;
     private ObservableList<Budget> budgetList;
     private ObservableList<String> notificationHistory;
     
     public UIUpdateObserver() {
-        // Constructor mặc định
     }
     
     public UIUpdateObserver(ObservableList<Transaction> transactionList, 
@@ -102,7 +98,8 @@ public class UIUpdateObserver implements Observer {
         // Sẽ được implement để refresh danh sách transaction từ database
         System.out.println("Refreshing transaction list...");
     }
-      private void refreshBudgetList() {
+
+    private void refreshBudgetList() {
         if (budgetList != null) {
             // Sẽ được implement để refresh danh sách budget từ database
             System.out.println("Refreshing budget list... (" + budgetList.size() + " items)");
@@ -122,7 +119,6 @@ public class UIUpdateObserver implements Observer {
         }
     }
     
-    // Setter methods để inject dependencies
     public void setTransactionList(ObservableList<Transaction> transactionList) {
         this.transactionList = transactionList;
     }

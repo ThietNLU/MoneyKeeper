@@ -3,9 +3,6 @@ package ood.application.moneykeeper.observer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Abstract Subject class - triển khai cơ bản của Subject interface
- */
 public abstract class AbstractSubject implements Subject {
     protected List<Observer> observers = new ArrayList<>();
     
@@ -27,11 +24,8 @@ public abstract class AbstractSubject implements Subject {
             observer.update(message, data);
         }
     }
-    
-    /**
-     * Thông báo với message đơn giản
-     */
-    protected void notifyObservers(String message) {
+
+    public void notifyObservers(String message) {
         notifyObservers(message, null);
     }
 }
